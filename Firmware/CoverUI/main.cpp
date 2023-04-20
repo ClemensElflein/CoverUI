@@ -3,25 +3,33 @@
 
 #include <stdio.h>
 
+#ifdef HW_YFC500 // --- Stock "YardForce Classic 500" HardWare ---
+#include "yfc500/main.hpp"
+#else // --- OM's Pico based HardWare ---
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "pico/multicore.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
-
+#endif
 #include <cstdio>
 #include "COBS.h"
-#include "CRC.h"
+#ifdef CRC // i.e. defined by STM32 HAL
+#undef CRC
+#endif
+#include "CRC.h" // TODO STM32: might/should use STM32 embedded crc unit
 
 #include <cstring>
 
+#ifndef HW_YFC500 // HW Pico
 #include "LEDcontrol.h"
 #include "statemachine.h"
 #include "buttonscan.h"
+#endif
 #include "BttnCtl.h"
 
-#define bufflen 1000
+#define bufflen 1000 // Q: 1000 look really huge! Is it a realistic value?
 
 #define FIRMWARE_VERSION 200
 // V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
@@ -96,7 +104,7 @@ void sendMessage(void *message, size_t size)
 #ifdef _serial_debug_
   printf("\nprint struct before encoding %d byte : ", (int)size);
   uint8_t *temp = data_pointer;
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
   {
     printf("0x%02x , ", *temp);
     temp++;
@@ -117,11 +125,15 @@ void sendMessage(void *message, size_t size)
   }
 #endif
 
+#ifdef HW_YFC500
+  HAL_UART_Transmit_DMA(&HUART_LL, out_buf, encoded_size);
+#else // HW Pico
   for (uint i = 0; i < encoded_size; i++)
   {
     uart_putc(UART_1, out_buf[i]);
   }
   mutex_exit(&mx1);
+#endif
 }
 
 /****************************************************************************************************
@@ -170,10 +182,14 @@ void PacketReceived()
     {
       // valid set_leds request
       printf("Got valid setled call\n");
+#ifdef HW_YFC500
+      LedControl.set(message->leds);
+#else // HW Pico
       mutex_enter_blocking(&mx1);
       LED_activity = message->leds;
       LEDs_refresh(pio_Block1, sm_LEDmux);
       mutex_exit(&mx1);
+#endif
     }
     else
     {
@@ -188,7 +204,7 @@ void PacketReceived()
 #ifdef _serial_debug_
   printf("packet received with %d bytes : ", (int)data_size);
   uint8_t *temp = decoded_buffer;
-  for (int i = 0; i < data_size; i++)
+  for (size_t i = 0; i < data_size; i++)
   {
     printf("0x%02x , ", *temp);
     temp++;
@@ -203,11 +219,22 @@ void PacketReceived()
  * out to buffer_serial
  *****************************************************************************************************/
 
+#ifdef HW_YFC500
+// I know, this is somehow "ugly"!!
+// But because I made UART-receive by DMA+IdleDetection all data is already avail in DMA buffer.
+// What I could do is: copy the whole function to yfc500/main.hpp to not confuse with this ugly #ifdef
+void getDataFromBuffer(const uint8_t *dma_buffer, uint16_t size)
+{
+  for (size_t i = 0; i < size; i++)
+  {
+    u_int8_t readbyte = *(dma_buffer + i);
+#else // HW Pico
 void getDataFromBuffer()
 {
   while (uart_is_readable(UART_1))
   {
     u_int8_t readbyte = uart_getc(UART_1);
+#endif
     buffer_serial[write] = readbyte;
     write++;
     if (write >= bufflen)
@@ -321,6 +348,9 @@ void core1()
 
 int main(void)
 {
+#ifdef HW_YFC500
+  init_mcu(); // Init STM32 and all peripherals
+#else         // HW Pico
   uint32_t last_led_update = 0;
 
   stdio_init_all();
@@ -334,10 +364,25 @@ int main(void)
   uart_set_fifo_enabled(UART_1, true);
 
   init_button_scan(); // Init hardware for button matix
-  // init_LED_driver();
-
+                      // init_LED_driver();
+#endif
   float ver = (float)FIRMWARE_VERSION / 100.0;
   printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);
+
+#ifdef HW_YFC500
+  start_peripherals();
+  LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive blink. Get switched to manual- fast-blink in the case of an error
+
+  // "Hi there" and jammed button mounting detection
+  bool tmp;
+  do
+  {
+    // LED blink to say it's alive
+    // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 2.5ms)
+    LedControl.animate();
+
+  } while (bit_getbutton(500, tmp));
+#else // HW Pico
 
   // initialise state machines
   sm_blink = init_run_StateMachine_blink(pio_Block1);    // on board led alive blink
@@ -379,9 +424,12 @@ int main(void)
   // enable other core for button detection
   multicore_reset_core1();
   multicore_launch_core1(core1);
-
+#endif
   printf("\n\n waiting for commands or button press");
 
+#ifdef HW_YFC500
+  core1(); // YFC500's STM32 only has one core, but nothing more todo in main()
+#else      // HW Pico
   while (true)
   {
 
@@ -398,4 +446,5 @@ int main(void)
       last_led_update = now;
     }
   }
+#endif
 }
