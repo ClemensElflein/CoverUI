@@ -129,13 +129,13 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
 
 void LEDcontrol::animate()
 {
-    for (int led = 0; led < NUM_LEDS - 1; led++)
+    for (int led = NUM_LEDS - 2; led >= 0; led--) // Without LED_REAR
     {
         set(led, LED_state::LED_on);
         HAL_Delay(15);
     }
 
-    for (int led = 0; led < NUM_LEDS - 1; led++)
+    for (int led = NUM_LEDS - 2; led >= 0; led--) // Without LED_REAR
     {
         set(led, LED_state::LED_off);
         HAL_Delay(15);

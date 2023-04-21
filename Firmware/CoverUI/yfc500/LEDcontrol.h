@@ -34,47 +34,26 @@ private:
         uint16_t pin;
     };
     Led_pio_def _leds[NUM_LEDS] = {
-        // Order derived from LED_animation() and UIButtonTest, but doesn't match with Buttons
-        {LED_2HR_GPIO_Port, LED_2HR_Pin}, // 1st (4 piece) row
-        {LED_4HR_GPIO_Port, LED_4HR_Pin},
-        {LED_6HR_GPIO_Port, LED_6HR_Pin},
-        {LED_8HR_GPIO_Port, LED_8HR_Pin},
-        {LED_S1_GPIO_Port, LED_S1_Pin}, // 2nd row
-        {LED_S2_GPIO_Port, LED_S2_Pin},
-        {LED_LOCK_GPIO_Port, LED_LOCK_Pin},
-        {LED_MON_GPIO_Port, LED_MON_Pin}, // 3rd (7 piece) row
-        {LED_TUE_GPIO_Port, LED_TUE_Pin},
-        {LED_WED_GPIO_Port, LED_WED_Pin},
-        {LED_THU_GPIO_Port, LED_THU_Pin},
-        {LED_FRI_GPIO_Port, LED_FRI_Pin},
-        {LED_SAT_GPIO_Port, LED_SAT_Pin},
-        {LED_SUN_GPIO_Port, LED_SUN_Pin},
-        {LED_LIFTED_GPIO_Port, LED_LIFTED_Pin}, // 4th row
-        {LED_WIRE_GPIO_Port, LED_WIRE_Pin},
-        {LED_BAT_GPIO_Port, LED_BAT_Pin},
-        {LED_CHARGE_GPIO_Port, LED_CHARGE_Pin},
-        {LED_REAR_GPIO_Port, LED_REAR_Pin} // LED 19 = SMD LED which seem not to exist on OM-CoverUI, used as alive
-
-        /* Order derived from schematic, but look fully wrong
-        {LED_SUN_GPIO_Port, LED_SUN_Pin},
-        {LED_SAT_GPIO_Port, LED_SAT_Pin},
-        {LED_FRI_GPIO_Port, LED_FRI_Pin},
-        {LED_LOCK_GPIO_Port, LED_LOCK_Pin},
-        {LED_S2_GPIO_Port, LED_S2_Pin},
-        {LED_4HR_GPIO_Port, LED_4HR_Pin},
-        {LED_6HR_GPIO_Port, LED_6HR_Pin},
-        {LED_8HR_GPIO_Port, LED_8HR_Pin},
+        // Order derived from LowLevel "enum LED_id"
         {LED_CHARGE_GPIO_Port, LED_CHARGE_Pin},
         {LED_BAT_GPIO_Port, LED_BAT_Pin},
         {LED_WIRE_GPIO_Port, LED_WIRE_Pin},
         {LED_LIFTED_GPIO_Port, LED_LIFTED_Pin},
-        {LED_MON_GPIO_Port, LED_MON_Pin},
-        {LED_TUE_GPIO_Port, LED_TUE_Pin},
-        {LED_WED_GPIO_Port, LED_WED_Pin},
+        {LED_SUN_GPIO_Port, LED_SUN_Pin},
+        {LED_SAT_GPIO_Port, LED_SAT_Pin},
+        {LED_FRI_GPIO_Port, LED_FRI_Pin},
         {LED_THU_GPIO_Port, LED_THU_Pin},
-        {LED_2HR_GPIO_Port, LED_2HR_Pin},
+        {LED_WED_GPIO_Port, LED_WED_Pin},
+        {LED_TUE_GPIO_Port, LED_TUE_Pin},
+        {LED_MON_GPIO_Port, LED_MON_Pin},
+        {LED_LOCK_GPIO_Port, LED_LOCK_Pin},
+        {LED_S2_GPIO_Port, LED_S2_Pin},
         {LED_S1_GPIO_Port, LED_S1_Pin},
-        {LED_REAR_GPIO_Port, LED_REAR_Pin}*/
+        {LED_8HR_GPIO_Port, LED_8HR_Pin},
+        {LED_6HR_GPIO_Port, LED_6HR_Pin},
+        {LED_4HR_GPIO_Port, LED_4HR_Pin},
+        {LED_2HR_GPIO_Port, LED_2HR_Pin},
+        {LED_REAR_GPIO_Port, LED_REAR_Pin}
     };
 
     uint64_t _led_states_bin = 0; // Binary representation of all LEDs. Each LED gets three bits (19*3=57) for the current state (see BtnCtrl.h)
