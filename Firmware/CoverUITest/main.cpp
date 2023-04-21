@@ -356,17 +356,21 @@ void setLed(struct msg_set_leds &msg, int led, uint8_t state) {
     msg.leds |= ((uint64_t)(state&0b111)) << (led*3);
 }
 
-void setBars7(struct msg_set_leds &msg, double value) {
+void setBars7(struct msg_set_leds &msg, double value)
+{
     int on_leds = round(value * 7.0);
-    for(int i = 0; i < 7; i++) {
-        setLed(msg, 4+i, i < on_leds ? LED_on : LED_off);
+    for (int i = 0; i < 7; i++)
+    {
+        setLed(msg, LED11 - i, i < on_leds ? LED_on : LED_off);
     }
 }
 
-void setBars4(struct msg_set_leds &msg, double value) {
+void setBars4(struct msg_set_leds &msg, double value)
+{
     int on_leds = round(value * 4.0);
-    for(int i = 0; i < 7; i++) {
-        setLed(msg, i, i < on_leds ? LED_on : LED_off);
+    for (int i = 0; i < 4; i++)
+    {
+        setLed(msg, LED18 - i, i < on_leds ? LED_on : LED_off);
     }
 }
 
@@ -378,10 +382,10 @@ void LEDstatic(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_on);
+        setLed(msg, LED18-led, LED_on);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
         sendMessage(&msg, sizeof(msg), com_port);
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
         sendMessage(&msg, sizeof(msg), com_port);
     }
@@ -396,13 +400,13 @@ void LEDfastblink(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_blink_fast);
+        setLed(msg, LED18-led, LED_blink_fast);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     }
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -418,7 +422,7 @@ void LEDslowblink(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_blink_slow);
+        setLed(msg, LED18-led, LED_blink_slow);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -426,7 +430,7 @@ void LEDslowblink(int com_port)
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 

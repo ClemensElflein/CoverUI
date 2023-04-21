@@ -23,10 +23,10 @@ enum TYPE
 // Function definiton for the 18 LEDS
 enum LED_id
 {
-    MOWER_LIFTED = 0,
-    POOR_GPS = 1,
-    BATTERY_LOW = 2,
-    CHARGING = 3,
+    LED_CHARGING = 0,
+    LED_BATTERY_LOW = 1,
+    LED_POOR_GPS = 2,
+    LED_MOWER_LIFTED = 3,
     LED5 = 4,
     LED6 = 5,
     LED7 = 6,
@@ -34,15 +34,13 @@ enum LED_id
     LED9 = 8,
     LED10 = 9,
     LED11 = 10,
-    LED12 = 11,
-    LED13 = 12,
-    LED14 = 13,
+    LED_LOCK = 11,
+    LED_S2 = 12,
+    LED_S1 = 13,
     LED15 = 14,
     LED16 = 15,
     LED17 = 16,
-    LED18 = 17,
-    LED_BAR = 18,
-    LED_BAR1 = 19
+    LED18 = 17
 };
 
 enum LED_state {
