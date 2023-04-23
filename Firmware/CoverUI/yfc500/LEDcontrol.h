@@ -19,10 +19,10 @@
 
 #define NUM_LEDS 19
 // Some handy shortcuts used during develope
-#define LED_NUM_LIFTED 14
-#define LED_NUM_WIRE 15
-#define LED_NUM_BAT 16
-#define LED_NUM_CHARGE 17
+#define LED_NUM_LIFTED 3
+#define LED_NUM_WIRE 2
+#define LED_NUM_BAT 1
+#define LED_NUM_CHARGE 0
 #define LED_NUM_REAR 18
 
 class LEDcontrol
@@ -35,25 +35,25 @@ private:
     };
     Led_pio_def _leds[NUM_LEDS] = {
         // Order derived from LowLevel "enum LED_id"
-        {LED_CHARGE_GPIO_Port, LED_CHARGE_Pin},
-        {LED_BAT_GPIO_Port, LED_BAT_Pin},
-        {LED_WIRE_GPIO_Port, LED_WIRE_Pin},
-        {LED_LIFTED_GPIO_Port, LED_LIFTED_Pin},
-        {LED_SUN_GPIO_Port, LED_SUN_Pin},
-        {LED_SAT_GPIO_Port, LED_SAT_Pin},
-        {LED_FRI_GPIO_Port, LED_FRI_Pin},
-        {LED_THU_GPIO_Port, LED_THU_Pin},
-        {LED_WED_GPIO_Port, LED_WED_Pin},
-        {LED_TUE_GPIO_Port, LED_TUE_Pin},
-        {LED_MON_GPIO_Port, LED_MON_Pin},
-        {LED_LOCK_GPIO_Port, LED_LOCK_Pin},
-        {LED_S2_GPIO_Port, LED_S2_Pin},
-        {LED_S1_GPIO_Port, LED_S1_Pin},
-        {LED_8HR_GPIO_Port, LED_8HR_Pin},
-        {LED_6HR_GPIO_Port, LED_6HR_Pin},
-        {LED_4HR_GPIO_Port, LED_4HR_Pin},
-        {LED_2HR_GPIO_Port, LED_2HR_Pin},
-        {LED_REAR_GPIO_Port, LED_REAR_Pin}
+        {LED_CHARGE_GPIO_Port, LED_CHARGE_Pin}, // 0
+        {LED_BAT_GPIO_Port, LED_BAT_Pin},       // 1
+        {LED_WIRE_GPIO_Port, LED_WIRE_Pin},     // 2
+        {LED_LIFTED_GPIO_Port, LED_LIFTED_Pin}, // 3
+        {LED_SUN_GPIO_Port, LED_SUN_Pin},       // 4
+        {LED_SAT_GPIO_Port, LED_SAT_Pin},       // 5
+        {LED_FRI_GPIO_Port, LED_FRI_Pin},       // 6
+        {LED_THU_GPIO_Port, LED_THU_Pin},       // 7
+        {LED_WED_GPIO_Port, LED_WED_Pin},       // 8
+        {LED_TUE_GPIO_Port, LED_TUE_Pin},       // 9
+        {LED_MON_GPIO_Port, LED_MON_Pin},       // 10
+        {LED_LOCK_GPIO_Port, LED_LOCK_Pin},     // 11
+        {LED_S2_GPIO_Port, LED_S2_Pin},         // 12
+        {LED_S1_GPIO_Port, LED_S1_Pin},         // 13
+        {LED_8HR_GPIO_Port, LED_8HR_Pin},       // 14
+        {LED_6HR_GPIO_Port, LED_6HR_Pin},       // 15
+        {LED_4HR_GPIO_Port, LED_4HR_Pin},       // 16
+        {LED_2HR_GPIO_Port, LED_2HR_Pin},       // 17
+        {LED_REAR_GPIO_Port, LED_REAR_Pin}      // 18
     };
 
     uint64_t _led_states_bin = 0; // Binary representation of all LEDs. Each LED gets three bits (19*3=57) for the current state (see BtnCtrl.h)
