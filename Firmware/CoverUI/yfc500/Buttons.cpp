@@ -39,6 +39,7 @@ uint16_t Buttons::get_status(uint8_t gpio_index)
  * @return true
  * @return false
  */
-bool Buttons::is_pressed_by_button_nr(uint8_t button_nr){
+bool Buttons::is_pressed(uint8_t button_nr)
+{
     return get_status(button_nrs[button_nr].debouncer_index) & button_nrs[button_nr].button_pin;
 };

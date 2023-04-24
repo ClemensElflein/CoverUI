@@ -23,7 +23,7 @@ class Buttons
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
     const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button. Get continious scanned for filter/debounce by timer
-    ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                          // Debouncer obj for each port in the same order as *_gpio_ports
+    ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                                // Debouncer obj for each port in the same order as *_gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
         new ButtonDebouncer(), new ButtonDebouncer()};
 
@@ -54,9 +54,9 @@ private:
 public:
     Buttons();
 
-    void process_states();                           // Has to get called regulary i.e. by timer (2.5ms)
-    uint16_t get_status(uint8_t gpio_index);         // Get status of all pins on the given GPIO index (as declared in *_gpio_ports)
-    bool is_pressed_by_button_nr(uint8_t button_nr); // Return boolean if the given button number is pressed
+    void process_states();                   // Has to get called regulary i.e. by timer (2.5ms)
+    uint16_t get_status(uint8_t gpio_index); // Get status of all pins on the given GPIO index (as declared in *_gpio_ports)
+    bool is_pressed(uint8_t button_nr);      // Return boolean if the given button number is pressed
 };
 
 #endif /* YFC500_BUTTONS_H */

@@ -378,8 +378,8 @@ int main(void)
   do
   {
     // LED blink to say it's alive
-    // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 2.5ms)
-    LedControl.animate();
+    // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 5ms)
+    LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
 
   } while (bit_getbutton(500, tmp));
 #else // HW Pico

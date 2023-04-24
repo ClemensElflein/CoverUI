@@ -11,6 +11,8 @@
 #ifndef __YFC500_MAIN_H
 #define __YFC500_MAIN_H
 
+#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
+
 /* --- PRINTF_BYTE_TO_BINARY macro's --- */
 #define PRINTF_BINARY_PATTERN_INT8 "%c%c%c%c%c%c%c%c"
 #define PRINTF_BYTE_TO_BINARY_INT8(i) (((i)&0x80ll) ? '1' : '0'), (((i)&0x40ll) ? '1' : '0'), (((i)&0x20ll) ? '1' : '0'), (((i)&0x10ll) ? '1' : '0'), \
@@ -85,7 +87,7 @@ void start_peripherals()
     // Start all timer
     HAL_TIM_Base_Start_IT(&HTIM_BLINK_SLOW);
     HAL_TIM_Base_Start_IT(&HTIM_BLINK_FAST);
-    HAL_TIM_Base_Start_IT(&HTIM_BTN);
+    HAL_TIM_Base_Start_IT(&HTIM_5MS);
 
     // Start UART-LL DMA receive
     if (HAL_OK != HAL_UARTEx_ReceiveToIdle_DMA(&HUART_LL, uart_ll_dma_buffer, UART_LL_DMA_BUFFSIZE))
@@ -147,12 +149,12 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     for (uint8_t i : scan_order)
     {
         uint32_t start = HAL_GetTick(); // start press_timeout measurement
-        if (Btns.is_pressed_by_button_nr(i))
+        if (Btns.is_pressed(i))
         {
             // wait for button released
-            while (Btns.is_pressed_by_button_nr(i) && (press_timeout == 0 || (HAL_GetTick() - start) < press_timeout))
+            while (Btns.is_pressed(i) && (press_timeout == 0 || (HAL_GetTick() - start) < press_timeout))
                 ;
-            if (Btns.is_pressed_by_button_nr(i))
+            if (Btns.is_pressed(i))
                 still_pressed = true;
             else
                 still_pressed = false;
@@ -163,10 +165,28 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
 }
 
 /**
+ * @brief Check if one of the "magic buttons" got pressed and do his function.
+ * At the moment the following magic buttons exists:
+ * OK + Clock = Display FW version
+ * OK + Sun   = LED animation
+ */
+void magic_buttons()
+{
+    if (!Btns.is_pressed(6)) // OK
+        return;
+
+    if (Btns.is_pressed(13)) // SUN
+        LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
+    else if (Btns.is_pressed(0)) // Clock
+        LedControl.show_num(FIRMWARE_VERSION);
+    return;
+}
+
+/**
  * @brief Timer callback(s)
  *  TIM_BLINK_SLOW (LED blink- slow) is configure at 500ms
  *  TIM_BLINK_FAST (LED blink- fast) is configured at 100ms
- *  TIM_BTN (button debouncing) is configured at 2.5ms
+ *  TIM_5MS 5ms timer i.e. used for button debouncing and LED-Sequences
  *
  * @param htim
  */
@@ -175,15 +195,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM_BLINK_SLOW)
     {
         LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
-#ifdef _serial_debug_
-        printf("Button status " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 "\n",
-               PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(0)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(1)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(2)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(3)));
-#endif
+        /*#ifdef _serial_debug_
+                printf("Button status " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 "\n",
+                       PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(0)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(1)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(2)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(3)));
+        #endif*/
+        magic_buttons();
     }
     else if (htim->Instance == TIM_BLINK_FAST)
         LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
-    else if (htim->Instance == TIM_BTN)
-        Btns.process_states(); // Read all defined gpio-port debouncer
+    else if (htim->Instance == TIM_5MS)
+    {
+        Btns.process_states();         // Read all defined gpio-port debouncer
+        LedControl.process_sequence(); // Process LED sequence
+    }
 }
 
 /**

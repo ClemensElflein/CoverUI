@@ -58,17 +58,17 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define TIM_BLINK_SLOW TIM16
+#define TIM_5MS TIM6
 #define HUART_U4 huart1
 #define TIM_BLINK_FAST TIM17
 #define HUART_LL huart2
 #define UART_LL USART2
 #define HTIM_BLINK_FAST htim17
+#define HTIM_5MS htim6
 #define UART_U4 USART1
 #define HDMA_HUART_U4_RX hdma_usart1_rx
 #define HTIM_BLINK_SLOW htim16
 #define HDMA_UART_LL_RX hdma_usart2_rx
-#define TIM_BTN TIM6
-#define HTIM_BTN htim6
 #define LED_LIFTED_Pin GPIO_PIN_0
 #define LED_LIFTED_GPIO_Port GPIOC
 #define LED_WIRE_Pin GPIO_PIN_1

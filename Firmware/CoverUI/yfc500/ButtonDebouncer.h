@@ -17,12 +17,12 @@
 #include <stdint.h>
 #include "stm32cube/inc/gpio.h"
 
-#define NUM_BUTTON_STATES 10 // * 2.5ms timer = 25ms bouncing-button states = debounced after 25ms
+#define NUM_BUTTON_STATES 6 // * 5ms timer = 30ms bouncing-button states = debounced after 30ms
 
 class ButtonDebouncer
 {
 private:
-    uint16_t _states[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 2.5ms)
+    uint16_t _states[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 5ms)
     uint8_t _state_index = 0;            // Index for next _states store positions
     uint16_t _state_debounced;           // Debounced buttons state
     uint16_t _state_changed;             // Just changed buttons
@@ -30,7 +30,7 @@ private:
 public:
     ButtonDebouncer();
 
-    void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (2.5ms) and store the (buttons) port state within _states array
+    void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
     uint16_t get_status();
     uint16_t get_pressed();
 };
