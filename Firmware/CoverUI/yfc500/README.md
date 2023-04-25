@@ -90,7 +90,7 @@ You might also simply bridge R34 and R42, but I thought it's more save to cut th
 ![Hardware Changes](images/IMG_PCB_Changes.jpg)
 BTW: The yellow cable on the picture (to R5/C2) might not harm you. This is the NRST signal which is only required if you bugged the code (like me) during development.
 
-Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe debugger to GND, CLK, DIO and 3V3.
+Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger.
 
 ### Flash Firmware
 
@@ -117,7 +117,7 @@ Open your ST-Link tool, then:
  - `Open` CoverUI/Firmware/CoverUI/yfc500/bin/firmware.bin
  - `Flash` (to Address 0x08000000)
 
-When done, re-plug you ST-Link and you should see a quick power-on animation.
+When done, re-plug your ST-Link and you should see a quick power-on animation.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -129,9 +129,9 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 There are also two, (I call it) magic-buttons. If you press:
 
-- OK + Sun Button you're able to trigger the power-on animation.<br>
-  This is mainly for mounting validation, to ensure that you hit all LED guidance holes
-- OK + Clock Button will show you a firmware version sequence, which should
+- OK + Sun Button, you're able to trigger the power-on animation.<br>
+  This is mainly for mounting validation, to ensure that you hit all LED guidance holes.
+- OK + Clock Button, will show you a firmware version sequence, which should
   show (as of writing) 200.<br>
   Fully useless ATM ;-)
 
@@ -146,7 +146,6 @@ I simply cropped the 16 pin connector from my original cable and crimped OM's pl
 <span style="color:red;">But before blindly doing it, validate if the cables pin 1 mark, also matches the 16 pin female/male connector!</span>
 
 ![Cable](images/IMG_Cable.jpg)
-(With "UI Board Pin ..." I do mean the "UI Board" labeled plug on OM's Mainboard, thus the tiny 4 Pin connector)
 
 You're done!
 
