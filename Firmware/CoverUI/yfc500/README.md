@@ -95,14 +95,16 @@ Lastly, you need to solder some kind of connector (pin header or cables) to GND,
 ### Flash Firmware
 
 You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
-<img src="images/IMG_ST-Link-V2-Clone.jpg" alt="My ST-Link (V2) clone" width="32%">
 
+<img src="images/IMG_ST-Link-V2-Clone.jpg" alt="My ST-Link (V2) clone" width="32%">
 
 Or use (build) a [Picoprobe][Picoprobe-url] (CMSIS-DAP debugger):
 
+<p float="left">
 <img src="images/IMG_Picoprobe.jpg" alt="My Picoprobe" width="32%">
 <img src="images/IMG_Picoprobe-open1.jpg" alt="My open Picoprobe" width="32%">
 <img src="images/IMG_Picoprobe-open2.jpg" alt="My open Picoprobe" width="32%">
+<p>
 
 Simply take a [Raspberry Pico][Pico-url], solder some cables, upload [Picoprobe][Picoprobe-url]
 and you're ready.
