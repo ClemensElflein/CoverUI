@@ -1,0 +1,47 @@
+name: CI
+
+on: [push]
+
+jobs:
+  tagged-release:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: INTI-CMNB/KiBot@v2_k6
+        with:
+          config: Hardware/CoverUI.kibot.yaml
+          board: Hardware/CoverUI.kicad_pcb
+
+      - name: 'Fix permissions on release/'
+        run: sudo chmod 0777 release
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: release/*
+
+      - name: Deploy release
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: release
+          destination_dir: release
+
+      - name: Deploy release_navigator
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: release_navigator
+          destination_dir: release_navigator
+          keep_files: true
+
+      - name: Deploy release_navigator index
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: release_navigator
+          keep_files: true
