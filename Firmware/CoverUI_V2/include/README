@@ -1,0 +1,2 @@
+pgmspace.h is taken from https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/avr/pgmspace.h
+and is included as workaround for Pico
