@@ -16,9 +16,13 @@
   <h3 align="center">OM CoverUI Firmware for Stock YardForce Classic 500 PCB</h3>
 
   <p align="center">
-    Yet only tested with PCB labeled "RM-ECOW-V1.3.0, 2020.05.08" (STM32F030R8 MCU Variant)
+    Yet only tested/working with PCB labeled "RM-ECOW-V1.3.0, 2020.05.08" with the STM32F030R8 MCU Variant!
   </p>
 </div>
+
+```diff
+- ATTENTION: If your stock CoverUI PCB has a GD32... MCU, this FW does NOT work (yet) -
+```
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -71,8 +75,7 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 ### Prerequisites
 
 * Stock *YardForce Classic 500* Cover-UI/Button-Board<br>
-  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with an "STM32F030R8" MCU has been tested.<br>
-  <span style="color:red;">Be carefull if you've another PCB version or one with a "GD32??" MCU.</span>
+  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with "STM32F030R8" MCU will work.<br>
 * Soldering Iron or Hot-Air Gun to move two SMD resistor
 * ST-Link or Picoprobe programmer/debugger
 
