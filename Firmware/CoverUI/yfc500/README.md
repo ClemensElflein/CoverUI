@@ -20,9 +20,8 @@
   </p>
 </div>
 
-```diff
-- ATTENTION: If your stock CoverUI PCB has a GD32... MCU, this FW does NOT work (yet) -
-```
+> **Warning**
+> If your stock CoverUI PCB has a GD32... MCU, this FW does NOT work (yet), as the used framework does NOT support this GD32... MCU.
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -119,6 +118,9 @@ Either by self "compile and upload" via PlatformIO, or by a simple Upload via th
 
 #### PlatformIO
 
+> **Note**
+> Updated 04/29/2023
+
 [PlatformIO](https://platformio.org/) is a [Visual Studio Code](https://code.visualstudio.com/) extension. Once installed, do:
 
 - `PlatformIO` (left bar)
@@ -128,16 +130,31 @@ Either by self "compile and upload" via PlatformIO, or by a simple Upload via th
 - In bottombar click `Switch PlatformIO Project Environment` and choose (whatever programmer/debugger- probe you use) either: `env:yfc500_stlink` or `env:yfc500_picoprobe` 
 - Wait till tools got loaded (bottom right status info)
 - Finally press `PlatformIO: Upload` (right arrow symbol) in bottombar. After it compiled, linked and uploaded, it should reboot and do a short power-on LED animation.
-
+- If you get an "Error: stm32x device protected", simply upload a second time. Look like I placed the "unlock" command some how to late. 
 
 #### ST-Link
 
-Open your ST-Link tool, then:
- - `Connect` to your ST-Link
- - `Open` CoverUI/Firmware/CoverUI/yfc500/bin/firmware.bin
- - `Flash` (to Address 0x08000000)
+> **Note**
+> Updated 04/29/2023
+
+It turns out that ST-Link GUI tool is some how flawy, why I prefer to use the command line tools.
+
+Open a terminal/console, then:
+ - `st-info --descr` has to return "F0xx"! If not you don't need to go on as you've a not (yet) supported MCU.
+ - Download [firmware.bin](https://github.com/Apehaenger/CoverUI/raw/feature/Stock-YFC500/Firmware/CoverUI/yfc500/bin/firmware.bin)
+ - `st-flash write firmware.bin 0x08000000` should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
+
+If flashing fails with an error like "Flash memory is write protected", we need to unlock it before.<br>
+I used [OpenOCD][OpenOCD-url] for it. Try `openocd --version` to check if it's already installed.
+
+Unlock your flash via:
+
+```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
+
+Try again flashing by: `st-flash write firmware.bin 0x08000000`
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -255,3 +272,4 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 [Picoprobe-open1]: images/IMG_Picoprobe-open1.jpg
 [Picoprobe-open2]: images/IMG_Picoprobe-open2.jpg
 [Pico-url]: https://www.raspberrypi.com/products/raspberry-pi-pico/ "Raspberry Pico"
+[OpenOCD-url]: https://openocd.org/pages/about.html
