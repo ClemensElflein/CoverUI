@@ -41,12 +41,18 @@ extern "C" void initialise_monitor_handles(void);
 #define UART_LL_DMA_BUFFSIZE 50
 uint8_t uart_ll_dma_buffer[UART_LL_DMA_BUFFSIZE]; // DMA buffer size has to be at least one COBS cmd length
 // extern DMA_HandleTypeDef HDMA_UART_LL_RX;
-extern void getDataFromBuffer(const uint8_t *data, uint16_t size); // defined in main.cpp
+
+// Defined in main.cpp
+extern void core1();
+extern void getDataFromBuffer(const uint8_t *data, uint16_t size);
+
+// Own forward declarations
+uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed);
 
 // Some dummy Pico-SDK definitions. Not used but by this we'll NOT pollution original code to much with #ifdefs
 #define pio0 NULL
 #define pio1 NULL
-typedef bool *PIO;
+    typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
 // YFC500 specific
@@ -79,8 +85,8 @@ void setup()
     // 5ms (200Hz) timer, used for button debouncing and LED sequences
     HardwareTimer *Timer_5ms = new HardwareTimer(TIM14);
     Timer_5ms->setOverflow(200, HERTZ_FORMAT);
-    // TODO Timer_5ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_fast));
-    // TODO Timer_5ms->resume();
+    Timer_5ms->attachInterrupt(std::bind(&LEDcontrol::process_sequence, &LedControl));
+    Timer_5ms->resume();
 }
 
 /**
@@ -105,40 +111,35 @@ void start_peripherals()
     __HAL_DMA_DISABLE_IT(&HDMA_UART_LL_RX, DMA_IT_HT); // Disable "Half Transfer" interrupt*/
 }
 
-bool initAnim = false;
-bool test2 = false;
-void loop()
+void loop() // This loop() doesn't loop! See drop off into core1() at the end of this func
 {
-    if (!initAnim)
-    {
 #ifdef DEBUG_SEMIHOSTING
-        initialise_monitor_handles(); // Semihosting
+    initialise_monitor_handles(); // Semihosting
 #endif
+    float ver = (float)FIRMWARE_VERSION / 100.0;
+    printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);
 
-        printf("Anim\n");
-        for (uint8_t led = 0; led < NUM_LEDS; led++)
-        {
-            LedControl.set(NUM_LEDS - 1 - led, LED_state::LED_on);
-            delay(15);
-        }
-        for (uint8_t led = 0; led < NUM_LEDS; led++)
-        {
-            LedControl.set(NUM_LEDS - 1 - led, LED_state::LED_off);
-            delay(15);
-        }
-        initAnim = true;
-    }
-    if(!test2)
+    LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive blink. Get switched to manual- fast-blink in the case of an error // FIXME: Not valid anymore since arduino framework. Useless at all?
+
+    // "Hi there" and jammed button mounting detection
+    bool tmp;
+    do
     {
-        LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
-        LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
-        LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
-        test2 = true;
-    }
-    LedControl.set(LED_NUM_REAR, LED_state::LED_on);
-    delay(500);
-    LedControl.set(LED_NUM_REAR, LED_state::LED_off);
-    delay(500);
+        // LED blink to say it's alive
+        // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 5ms)
+        LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
+
+    } while (bit_getbutton(500, tmp));
+
+    // Dev tests
+    LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
+    LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
+    LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
+
+    printf("\n\n waiting for commands or button press");
+
+    // Drop off into endless core1() for button processing (waste (one more?) stack entry!)
+    core1(); 
 }
 
 /****************************************************************

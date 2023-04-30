@@ -346,12 +346,9 @@ void core1()
   }
 }
 
-#ifndef HW_YFC500 // HW_Pico
+#ifndef HW_YFC500 // HW_Pico (HW_YFC500 is arduino based. See setup() & loop() in yfc500/main.hpp)
 int main(void)
 {
-#ifdef HW_YFC500
-  init_mcu(); // Init STM32 and all peripherals
-#else         // HW Pico
   uint32_t last_led_update = 0;
 
   stdio_init_all();
@@ -366,24 +363,9 @@ int main(void)
 
   init_button_scan(); // Init hardware for button matix
                       // init_LED_driver();
-#endif
+
   float ver = (float)FIRMWARE_VERSION / 100.0;
   printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);
-
-#ifdef HW_YFC500
-  start_peripherals();
-  LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive blink. Get switched to manual- fast-blink in the case of an error
-
-  // "Hi there" and jammed button mounting detection
-  bool tmp;
-  do
-  {
-    // LED blink to say it's alive
-    // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 5ms)
-    LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
-
-  } while (bit_getbutton(500, tmp));
-#else // HW Pico
 
   // initialise state machines
   sm_blink = init_run_StateMachine_blink(pio_Block1);    // on board led alive blink
@@ -425,12 +407,9 @@ int main(void)
   // enable other core for button detection
   multicore_reset_core1();
   multicore_launch_core1(core1);
-#endif
+
   printf("\n\n waiting for commands or button press");
 
-#ifdef HW_YFC500
-  core1(); // YFC500's STM32 only has one core, but nothing more todo in main()
-#else      // HW Pico
   while (true)
   {
 
@@ -447,6 +426,5 @@ int main(void)
       last_led_update = now;
     }
   }
-#endif
 }
 #endif
