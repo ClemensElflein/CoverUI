@@ -21,26 +21,18 @@
 #define PRINTF_BYTE_TO_BINARY_INT16(i) PRINTF_BYTE_TO_BINARY_INT8((i) >> 8), PRINTF_BYTE_TO_BINARY_INT8(i)
 /* --- end PRINTF_BYTE_TO_BINARY macros --- */
 
-// STM32CubeIDE code is only used for HW definition and initialization.
-// There's no user defined code within STM32Cube specific files except some handy #define's.
-// By this it should be easily possible to change/enhance HW definitions via STM32CubeIDE.
-// Simply copy STM32CubeIDE files (except main.c) to the stm32cube directory  without further modifications.
-#include "stm32cube/inc/main.h"
-#include "stm32cube/inc/dma.h"
-#include "stm32cube/inc/tim.h"
-#include "stm32cube/inc/usart.h"
-#include "stm32cube/inc/gpio.h"
-
-#include "sysclock.hpp"
+#include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+#include "settings.h"
 #include "LEDcontrol.h"
 #include "Buttons.h"
 
+// FIXME: Doesn't work anymore! Due to arduino framework?
 #ifdef DEBUG_SEMIHOSTING
 extern "C" void initialise_monitor_handles(void);
 #endif
 
-// Current STM32F030 implementation is single core without threads.
-// Send mutex calls of main.cpp to nirvana. Dangerous?
+// Current STM32F030 implementation is single core without threads. // FIXME: Check num of Cortex M4 (GD32) cores
+// Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)
 #define auto_init_mutex(name)
 #define mutex_enter_blocking(ptr)
 #define mutex_exit(ptr)
@@ -48,7 +40,7 @@ extern "C" void initialise_monitor_handles(void);
 // UART-LL specific settings
 #define UART_LL_DMA_BUFFSIZE 50
 uint8_t uart_ll_dma_buffer[UART_LL_DMA_BUFFSIZE]; // DMA buffer size has to be at least one COBS cmd length
-extern DMA_HandleTypeDef HDMA_UART_LL_RX;
+// extern DMA_HandleTypeDef HDMA_UART_LL_RX;
 extern void getDataFromBuffer(const uint8_t *data, uint16_t size); // defined in main.cpp
 
 // Some dummy Pico-SDK definitions. Not used but by this we'll NOT pollution original code to much with #ifdefs
@@ -57,8 +49,39 @@ extern void getDataFromBuffer(const uint8_t *data, uint16_t size); // defined in
 typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
+// YFC500 specific
 LEDcontrol LedControl; // Main LED controller object
 Buttons Btns;          // Main Buttons object
+
+void setup()
+{
+#ifdef DEBUG_SEMIHOSTING
+    initialise_monitor_handles(); // Semihosting
+#endif
+    printf("Main Setup\n");
+    LedControl.setup();
+
+    // We've hardware timer on mass, let's use them
+    // (choose those which are available on STM32 as well as GD32 model, preferable the simpler basic/generic ones)
+
+    // 500ms (2Hz) timer, used for LED-blink-slow
+    HardwareTimer *Timer_500ms = new HardwareTimer(TIM16);
+    Timer_500ms->setOverflow(2, HERTZ_FORMAT);             
+    Timer_500ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_slow));
+    Timer_500ms->resume();
+
+    // 100ms (10Hz) timer, used for LED-blink-fast
+    HardwareTimer *Timer_100ms = new HardwareTimer(TIM15);
+    Timer_100ms->setOverflow(10, HERTZ_FORMAT);
+    Timer_100ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_fast));
+    Timer_100ms->resume();
+
+    // 5ms (200Hz) timer, used for button debouncing and LED sequences
+    HardwareTimer *Timer_5ms = new HardwareTimer(TIM14);
+    Timer_5ms->setOverflow(200, HERTZ_FORMAT);
+    // TODO Timer_5ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_fast));
+    // TODO Timer_5ms->resume();
+}
 
 /**
  * @brief Init all HW relevant stuff like GPIO, DMA, U(S)ARTs, Timer and Semihosting
@@ -66,36 +89,61 @@ Buttons Btns;          // Main Buttons object
  */
 void init_mcu()
 {
-    HAL_Init();           // Reset of all peripherals, Initializes the Flash interface and the Systick
-    SystemClock_Config(); // Configure the system clock
-
-    // Initialize required peripherals
-    MX_GPIO_Init();
+    /*
     MX_DMA_Init();
-    MX_USART2_UART_Init(); // to LL-Pico via J6
-    MX_TIM16_Init();       // Blink-slow timer
-    MX_TIM17_Init();       // Blink-fast timer
-    MX_TIM6_Init();        // Button debounce timer
-
-#ifdef DEBUG_SEMIHOSTING
-    initialise_monitor_handles(); // Semihosting
-#endif
+    MX_USART2_UART_Init(); // to LL-Pico via J6 */
 }
 
 void start_peripherals()
 {
-    // Start all timer
-    HAL_TIM_Base_Start_IT(&HTIM_BLINK_SLOW);
-    HAL_TIM_Base_Start_IT(&HTIM_BLINK_FAST);
-    HAL_TIM_Base_Start_IT(&HTIM_5MS);
-
+    /*
     // Start UART-LL DMA receive
     if (HAL_OK != HAL_UARTEx_ReceiveToIdle_DMA(&HUART_LL, uart_ll_dma_buffer, UART_LL_DMA_BUFFSIZE))
     {
         Error_Handler();
     }
-    __HAL_DMA_DISABLE_IT(&HDMA_UART_LL_RX, DMA_IT_HT); // Disable "Half Transfer" interrupt
+    __HAL_DMA_DISABLE_IT(&HDMA_UART_LL_RX, DMA_IT_HT); // Disable "Half Transfer" interrupt*/
 }
+
+bool initAnim = false;
+bool test2 = false;
+void loop()
+{
+    if (!initAnim)
+    {
+#ifdef DEBUG_SEMIHOSTING
+        initialise_monitor_handles(); // Semihosting
+#endif
+
+        printf("Anim\n");
+        for (uint8_t led = 0; led < NUM_LEDS; led++)
+        {
+            LedControl.set(NUM_LEDS - 1 - led, LED_state::LED_on);
+            delay(15);
+        }
+        for (uint8_t led = 0; led < NUM_LEDS; led++)
+        {
+            LedControl.set(NUM_LEDS - 1 - led, LED_state::LED_off);
+            delay(15);
+        }
+        initAnim = true;
+    }
+    if(!test2)
+    {
+        LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
+        LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
+        LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
+        test2 = true;
+    }
+    LedControl.set(LED_NUM_REAR, LED_state::LED_on);
+    delay(500);
+    LedControl.set(LED_NUM_REAR, LED_state::LED_off);
+    delay(500);
+}
+
+/****************************************************************
+ * Some dump OM wrapper for not polluting original code to much *
+ ****************************************************************/
 
 /**
  * @brief OM wrapper
@@ -129,11 +177,11 @@ void Blink_LED(PIO dummy, int dummy2, int led_num)
  */
 static inline void buzzer_program_put_words(PIO pio, uint sm, uint32_t repeat, uint32_t duration, uint32_t gap)
 {
-    // YFC500 doesn't has (not yet) a buzzer on CoverUI
+    // YFC500 doesn't has (not yet?) a buzzer on CoverUI
 }
 
 /**
- * @brief OM wrapper for original function call to STM's Buttons class implementation
+ * @brief OM wrapper for original function call, to STM's Buttons class implementation
  *
  * @param press_timeout
  * @param still_pressed
@@ -148,11 +196,11 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     const uint8_t scan_order[] = {0, 1, 2, 3, 4, 5, 6, 13, 7, 8, 9, 10, 11, 12}; // Attention: Ours = OM's -1. See Buttons.h: FYC500_Button_Def for index number
     for (uint8_t i : scan_order)
     {
-        uint32_t start = HAL_GetTick(); // start press_timeout measurement
+        uint32_t start = millis(); // start press_timeout measurement
         if (Btns.is_pressed(i))
         {
             // wait for button released
-            while (Btns.is_pressed(i) && (press_timeout == 0 || (HAL_GetTick() - start) < press_timeout))
+            while (Btns.is_pressed(i) && (press_timeout == 0 || (millis() - start) < press_timeout))
                 ;
             if (Btns.is_pressed(i))
                 still_pressed = true;
@@ -163,6 +211,10 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     }
     return 0;
 }
+
+/********************************
+ *  TODO
+ ********************************/
 
 /**
  * @brief Check if one of the "magic buttons" got pressed and do his function.
@@ -190,25 +242,25 @@ void magic_buttons()
  *
  * @param htim
  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+/*void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM_BLINK_SLOW)
     {
-        LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
-        /*#ifdef _serial_debug_
-                printf("Button status " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 "\n",
-                       PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(0)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(1)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(2)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(3)));
-        #endif*/
-        magic_buttons();
-    }
-    else if (htim->Instance == TIM_BLINK_FAST)
-        LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
-    else if (htim->Instance == TIM_5MS)
-    {
-        Btns.process_states();         // Read all defined gpio-port debouncer
-        LedControl.process_sequence(); // Process LED sequence
-    }
+        LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);*/
+/*#ifdef _serial_debug_
+        printf("Button status " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 "\n",
+               PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(0)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(1)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(2)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(3)));
+#endif*/
+/*magic_buttons();
 }
+else if (htim->Instance == TIM_BLINK_FAST)
+LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
+else if (htim->Instance == TIM_5MS)
+{
+Btns.process_states();         // Read all defined gpio-port debouncer
+LedControl.process_sequence(); // Process LED sequence
+}
+}*/
 
 /**
  * @brief RX idle callback which has to process the data within the circular DMA buffer.
@@ -217,7 +269,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  * @param huart UART handle
  * @param pos Position of last rx data within buffer
  */
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t pos)
+/*void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t pos)
 {
     static uint16_t old_ll_pos;
     uint16_t size;
@@ -251,6 +303,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t pos)
         }
         old_ll_pos = pos;
     }
-}
+}*/
 
 #endif /* __YFC500_MAIN_H */

@@ -12,7 +12,10 @@
 #define YFC500_BUTTONS_H
 
 #include <stdint.h>
-#include "stm32cube/inc/gpio.h"
+#ifdef MCU_STM32
+//#include "stm32cube/inc/gpio.h"
+#else // MCU_GD32
+#endif
 #include "ButtonDebouncer.h"
 
 #define NUM_GPIO_PORTS 4
@@ -22,10 +25,10 @@ class Buttons
 {
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
-    const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button. Get continious scanned for filter/debounce by timer
+    /*const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button. Get continious scanned for filter/debounce by timer
     ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                                // Debouncer obj for each port in the same order as *_gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
-        new ButtonDebouncer(), new ButtonDebouncer()};
+        new ButtonDebouncer(), new ButtonDebouncer()};*/
 
     struct FYC500_Button_Def // Definition of a YFC500 button
     {

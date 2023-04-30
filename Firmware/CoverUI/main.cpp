@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 
-#ifdef HW_YFC500 // --- Stock "YardForce Classic 500" HardWare ---
+#ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
 #include "yfc500/main.hpp"
-#else // --- OM's Pico based HardWare ---
+#else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
@@ -15,7 +15,7 @@
 #endif
 #include <cstdio>
 #include "COBS.h"
-#ifdef CRC // i.e. defined by STM32 HAL
+#ifdef CRC // i.e. defined by STM32 HAL or STM32 CMSIS
 #undef CRC
 #endif
 #include "CRC.h" // TODO STM32: might/should use STM32 embedded crc unit
@@ -126,7 +126,7 @@ void sendMessage(void *message, size_t size)
 #endif
 
 #ifdef HW_YFC500
-  HAL_UART_Transmit_DMA(&HUART_LL, out_buf, encoded_size);
+  //HAL_UART_Transmit_DMA(&HUART_LL, out_buf, encoded_size);
 #else // HW Pico
   for (uint i = 0; i < encoded_size; i++)
   {
@@ -346,6 +346,7 @@ void core1()
   }
 }
 
+#ifndef HW_YFC500 // HW_Pico
 int main(void)
 {
 #ifdef HW_YFC500
@@ -448,3 +449,4 @@ int main(void)
   }
 #endif
 }
+#endif

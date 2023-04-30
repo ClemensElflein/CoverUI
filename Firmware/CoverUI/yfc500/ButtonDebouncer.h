@@ -15,7 +15,10 @@
 #define YFC500_BUTTONDEBOUNCER_H
 
 #include <stdint.h>
-#include "stm32cube/inc/gpio.h"
+#ifdef MCU_STM32
+//#include "stm32cube/inc/gpio.h"
+#else // MCU_GD32
+#endif
 
 #define NUM_BUTTON_STATES 6 // * 5ms timer = 30ms bouncing-button states = debounced after 30ms
 
@@ -30,7 +33,7 @@ private:
 public:
     ButtonDebouncer();
 
-    void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
+    //void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
     uint16_t get_status();
     uint16_t get_pressed();
 };

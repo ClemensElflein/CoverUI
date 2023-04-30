@@ -11,10 +11,23 @@
 #include <map>
 #include <cstring>
 #include "LEDcontrol.h"
-#include "stm32cube/inc/gpio.h"
 #include "../BttnCtl.h" // LED_state is defined in BttnCtl.h
 
 LEDcontrol::LEDcontrol() {}
+
+/**
+ * @brief Setup LED GPIOs
+ *
+ */
+void LEDcontrol::setup()
+{
+    printf("LedControl Setup\n");
+
+    for (uint32_t led_num : _leds)
+    {
+        pinMode(led_num, OUTPUT);
+    }
+}
 
 /**
  * @brief Set any of known LED_state states for the given LED num.
@@ -28,10 +41,10 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
     switch (state)
     {
     case LED_state::LED_on:
-        HAL_GPIO_WritePin(_leds[led_num].port, _leds[led_num].pin, GPIO_PIN_SET);
+        digitalWrite(_leds[led_num], HIGH);
         break;
     case LED_state::LED_off:
-        HAL_GPIO_WritePin(_leds[led_num].port, _leds[led_num].pin, GPIO_PIN_RESET);
+        digitalWrite(_leds[led_num], LOW);
         break;
     case LED_state::LED_blink_slow:
     case LED_state::LED_blink_fast:
@@ -98,11 +111,6 @@ void LEDcontrol::force_on(uint8_t led_num, bool force)
         set(led_num, get(led_num), false); // Restore state
 }
 
-void LEDcontrol::toggle(uint8_t led_num)
-{
-    HAL_GPIO_TogglePin(_leds[led_num].port, _leds[led_num].pin);
-};
-
 void LEDcontrol::_change_led_states(uint8_t led_num, LED_state state)
 {
     _led_states_bin &= ~((uint64_t)(0b111) << (3 * led_num)); // Be safe for future LED_state changes and mask out the whole led
@@ -136,10 +144,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
     {
         if (has(led_num, blink_state) && !(_force_led_off & (1 << led_num)))
         {
-            // toggle() might blink in push-pull/reverse than other LEDs with the same blink-rate
-            // toggle(led_num);
-            // Directly set LED without changing state
-            set(led_num, sync_blink_map[blink_state], false);
+            set(led_num, sync_blink_map[blink_state], false); // Set LED without state change
         }
     }
     // Synchronous toggle
@@ -158,11 +163,11 @@ void LEDcontrol::identify(uint8_t led_num)
 {
     force_off(led_num, false);
     force_on(led_num, true);
-    HAL_Delay(100);
+    delay(100); // FIXME: Might fail in ISR
 
     force_off(led_num, true);
     force_on(led_num, false);
-    HAL_Delay(100);
+    delay(100); // FIXME: Might fail in ISR
 
     // stop with forced off
     force_off(led_num, true);
@@ -180,7 +185,7 @@ void LEDcontrol::show_num(uint16_t num)
  ******************************************************************************************
  * Timer based implementation for LED sequences like animation, FW version, ...           *
  * to overcome the tricky use of HAL_Delay() which is heavily ISR fragile.                *
- * Look a little bit over-complicated, but ...                                            *
+ * Looks a little bit over-complicated, but ...                                           *
  ******************************************************************************************/
 
 /**
@@ -194,7 +199,7 @@ void LEDcontrol::sequence_start(void (LEDcontrol::*handler)())
         return; // There's already/still a running sequence
 
     _seq_step = 0;
-    _seq_start_tick = HAL_GetTick();
+    _seq_start_tick = millis();
     _seq_handler = handler;
 }
 
@@ -205,7 +210,7 @@ void LEDcontrol::sequence_start(void (LEDcontrol::*handler)())
 void LEDcontrol::process_sequence()
 {
     if (_seq_start_tick == 0)
-        return; // No started sequence
+        return; // No sequence
 
     (this->*_seq_handler)(); // Call sequence handler
 }
@@ -220,7 +225,7 @@ uint16_t LEDcontrol::_seq_get_next_step(uint16_t step_rate)
 {
     static uint16_t last_step_tick = 0;
 
-    uint16_t step_tick = ((((HAL_GetTick() - _seq_start_tick) + (step_rate - 1))) / step_rate) * step_rate; // Round to the next nearest multiple of <step_rate>
+    uint16_t step_tick = ((((millis() - _seq_start_tick) + (step_rate - 1))) / step_rate) * step_rate; // Round to the next nearest multiple of <step_rate>
     if (step_tick == last_step_tick)
         return 0; // Not a new <step_rate> step
 

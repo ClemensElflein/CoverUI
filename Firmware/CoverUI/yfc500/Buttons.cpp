@@ -15,8 +15,8 @@ Buttons::Buttons() {}
 
 void Buttons::process_states()
 {
-    for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
-        _debouncers[i]->process_state(_gpio_ports[i]);
+//    for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
+//        _debouncers[i]->process_state(_gpio_ports[i]);
 }
 
 /**
@@ -28,7 +28,8 @@ void Buttons::process_states()
  */
 uint16_t Buttons::get_status(uint8_t gpio_index)
 {
-    return _debouncers[gpio_index]->get_status();
+//    return _debouncers[gpio_index]->get_status();
+return 0;
 }
 
 /**

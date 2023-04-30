@@ -19,7 +19,7 @@ void Error_Handler(void)
         // Can't use timers anymore as we're in faulty state. Dummy delay loop
         for (float i = 0; i < 0xFFF; i++) // something < 100ms
             ;
-        LedControl.toggle(LED_NUM_REAR);
+        //LedControl.toggle(LED_NUM_REAR);
     }
 }
 

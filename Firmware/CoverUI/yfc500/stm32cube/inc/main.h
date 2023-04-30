@@ -69,18 +69,8 @@ void Error_Handler(void);
 #define HDMA_HUART_U4_RX hdma_usart1_rx
 #define HTIM_BLINK_SLOW htim16
 #define HDMA_UART_LL_RX hdma_usart2_rx
-#define LED_LIFTED_Pin GPIO_PIN_0
-#define LED_LIFTED_GPIO_Port GPIOC
-#define LED_WIRE_Pin GPIO_PIN_1
-#define LED_WIRE_GPIO_Port GPIOC
-#define LED_BAT_Pin GPIO_PIN_2
-#define LED_BAT_GPIO_Port GPIOC
-#define LED_CHARGE_Pin GPIO_PIN_3
-#define LED_CHARGE_GPIO_Port GPIOC
-#define LED_S1_Pin GPIO_PIN_0
-#define LED_S1_GPIO_Port GPIOA
-#define LED_S2_Pin GPIO_PIN_1
-#define LED_S2_GPIO_Port GPIOA
+
+
 #define UART_LL_TX_Pin GPIO_PIN_2
 #define UART_LL_TX_GPIO_Port GPIOA
 #define UART_LL_RX_Pin GPIO_PIN_3
@@ -89,18 +79,8 @@ void Error_Handler(void);
 #define BTN_CLK_GPIO_Port GPIOF
 #define BTN_OK_Pin GPIO_PIN_5
 #define BTN_OK_GPIO_Port GPIOF
-#define LED_2HR_Pin GPIO_PIN_4
-#define LED_2HR_GPIO_Port GPIOA
-#define LED_4HR_Pin GPIO_PIN_5
-#define LED_4HR_GPIO_Port GPIOA
-#define LED_6HR_Pin GPIO_PIN_6
-#define LED_6HR_GPIO_Port GPIOA
-#define LED_8HR_Pin GPIO_PIN_7
-#define LED_8HR_GPIO_Port GPIOA
-#define LED_LOCK_Pin GPIO_PIN_4
-#define LED_LOCK_GPIO_Port GPIOC
-#define LED_REAR_Pin GPIO_PIN_0
-#define LED_REAR_GPIO_Port GPIOB
+
+
 #define BTN_S1_Pin GPIO_PIN_2
 #define BTN_S1_GPIO_Port GPIOB
 #define BTN_S2_Pin GPIO_PIN_10
@@ -125,20 +105,7 @@ void Error_Handler(void);
 #define BTN_PLAY_GPIO_Port GPIOA
 #define BTN_HOME_Pin GPIO_PIN_12
 #define BTN_HOME_GPIO_Port GPIOA
-#define LED_MON_Pin GPIO_PIN_15
-#define LED_MON_GPIO_Port GPIOA
-#define LED_TUE_Pin GPIO_PIN_10
-#define LED_TUE_GPIO_Port GPIOC
-#define LED_WED_Pin GPIO_PIN_11
-#define LED_WED_GPIO_Port GPIOC
-#define LED_THU_Pin GPIO_PIN_12
-#define LED_THU_GPIO_Port GPIOC
-#define LED_FRI_Pin GPIO_PIN_2
-#define LED_FRI_GPIO_Port GPIOD
-#define LED_SAT_Pin GPIO_PIN_3
-#define LED_SAT_GPIO_Port GPIOB
-#define LED_SUN_Pin GPIO_PIN_4
-#define LED_SUN_GPIO_Port GPIOB
+
 
 /* USER CODE BEGIN Private defines */
 

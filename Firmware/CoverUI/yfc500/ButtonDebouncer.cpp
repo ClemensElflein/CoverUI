@@ -10,11 +10,13 @@
  */
 #include <stdio.h>
 #include "ButtonDebouncer.h"
-#include "stm32cube/inc/gpio.h"
+#ifdef MCU_STM32
+//#include "stm32cube/inc/gpio.h"
+#endif
 
 ButtonDebouncer::ButtonDebouncer() {}
 
-void ButtonDebouncer::process_state(const GPIO_TypeDef *gpio_port)
+/*void ButtonDebouncer::process_state(const GPIO_TypeDef *gpio_port)
 {
     uint8_t i;
     uint16_t last_state_debounced = _state_debounced;
@@ -31,7 +33,7 @@ void ButtonDebouncer::process_state(const GPIO_TypeDef *gpio_port)
 
     // Save what changed
     _state_changed = _state_debounced ^ last_state_debounced;
-}
+}*/
 
 uint16_t ButtonDebouncer::get_pressed()
 {
