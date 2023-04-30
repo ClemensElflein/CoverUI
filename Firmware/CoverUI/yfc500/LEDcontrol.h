@@ -2,8 +2,8 @@
  * @file LEDcontrol.h
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI LED driver for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-04-10
+ * @version 0.2
+ * @date 2023-04-30
  *
  * @copyright Copyright (c) 2023
  *

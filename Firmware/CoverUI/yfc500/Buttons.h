@@ -2,8 +2,8 @@
  * @file Buttons.h
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI Buttons class for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-04-14
+ * @version 0.2
+ * @date 2023-04-30
  *
  * @copyright Copyright (c) 2023
  *
@@ -11,11 +11,8 @@
 #ifndef YFC500_BUTTONS_H
 #define YFC500_BUTTONS_H
 
+#include <Arduino.h>
 #include <stdint.h>
-#ifdef MCU_STM32
-//#include "stm32cube/inc/gpio.h"
-#else // MCU_GD32
-#endif
 #include "ButtonDebouncer.h"
 
 #define NUM_GPIO_PORTS 4
@@ -25,19 +22,19 @@ class Buttons
 {
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
-    /*const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button. Get continious scanned for filter/debounce by timer
+    const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button get debounced per port, via timer ISR
     ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                                // Debouncer obj for each port in the same order as *_gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
-        new ButtonDebouncer(), new ButtonDebouncer()};*/
+        new ButtonDebouncer(), new ButtonDebouncer()};
 
-    struct FYC500_Button_Def // Definition of a YFC500 button
+    struct _Button_Def
     {
         uint8_t debouncer_index; // Debouncer index as defined in _debouncers array
         uint16_t button_pin;     // Mask which identifies a button
     };
 
-    // Map OM button number to YFC500 Button-definiton (except we start at 0 and not 1, which get handled in OM wrapper bit_getbutton() within main.hpp)
-    const FYC500_Button_Def button_nrs[NUM_BUTTONS] = {
+    // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper bit_getbutton() within main.hpp)
+    const _Button_Def button_nrs[NUM_BUTTONS] = {
         {3, 0b0000000000010000}, //  0 = BTN_CLK
         {0, 0b0001000000000000}, //  1 = BTN_HOME
         {0, 0b0000100000000000}, //  2 = BTN_PLAY

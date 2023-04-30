@@ -2,8 +2,8 @@
  * @file Buttons.cpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI Buttons class for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-04-14
+ * @version 0.2
+ * @date 2023-04-30
  *
  * @copyright Copyright (c) 2023
  *

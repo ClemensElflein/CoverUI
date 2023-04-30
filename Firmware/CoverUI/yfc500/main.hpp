@@ -2,8 +2,8 @@
  * @file main.hpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI main header for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-04-11
+ * @version 0.2
+ * @date 2023-04-30
  *
  * @copyright Copyright (c) 2023
  *
@@ -132,6 +132,7 @@ void loop() // This loop() doesn't loop! See drop off into core1() at the end of
     } while (bit_getbutton(500, tmp));
 
     // Dev tests
+    delay(1000);
     LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
     LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
     LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
