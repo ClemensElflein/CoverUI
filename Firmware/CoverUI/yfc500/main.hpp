@@ -22,14 +22,11 @@
 /* --- end PRINTF_BYTE_TO_BINARY macros --- */
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+#include <HardwareTimer.h>
 #include "settings.h"
 #include "LEDcontrol.h"
 #include "Buttons.h"
-
-// FIXME: Doesn't work anymore! Due to arduino framework?
-#ifdef DEBUG_SEMIHOSTING
-extern "C" void initialise_monitor_handles(void);
-#endif
+#include "hwtimer.hpp"
 
 // Current STM32F030 implementation is single core without threads. // FIXME: Check num of Cortex M4 (GD32) cores
 // Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)
@@ -52,7 +49,7 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed);
 // Some dummy Pico-SDK definitions. Not used but by this we'll NOT pollution original code to much with #ifdefs
 #define pio0 NULL
 #define pio1 NULL
-    typedef bool *PIO;
+typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
 // YFC500 specific
@@ -61,32 +58,13 @@ Buttons Btns;          // Main Buttons object
 
 void setup()
 {
-#ifdef DEBUG_SEMIHOSTING
-    initialise_monitor_handles(); // Semihosting
-#endif
     printf("Main Setup\n");
     LedControl.setup();
 
-    // We've hardware timer on mass, let's use them
-    // (choose those which are available on STM32 as well as GD32 model, preferable the simpler basic/generic ones)
-
-    // 500ms (2Hz) timer, used for LED-blink-slow
-    HardwareTimer *Timer_500ms = new HardwareTimer(TIM16);
-    Timer_500ms->setOverflow(2, HERTZ_FORMAT);             
-    Timer_500ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_slow));
-    Timer_500ms->resume();
-
-    // 100ms (10Hz) timer, used for LED-blink-fast
-    HardwareTimer *Timer_100ms = new HardwareTimer(TIM15);
-    Timer_100ms->setOverflow(10, HERTZ_FORMAT);
-    Timer_100ms->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_fast));
-    Timer_100ms->resume();
-
-    // 5ms (200Hz) timer, used for button debouncing and LED sequences
-    HardwareTimer *Timer_5ms = new HardwareTimer(TIM14);
-    Timer_5ms->setOverflow(200, HERTZ_FORMAT);
-    Timer_5ms->attachInterrupt(std::bind(&LEDcontrol::process_sequence, &LedControl));
-    Timer_5ms->resume();
+    // We've hardware timer on mass, let's use them.
+    hwtimer_setup(TIM_SLOW, 2, std::bind(&LEDcontrol::blink_slow_timer_elapsed, &LedControl));  //   2Hz (500ms) timer, used for LED-blink-slow
+    hwtimer_setup(TIM_FAST, 10, std::bind(&LEDcontrol::blink_fast_timer_elapsed, &LedControl)); //  10Hz (100ms) timer, used for LED-blink-fast
+    hwtimer_setup(TIM_QUICK, 200, std::bind(&LEDcontrol::process_sequence, &LedControl));       // 200Hz   (5ms) timer, used for LED- sequences
 }
 
 /**
@@ -113,13 +91,23 @@ void start_peripherals()
 
 void loop() // This loop() doesn't loop! See drop off into core1() at the end of this func
 {
-#ifdef DEBUG_SEMIHOSTING
-    initialise_monitor_handles(); // Semihosting
-#endif
     float ver = (float)FIRMWARE_VERSION / 100.0;
     printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);
 
     LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive blink. Get switched to manual- fast-blink in the case of an error // FIXME: Not valid anymore since arduino framework. Useless at all?
+
+    // Manual loop as long as GD32 clock/timer aren't validated
+    for (uint8_t i = 0; i < NUM_LEDS; i++)
+    {
+        LedControl.set(NUM_LEDS - i - 1, LED_state::LED_on, false);
+        delay(15);
+    }
+    for (uint8_t i = 0; i < NUM_LEDS; i++)
+    {
+        LedControl.set(NUM_LEDS - i - 1, LED_state::LED_off, false);
+        delay(15);
+    }
+    delay(1000);
 
     // "Hi there" and jammed button mounting detection
     bool tmp;
@@ -140,7 +128,7 @@ void loop() // This loop() doesn't loop! See drop off into core1() at the end of
     printf("\n\n waiting for commands or button press");
 
     // Drop off into endless core1() for button processing (waste (one more?) stack entry!)
-    core1(); 
+    core1();
 }
 
 /****************************************************************

@@ -22,10 +22,10 @@ class Buttons
 {
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
-    const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button get debounced per port, via timer ISR
+    /*const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button get debounced per port, via timer ISR
     ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                                // Debouncer obj for each port in the same order as *_gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
-        new ButtonDebouncer(), new ButtonDebouncer()};
+        new ButtonDebouncer(), new ButtonDebouncer()};*/
 
     struct _Button_Def
     {
