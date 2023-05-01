@@ -242,11 +242,13 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 ## Acknowledgments
 
 * [OpenMower](https://github.com/ClemensElflein/OpenMower)
-* [YardForce](https://www.yardforce.eu)
+* [Mowgli](https://github.com/cloudn1ne/Mowgli)
 * [PlatformIO](https://platformio.org/)
 * [STM32F0x0](https://www.st.com/en/microcontrollers-microprocessors/stm32f0x0-value-line.html)
 * [Picoprobe](https://github.com/raspberrypi/picoprobe)
 * [Picoprobe housing](https://www.printables.com/de/model/217523-raspberry-pi-pico-picoprobe-housing)
+* [Maximilian Gerhardt](https://community.platformio.org/u/maxgerhardt)
+* [YardForce](https://www.yardforce.eu)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
