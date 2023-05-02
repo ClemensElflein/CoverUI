@@ -11,10 +11,35 @@
 #ifndef YFC500_LEDCONTROL_H
 #define YFC500_LEDCONTROL_H
 
+#include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "settings.h"
 #include "../BttnCtl.h"
+
+// 1st row: 2,4,6,8HR
+#define LED_PIN_2HR PA4
+#define LED_PIN_4HR PA5
+#define LED_PIN_6HR PA6
+#define LED_PIN_8HR PA7
+// 2nd row: S1, S2, LOCK
+#define LED_PIN_S1 PA0
+#define LED_PIN_S2 PA1
+#define LED_PIN_LOCK PC4
+// 3rd row: Mon-Sun
+#define LED_PIN_MON PA15
+#define LED_PIN_TUE PC10
+#define LED_PIN_WED PC11
+#define LED_PIN_THU PC12
+#define LED_PIN_FRI PD2
+#define LED_PIN_SAT PB3
+#define LED_PIN_SUN PB4
+// 4th row: Lifted, Wire, Bat, Charge
+#define LED_PIN_LIFTED PC0
+#define LED_PIN_WIRE PC1
+#define LED_PIN_BAT PC2
+#define LED_PIN_CHARGE PC3
+// Backside
+#define LED_PIN_REAR PB0
 
 #define NUM_LEDS 19
 

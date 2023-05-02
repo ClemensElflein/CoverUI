@@ -4,6 +4,13 @@
 #include <stdio.h>
 
 #ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
+/* FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
+ * =======================================================================
+ * 1) Since we've no HAL_TIM_PeriodElapsedCallback() ISR anymore,
+ *    in the current structure we may lose serial data when blocked
+ *    in core1() i.e. by an long-press detection.
+ *    Need some kind of INT or threads
+ */
 #include "yfc500/main.hpp"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
@@ -29,7 +36,7 @@
 #endif
 #include "BttnCtl.h"
 
-#define bufflen 1000 // Q: 1000 look really huge! Is it a realistic value?
+#define bufflen 512 // Q: 1000 look really huge! Is it a realistic value?
 
 #define FIRMWARE_VERSION 200
 // V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
@@ -125,15 +132,12 @@ void sendMessage(void *message, size_t size)
   }
 #endif
 
-#ifdef HW_YFC500
-  //HAL_UART_Transmit_DMA(&HUART_LL, out_buf, encoded_size);
-#else // HW Pico
   for (uint i = 0; i < encoded_size; i++)
   {
-    uart_putc(UART_1, out_buf[i]);
+    //uart_putc(UART_1, out_buf[i]);
+    Serial_LL.write(out_buf[i]);
   }
   mutex_exit(&mx1);
-#endif
 }
 
 /****************************************************************************************************
@@ -219,22 +223,19 @@ void PacketReceived()
  * out to buffer_serial
  *****************************************************************************************************/
 
-#ifdef HW_YFC500
-// I know, this is somehow "ugly"!!
-// But because I made UART-receive by DMA+IdleDetection all data is already avail in DMA buffer.
-// What I could do is: copy the whole function to yfc500/main.hpp to not confuse with this ugly #ifdef
-void getDataFromBuffer(const uint8_t *dma_buffer, uint16_t size)
-{
-  for (size_t i = 0; i < size; i++)
-  {
-    u_int8_t readbyte = *(dma_buffer + i);
-#else // HW Pico
 void getDataFromBuffer()
 {
-  while (uart_is_readable(UART_1))
-  {
+ // while (uart_is_readable(UART_1))
+  while (Serial_LL.available()>0)
+    {
+#ifdef HW_YFC500
+    // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
+    // Don't wanna derive a new subclass now. #ifdef is simpler for now and not very hard to read ;-)
+    u_int8_t readbyte = Serial_LL.read();
+#else
     u_int8_t readbyte = uart_getc(UART_1);
 #endif
+
     buffer_serial[write] = readbyte;
     write++;
     if (write >= bufflen)
@@ -250,7 +251,7 @@ void getDataFromBuffer()
       write = 0;
       return;
     }
-  }
+    }
 }
 
 int getLedForButton(int button)
@@ -267,6 +268,10 @@ void core1()
   printf("Core 1 started\n");
   while (true)
   {
+#ifdef HW_YFC500
+    // This is not sufficient as we might miss serial data within bit_getbutton()
+    getDataFromBuffer();
+#endif
     // Scan Buttons
     bool pressed = false;
     unsigned int button = 0;

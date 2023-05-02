@@ -19,32 +19,31 @@
                                       (((i)&0x08ll) ? '1' : '0'), (((i)&0x04ll) ? '1' : '0'), (((i)&0x02ll) ? '1' : '0'), (((i)&0x01ll) ? '1' : '0')
 #define PRINTF_BINARY_PATTERN_INT16 PRINTF_BINARY_PATTERN_INT8 PRINTF_BINARY_PATTERN_INT8
 #define PRINTF_BYTE_TO_BINARY_INT16(i) PRINTF_BYTE_TO_BINARY_INT8((i) >> 8), PRINTF_BYTE_TO_BINARY_INT8(i)
-/* --- end PRINTF_BYTE_TO_BINARY macros --- */
+/* --- end PRINTF_BYTE_TO_BINARY macro's --- */
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
-#include <HardwareTimer.h>
-#include "settings.h"
+#include "hwtimer.hpp"
 #include "LEDcontrol.h"
 #include "Buttons.h"
-#include "hwtimer.hpp"
 
 // Current STM32F030 implementation is single core without threads. // FIXME: Check num of Cortex M4 (GD32) cores
-// Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)
+// Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)?
 #define auto_init_mutex(name)
 #define mutex_enter_blocking(ptr)
 #define mutex_exit(ptr)
 
-// UART-LL specific settings
-#define UART_LL_DMA_BUFFSIZE 50
-uint8_t uart_ll_dma_buffer[UART_LL_DMA_BUFFSIZE]; // DMA buffer size has to be at least one COBS cmd length
-// extern DMA_HandleTypeDef HDMA_UART_LL_RX;
-
 // Defined in main.cpp
 extern void core1();
-extern void getDataFromBuffer(const uint8_t *data, uint16_t size);
+extern void getDataFromBuffer();
 
 // Own forward declarations
 uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed);
+void timer_slow_callback_wrapper();
+void timer_fast_callback_wrapper();
+void timer_quick_callback_wrapper();
+
+// OM names. Could also use those, but I prefer logic names instead physical ones
+#define uart1 Serial_LL
 
 // Some dummy Pico-SDK definitions. Not used but by this we'll NOT pollution original code to much with #ifdefs
 #define pio0 NULL
@@ -56,37 +55,23 @@ typedef bool *PIO;
 LEDcontrol LedControl; // Main LED controller object
 Buttons Btns;          // Main Buttons object
 
+#ifdef MCU_STM32
+HardwareSerial Serial_LL(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
+#else
+HardwareSerial Serial_LL((uint8_t)PA3, (uint8_t)PA2, 0); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
+#endif
+
 void setup()
 {
     printf("Main Setup\n");
     LedControl.setup();
 
     // We've hardware timer on mass, let's use them.
-    hwtimer_setup(TIM_SLOW, 2, std::bind(&LEDcontrol::blink_slow_timer_elapsed, &LedControl));  //   2Hz (500ms) timer, used for LED-blink-slow
-    hwtimer_setup(TIM_FAST, 10, std::bind(&LEDcontrol::blink_fast_timer_elapsed, &LedControl)); //  10Hz (100ms) timer, used for LED-blink-fast
-    hwtimer_setup(TIM_QUICK, 200, std::bind(&LEDcontrol::process_sequence, &LedControl));       // 200Hz   (5ms) timer, used for LED- sequences
-}
+    hwtimer_setup(TIM_SLOW, 2, timer_slow_callback_wrapper);     //   2Hz (500ms) timer, used for LED-blink-slow
+    hwtimer_setup(TIM_FAST, 10, timer_fast_callback_wrapper);    //  10Hz (100ms) timer, used for LED-blink-fast
+    hwtimer_setup(TIM_QUICK, 200, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for LED- sequences
 
-/**
- * @brief Init all HW relevant stuff like GPIO, DMA, U(S)ARTs, Timer and Semihosting
- *
- */
-void init_mcu()
-{
-    /*
-    MX_DMA_Init();
-    MX_USART2_UART_Init(); // to LL-Pico via J6 */
-}
-
-void start_peripherals()
-{
-    /*
-    // Start UART-LL DMA receive
-    if (HAL_OK != HAL_UARTEx_ReceiveToIdle_DMA(&HUART_LL, uart_ll_dma_buffer, UART_LL_DMA_BUFFSIZE))
-    {
-        Error_Handler();
-    }
-    __HAL_DMA_DISABLE_IT(&HDMA_UART_LL_RX, DMA_IT_HT); // Disable "Half Transfer" interrupt*/
+    Serial_LL.begin(115200);
 }
 
 void loop() // This loop() doesn't loop! See drop off into core1() at the end of this func
@@ -107,7 +92,7 @@ void loop() // This loop() doesn't loop! See drop off into core1() at the end of
         LedControl.set(NUM_LEDS - i - 1, LED_state::LED_off, false);
         delay(15);
     }
-    delay(1000);
+    delay(500);
 
     // "Hi there" and jammed button mounting detection
     bool tmp;
@@ -127,13 +112,74 @@ void loop() // This loop() doesn't loop! See drop off into core1() at the end of
 
     printf("\n\n waiting for commands or button press");
 
+    /*while (true)
+    {
+        while (Serial_LL.available() == 0)
+            ;
+        uint8_t readbyte = Serial_LL.read();
+        printf("\n\n waiting for commands or button press");
+    }*/
     // Drop off into endless core1() for button processing (waste (one more?) stack entry!)
     core1();
+}
+
+/**
+ * @brief Check if one of the "magic buttons" got pressed and do his function.
+ * At the moment the following magic buttons exists:
+ * OK + Clock = Display FW version
+ * OK + Sun   = LED animation
+ */
+void magic_buttons()
+{
+    if (!Btns.is_pressed(6)) // OK
+        return;
+
+    if (Btns.is_pressed(13)) // SUN
+        LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
+    else if (Btns.is_pressed(0)) // Clock
+        LedControl.show_num(FIRMWARE_VERSION);
+    return;
+}
+
+/**
+ * @brief Stupid timer callback wrapper to work-around callback_function_t and timerCallback_t framework differences.
+ *   Also, framework-arduinogd32 implementation doesn't support callback arguments nor std::bind and thus no ptr to member function!
+ */
+void timer_slow_callback_wrapper()
+{
+    LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
+    /*#ifdef _serial_debug_
+        printf("Button status " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 " " PRINTF_BINARY_PATTERN_INT16 "\n",
+            PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(0)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(1)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(2)), PRINTF_BYTE_TO_BINARY_INT16(Btns.get_status(3)));
+    #endif*/
+    magic_buttons();
+}
+
+void timer_fast_callback_wrapper()
+{
+    LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
+}
+
+void timer_quick_callback_wrapper()
+{
+    //getDataFromBuffer();
+    Btns.process_states();
+    LedControl.process_sequence();
 }
 
 /****************************************************************
  * Some dump OM wrapper for not polluting original code to much *
  ****************************************************************/
+
+static bool uart_is_readable(HardwareSerial Serial)
+{
+    return Serial.available();
+}
+
+static void uart_putc(HardwareSerial Serial, uint8_t c)
+{
+    // Serial.write(c);
+}
 
 /**
  * @brief OM wrapper
@@ -207,24 +253,6 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
  ********************************/
 
 /**
- * @brief Check if one of the "magic buttons" got pressed and do his function.
- * At the moment the following magic buttons exists:
- * OK + Clock = Display FW version
- * OK + Sun   = LED animation
- */
-void magic_buttons()
-{
-    if (!Btns.is_pressed(6)) // OK
-        return;
-
-    if (Btns.is_pressed(13)) // SUN
-        LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
-    else if (Btns.is_pressed(0)) // Clock
-        LedControl.show_num(FIRMWARE_VERSION);
-    return;
-}
-
-/**
  * @brief Timer callback(s)
  *  TIM_BLINK_SLOW (LED blink- slow) is configure at 500ms
  *  TIM_BLINK_FAST (LED blink- fast) is configured at 100ms
@@ -250,49 +278,6 @@ else if (htim->Instance == TIM_5MS)
 Btns.process_states();         // Read all defined gpio-port debouncer
 LedControl.process_sequence(); // Process LED sequence
 }
-}*/
-
-/**
- * @brief RX idle callback which has to process the data within the circular DMA buffer.
- *        Take attention when enabling the printf() debugging. Semihosting will burn to much CPU for reliable (>1-2 circled) buffer processing!!!
- *
- * @param huart UART handle
- * @param pos Position of last rx data within buffer
- */
-/*void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t pos)
-{
-    static uint16_t old_ll_pos;
-    uint16_t size;
-
-    if (huart->Instance == UART_LL)
-    {
-        if (pos == old_ll_pos) // no new data
-            return;
-
-        if (pos > old_ll_pos) // buffer simply increased without going over end of buffer
-        {
-            size = pos - old_ll_pos;
-            // printf("\nDMA(incr) old_ll_pos %u, pos %u = size %u", old_ll_pos, pos, size);
-            getDataFromBuffer(&uart_ll_dma_buffer[old_ll_pos], size);
-        }
-        else // pos < old_ll_pos => buffer pos circled
-        {
-            // Remaining end of circular buffer
-            size = UART_LL_DMA_BUFFSIZE - old_ll_pos;
-            // printf("\nDMA(rest) old_ll_pos %u, pos %u = size %u", old_ll_pos, pos, size);
-            if (size > 0) // Not really necessary, could also call getDataFromBuffer() with a size of 0
-            {
-                getDataFromBuffer(&uart_ll_dma_buffer[old_ll_pos], size);
-            }
-            // Start of circular buffer
-            // printf("\nDMA(incr) old_ll_pos %u, pos %u = size %u", old_ll_pos, pos, pos);
-            if (pos > 0) // Not really necessary, could also call getDataFromBuffer() with a size of 0
-            {
-                getDataFromBuffer(&uart_ll_dma_buffer[0], pos);
-            }
-        }
-        old_ll_pos = pos;
-    }
 }*/
 
 #endif /* __YFC500_MAIN_H */

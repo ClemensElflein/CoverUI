@@ -10,9 +10,6 @@
  */
 #include <stdio.h>
 #include "ButtonDebouncer.h"
-#ifdef MCU_STM32
-//#include "stm32cube/inc/gpio.h"
-#endif
 
 ButtonDebouncer::ButtonDebouncer() {}
 

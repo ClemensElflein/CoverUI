@@ -15,10 +15,6 @@
 #define YFC500_BUTTONDEBOUNCER_H
 
 #include <stdint.h>
-#ifdef MCU_STM32
-//#include "stm32cube/inc/gpio.h"
-#else // MCU_GD32
-#endif
 
 #define NUM_BUTTON_STATES 6 // * 5ms timer = 30ms bouncing-button states = debounced after 30ms
 

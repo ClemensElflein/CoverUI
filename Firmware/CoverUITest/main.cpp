@@ -542,11 +542,11 @@ int main(int argc, char *argv[])
 
     LEDstatic(com_port);
 
-    LEDfastblink(com_port);
+    //LEDfastblink(com_port);
 
-    LEDslowblink(com_port);
+    //LEDslowblink(com_port);
 
-    Buzzertest(com_port);
+    //Buzzertest(com_port);
 
 
     LEDBar4test(com_port);

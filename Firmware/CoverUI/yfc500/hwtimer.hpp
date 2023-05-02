@@ -1,9 +1,9 @@
 /**
- * @file timer_setup.hpp
+ * @file hwtimer.hpp
  * @author Apehaenger (joerg@ebeling.ws)
- * @brief YardForce Classic 500 CoverUI STM32 & GD32 HW-Timer setup for OpenMower https://github.com/ClemensElflein/OpenMower
- *   Required because framework-arduino & framework-arduinogd32 have incompatible definitions and I don't fill-up our
- *   main.hpp with #ifdef's
+ * @brief YardForce Classic 500 CoverUI STM32 & GD32 HW-Timer for OpenMower https://github.com/ClemensElflein/OpenMower
+ *   Simple wrapper around the incompatible framework-arduinoststm32 & framework-arduinogd32 APIs so that we don't
+ *   fill-up our main.hpp with #ifdef's
  * @version 0.1
  * @date 2023-05-01
  *
@@ -15,8 +15,19 @@
 
 #include <Arduino.h>
 #include <stdint.h>
+#include <HardwareTimer.h> // Required for GD32 framework
 
 #ifdef MCU_STM32
+#define TIM_SLOW TIM16
+#define TIM_FAST TIM15
+#define TIM_QUICK TIM14
+#else
+#define TIM_SLOW TIMER16
+#define TIM_FAST TIMER15
+#define TIM_QUICK TIMER14
+#endif
+
+#ifdef MCU_STM32 // ---------- STM32 ----------
 
 void hwtimer_setup(TIM_TypeDef *instance, uint32_t freq, callback_function_t callback)
 {
@@ -28,20 +39,14 @@ void hwtimer_setup(TIM_TypeDef *instance, uint32_t freq, callback_function_t cal
     cycle = Timer->getTimerClkFreq() / freq;
     prescale_fact = (cycle / 0x10000) + 1;
     Timer->setPrescaleFactor(prescale_fact - 1);
-    //Timer->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_slow));
+    // Timer->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_slow));
     Timer->attachInterrupt(callback);
     Timer->resume();
 }
 
-#else
+#else // ---------- GD32 ----------
 
-#include <HardwareTimer.h>
-void todo_wrapper()
-{
-    LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
-}
-
-void hwtimer_setup(uint32_t instance, uint32_t freq)
+void hwtimer_setup(uint32_t instance, uint32_t freq, timerCallback_t callback)
 {
     uint32_t cycle, prescale_fact;
 
@@ -51,7 +56,7 @@ void hwtimer_setup(uint32_t instance, uint32_t freq)
     cycle = Timer->getTimerClkFre() / freq;
     prescale_fact = (cycle / 0x10000) + 1;
     Timer->setPrescaler(prescale_fact - 1);
-    Timer->attachInterrupt(todo_wrapper); // framework-arduinogd32 only support void (*timerCallback_t)()
+    Timer->attachInterrupt(callback);
     Timer->start();
 }
 
