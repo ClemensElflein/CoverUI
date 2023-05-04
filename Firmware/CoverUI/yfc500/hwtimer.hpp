@@ -15,49 +15,39 @@
 
 #include <Arduino.h>
 #include <stdint.h>
-#include <HardwareTimer.h> // Required for GD32 framework
+#include <HardwareTimer.h> // Required for framework-arduinogd32
 
 #ifdef MCU_STM32
 #define TIM_SLOW TIM16
 #define TIM_FAST TIM15
 #define TIM_QUICK TIM14
 #else
-#define TIM_SLOW TIMER16
-#define TIM_FAST TIMER15
-#define TIM_QUICK TIMER14
+// ATTENTION: TIMER14-16 are bugged somewhere in current GD32F3x implementation (CMSIS or framework-arduinogd32)
+#define TIM_SLOW TIMER13
+#define TIM_FAST TIMER2
+#define TIM_QUICK TIMER1
 #endif
 
 #ifdef MCU_STM32 // ---------- STM32 ----------
 
-void hwtimer_setup(TIM_TypeDef *instance, uint32_t freq, callback_function_t callback)
+HardwareTimer *hwtimer(TIM_TypeDef *instance, uint32_t freq, callback_function_t callback)
 {
-    uint32_t cycle, prescale_fact;
-
     HardwareTimer *Timer = new HardwareTimer(instance);
-
-    // Prepare calculation
-    cycle = Timer->getTimerClkFreq() / freq;
-    prescale_fact = (cycle / 0x10000) + 1;
-    Timer->setPrescaleFactor(prescale_fact - 1);
-    // Timer->attachInterrupt(std::bind(&LEDcontrol::blink_timer_elapsed, &LedControl, LED_state::LED_blink_slow));
+    Timer->setOverflow(freq, HERTZ_FORMAT);
     Timer->attachInterrupt(callback);
     Timer->resume();
+    return Timer;
 }
 
 #else // ---------- GD32 ----------
 
-void hwtimer_setup(uint32_t instance, uint32_t freq, timerCallback_t callback)
+HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callback)
 {
-    uint32_t cycle, prescale_fact;
-
     HardwareTimer *Timer = new HardwareTimer(instance);
-
-    // Prepare calculation
-    cycle = Timer->getTimerClkFre() / freq;
-    prescale_fact = (cycle / 0x10000) + 1;
-    Timer->setPrescaler(prescale_fact - 1);
+    Timer->setPeriodTime(freq, FORMAT_HZ);
     Timer->attachInterrupt(callback);
     Timer->start();
+    return Timer;
 }
 
 #endif

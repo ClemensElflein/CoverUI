@@ -48,7 +48,7 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
         break;
     case LED_state::LED_blink_slow:
     case LED_state::LED_blink_fast:
-        // Get handled by timer
+        // Get handled by timers
         break;
     }
     if (change_state)
@@ -132,7 +132,7 @@ bool LEDcontrol::has(uint8_t led_num, LED_state state)
 
 void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
 {
-    // Sync blink vars are only for cosmetic nature, probably only interesting for a nice looking CoverUITest
+    // Synchronous blink is only for cosmetic nature, probably only interesting for a nice looking CoverUITest
     static std::map<LED_state, LED_state> sync_blink_map = {
         {LED_state::LED_blink_slow, LED_state::LED_on},
         {LED_state::LED_blink_fast, LED_state::LED_on}};

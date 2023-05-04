@@ -4,13 +4,6 @@
 #include <stdio.h>
 
 #ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
-/* FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
- * =======================================================================
- * 1) Since we've no HAL_TIM_PeriodElapsedCallback() ISR anymore,
- *    in the current structure we may lose serial data when blocked
- *    in core1() i.e. by an long-press detection.
- *    Need some kind of INT or threads
- */
 #include "yfc500/main.hpp"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
@@ -36,7 +29,7 @@
 #endif
 #include "BttnCtl.h"
 
-#define bufflen 512 // Q: 1000 look really huge! Is it a realistic value?
+#define bufflen 1000
 
 #define FIRMWARE_VERSION 200
 // V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
@@ -134,8 +127,7 @@ void sendMessage(void *message, size_t size)
 
   for (uint i = 0; i < encoded_size; i++)
   {
-    //uart_putc(UART_1, out_buf[i]);
-    Serial_LL.write(out_buf[i]);
+    uart_putc(UART_1, out_buf[i]);
   }
   mutex_exit(&mx1);
 }
@@ -225,12 +217,11 @@ void PacketReceived()
 
 void getDataFromBuffer()
 {
- // while (uart_is_readable(UART_1))
-  while (Serial_LL.available()>0)
-    {
+  while (Serial_LL.available() > 0)
+  {
 #ifdef HW_YFC500
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
-    // Don't wanna derive a new subclass now. #ifdef is simpler for now and not very hard to read ;-)
+    // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
     u_int8_t readbyte = Serial_LL.read();
 #else
     u_int8_t readbyte = uart_getc(UART_1);
@@ -268,10 +259,6 @@ void core1()
   printf("Core 1 started\n");
   while (true)
   {
-#ifdef HW_YFC500
-    // This is not sufficient as we might miss serial data within bit_getbutton()
-    getDataFromBuffer();
-#endif
     // Scan Buttons
     bool pressed = false;
     unsigned int button = 0;
