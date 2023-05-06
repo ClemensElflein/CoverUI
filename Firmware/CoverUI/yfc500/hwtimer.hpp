@@ -18,9 +18,9 @@
 #include <HardwareTimer.h> // Required for framework-arduinogd32
 
 #ifdef MCU_STM32
-#define TIM_SLOW TIM16
-#define TIM_FAST TIM15
-#define TIM_QUICK TIM14
+#define TIM_SLOW TIM6   // Basic timer
+#define TIM_FAST TIM17  // General purpose timer
+#define TIM_QUICK TIM16 // General purpose timer
 #else
 // ATTENTION: TIMER14-16 are bugged somewhere in current GD32F3x implementation (CMSIS or framework-arduinogd32)
 #define TIM_SLOW TIMER13

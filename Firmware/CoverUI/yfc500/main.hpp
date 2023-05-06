@@ -42,11 +42,11 @@ typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
 // YFC500 implementation specific
-LEDcontrol LedControl; // Main LED controller object
-Buttons Btns;          // Main Buttons object
-HardwareTimer *Timer_slow;
-HardwareTimer *Timer_fast;
-HardwareTimer *Timer_quick;
+LEDcontrol LedControl;      // Main LED controller object
+Buttons Btns;               // Main Buttons object
+HardwareTimer *Timer_slow;  // Used for blink-slow LEDs and magic buttons
+HardwareTimer *Timer_fast;  // Used for blink-fast LEDs
+HardwareTimer *Timer_quick; // Button debouncer and LED sequences
 
 #ifdef MCU_STM32
 HardwareSerial Serial_LL(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
@@ -58,11 +58,12 @@ void setup()
 {
     printf("Main Setup\n");
     LedControl.setup();
+    Btns.setup();
 
     // We've hardware timer on mass, let's use them.
-    Timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper);      //   2Hz (500ms) timer, used for LED-blink-slow
+    Timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper);      //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
     Timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper);     //  10Hz (100ms) timer, used for LED-blink-fast
-    Timer_quick = hwtimer(TIM_QUICK, 200, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for LED- sequences
+    Timer_quick = hwtimer(TIM_QUICK, 200, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
 
     Serial_LL.begin(115200);
 

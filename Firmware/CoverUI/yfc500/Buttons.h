@@ -15,48 +15,66 @@
 #include <stdint.h>
 #include "ButtonDebouncer.h"
 
-#define NUM_GPIO_PORTS 4
+#define BTN_CLK_PIN PF4
+#define BTN_OK_PIN PF5
+#define BTN_S1_PIN PB2
+#define BTN_S2_PIN PB10
+#define BTN_LOCK_PIN PB11
+#define BTN_MON_PIN PB12
+#define BTN_TUE_PIN PB13
+#define BTN_WED_PIN PB14
+#define BTN_THU_PIN PB15
+#define BTN_FRI_PIN PC6
+#define BTN_SAT_PIN PC7
+#define BTN_SUN_PIN PC8
+#define BTN_PLAY_PIN PA11
+#define BTN_HOME_PIN PA12
+
 #define NUM_BUTTONS 14
+#define NUM_GPIO_PORTS 4
 
 class Buttons
 {
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
-    /*const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF}; // All ports with a button get debounced per port, via timer ISR
-    ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = {                                // Debouncer obj for each port in the same order as *_gpio_ports
+    // All ports with a button get debounced per port, via timer callback
+    const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF};
+    ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as _gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
-        new ButtonDebouncer(), new ButtonDebouncer()};*/
+        new ButtonDebouncer(), new ButtonDebouncer()};
 
     struct _Button_Def
     {
         uint8_t debouncer_index; // Debouncer index as defined in _debouncers array
-        uint16_t button_pin;     // Mask which identifies a button
+        uint8_t digital_pin;
     };
 
     // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper bit_getbutton() within main.hpp)
-    const _Button_Def button_nrs[NUM_BUTTONS] = {
-        {3, 0b0000000000010000}, //  0 = BTN_CLK
-        {0, 0b0001000000000000}, //  1 = BTN_HOME
-        {0, 0b0000100000000000}, //  2 = BTN_PLAY
-        {1, 0b0000000000000100}, //  3 = BTN_S1
-        {1, 0b0000010000000000}, //  4 = BTN_S2
-        {1, 0b0000100000000000}, //  5 = BTN_LOCK
-        {3, 0b0000000000100000}, //  6 = BTN_OK
-        {1, 0b0001000000000000}, //  7 = BTN_MON
-        {1, 0b0010000000000000}, //  8 = BTN_TUE
-        {1, 0b0100000000000000}, //  9 = BTN_WED
-        {1, 0b1000000000000000}, // 10 = BTN_THU
-        {2, 0b0000000001000000}, // 11 = BTN_FRI
-        {2, 0b0000000010000000}, // 12 = BTN_SAT
-        {2, 0b0000000100000000}  // 13 = BTN_SUN
+    // Again: Some-how static with debouncer_index
+    const _Button_Def _button_nrs[NUM_BUTTONS] = {
+        {3, BTN_CLK_PIN},  //  0
+        {0, BTN_HOME_PIN}, //  1
+        {0, BTN_PLAY_PIN}, //  2
+        {1, BTN_S1_PIN},   //  3
+        {1, BTN_S2_PIN},   //  4
+        {1, BTN_LOCK_PIN}, //  5
+        {3, BTN_OK_PIN},   //  6
+        {1, BTN_MON_PIN},  //  7
+        {1, BTN_TUE_PIN},  //  8
+        {1, BTN_WED_PIN},  //  9
+        {1, BTN_THU_PIN},  // 10
+        {2, BTN_FRI_PIN},  // 11
+        {2, BTN_SAT_PIN},  // 12
+        {2, BTN_SUN_PIN}   // 13
     };
 
 public:
     Buttons();
 
-    void process_states();                   // Has to get called regulary i.e. by timer (2.5ms)
-    uint16_t get_status(uint8_t gpio_index); // Get status of all pins on the given GPIO index (as declared in *_gpio_ports)
-    bool is_pressed(uint8_t button_nr);      // Return boolean if the given button number is pressed
+    void setup();
+    void process_states();                        // Has to get called regulary i.e. by timer (5ms)
+    uint16_t get_status(uint8_t debouncer_index); // Get status of all pins on the given debouncer index (as declared in *_gpio_ports)
+    bool is_pressed(uint8_t button_nr);           // Return boolean if the given button number is pressed
 };
 
 #endif /* YFC500_BUTTONS_H */

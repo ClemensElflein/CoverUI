@@ -13,10 +13,22 @@
 
 Buttons::Buttons() {}
 
+/**
+ * @brief Setup LED GPIOs
+ *
+ */
+void Buttons::setup()
+{
+    printf("Buttons Setup\n");
+
+    for (_Button_Def btn_def : _button_nrs)
+        pinMode(btn_def.digital_pin, INPUT_PULLUP);
+}
+
 void Buttons::process_states()
 {
-//    for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
-//        _debouncers[i]->process_state(_gpio_ports[i]);
+    for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
+        _debouncers[i]->process_state(_gpio_ports[i]);
 }
 
 /**
@@ -28,8 +40,7 @@ void Buttons::process_states()
  */
 uint16_t Buttons::get_status(uint8_t gpio_index)
 {
-//    return _debouncers[gpio_index]->get_status();
-return 0;
+    return _debouncers[gpio_index]->get_status();
 }
 
 /**
@@ -42,5 +53,5 @@ return 0;
  */
 bool Buttons::is_pressed(uint8_t button_nr)
 {
-    return get_status(button_nrs[button_nr].debouncer_index) & button_nrs[button_nr].button_pin;
+    return get_status(_button_nrs[button_nr].debouncer_index) & digitalPinToBitMask(_button_nrs[button_nr].digital_pin);
 };

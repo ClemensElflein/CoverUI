@@ -14,9 +14,10 @@
 #ifndef YFC500_BUTTONDEBOUNCER_H
 #define YFC500_BUTTONDEBOUNCER_H
 
+#include <Arduino.h>
 #include <stdint.h>
 
-#define NUM_BUTTON_STATES 6 // * 5ms timer = 30ms bouncing-button states = debounced after 30ms
+#define NUM_BUTTON_STATES 8 // * 5ms timer = 40ms bouncing-button states = debounced after 40ms
 
 class ButtonDebouncer
 {
@@ -28,8 +29,8 @@ private:
 
 public:
     ButtonDebouncer();
-
-    //void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
+    
+    void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
     uint16_t get_status();
     uint16_t get_pressed();
 };
