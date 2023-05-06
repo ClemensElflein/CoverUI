@@ -23,9 +23,9 @@
 #define TIM_QUICK TIM16 // General purpose timer
 #else
 // ATTENTION: TIMER14-16 are bugged somewhere in current GD32F3x implementation (CMSIS or framework-arduinogd32)
-#define TIM_SLOW TIMER13
-#define TIM_FAST TIMER2
-#define TIM_QUICK TIMER1
+#define TIM_SLOW TIMER16
+#define TIM_FAST TIMER15
+#define TIM_QUICK TIMER14
 #endif
 
 #ifdef MCU_STM32 // ---------- STM32 ----------
