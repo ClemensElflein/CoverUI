@@ -13,11 +13,16 @@
 
 ButtonDebouncer::ButtonDebouncer() {}
 
-void ButtonDebouncer::process_state(const GPIO_TypeDef *gpio_port)
+void ButtonDebouncer::process_state(const uint32_t gpio_port)
 {
     uint8_t i;
     uint16_t last_state_debounced = _state_debounced;
-    _states[_state_index] = gpio_port->IDR ^ 0xFFFF; // XOR changes for pull-up _states
+
+#ifdef MCU_STM32
+    _states[_state_index] = ((GPIO_TypeDef *)gpio_port)->IDR ^ 0xFFFF; // XOR changes for pull-up _states
+#else
+    _states[_state_index] = GPIO_ISTAT(gpio_port) ^ 0xFFFF; // XOR changes for pull-up _states
+#endif
 
     // Debounce
     for (i = 0, _state_debounced = 0xFFFF; i < NUM_BUTTON_STATES; i++)

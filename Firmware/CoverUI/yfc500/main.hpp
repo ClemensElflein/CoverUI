@@ -56,7 +56,6 @@ HardwareSerial Serial_LL((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to
 
 void setup()
 {
-    printf("Main Setup\n");
     LedControl.setup();
     Btns.setup();
 
@@ -67,10 +66,7 @@ void setup()
 
     Serial_LL.begin(115200);
 
-    float ver = (float)FIRMWARE_VERSION / 100.0;
-    printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);
-
-    LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink
+    LedControl.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay or similar as a timer might walk on even if main crashed
 
     delay(100); // Some required stupid delay, dunno why :-/
 
@@ -86,11 +82,9 @@ void setup()
     delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay
 
     // Dev test LEDs
-    LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
+    /*LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
     LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
-    LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
-
-    printf("\n\n waiting for commands or button press");
+    LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);*/
 }
 
 void loop() // This loop() doesn't loop!
@@ -107,12 +101,12 @@ void loop() // This loop() doesn't loop!
  */
 void magic_buttons()
 {
-    if (!Btns.is_pressed(6)) // OK
+    if (!Btns.is_pressed(BTN_NUM_OK))
         return;
 
-    if (Btns.is_pressed(13)) // SUN
+    if (Btns.is_pressed(BTN_NUM_SUN))
         LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
-    else if (Btns.is_pressed(0)) // Clock
+    else if (Btns.is_pressed(BTN_NUM_CLK))
         LedControl.show_num(FIRMWARE_VERSION);
     return;
 }

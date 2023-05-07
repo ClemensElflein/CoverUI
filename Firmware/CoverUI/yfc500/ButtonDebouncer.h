@@ -30,7 +30,7 @@ private:
 public:
     ButtonDebouncer();
     
-    void process_state(const GPIO_TypeDef *gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
+    void process_state(const uint32_t gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
     uint16_t get_status();
     uint16_t get_pressed();
 };

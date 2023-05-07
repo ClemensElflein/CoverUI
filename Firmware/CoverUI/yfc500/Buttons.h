@@ -15,6 +15,13 @@
 #include <stdint.h>
 #include "ButtonDebouncer.h"
 
+#ifdef MCU_GD32
+#define GPIOA_BASE GPIOA
+#define GPIOB_BASE GPIOB
+#define GPIOC_BASE GPIOC
+#define GPIOF_BASE GPIOF
+#endif
+
 #define BTN_CLK_PIN PF4
 #define BTN_OK_PIN PF5
 #define BTN_S1_PIN PB2
@@ -33,12 +40,18 @@
 #define NUM_BUTTONS 14
 #define NUM_GPIO_PORTS 4
 
+// Some handy defines
+#define BTN_NUM_CLK 0
+#define BTN_NUM_OK 6
+#define BTN_NUM_SUN 13
+
 class Buttons
 {
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
     // All ports with a button get debounced per port, via timer callback
-    const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF};
+    // const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF};
+    const uint32_t _gpio_ports[NUM_GPIO_PORTS] = {GPIOA_BASE, GPIOB_BASE, GPIOC_BASE, GPIOF_BASE};
     ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as _gpio_ports
         new ButtonDebouncer(), new ButtonDebouncer(),
         new ButtonDebouncer(), new ButtonDebouncer()};
@@ -49,7 +62,7 @@ private:
         uint8_t digital_pin;
     };
 
-    // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper bit_getbutton() within main.hpp)
+    // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper main.hpp::bit_getbutton())
     // Again: Some-how static with debouncer_index
     const _Button_Def _button_nrs[NUM_BUTTONS] = {
         {3, BTN_CLK_PIN},  //  0
