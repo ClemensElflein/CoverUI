@@ -13,15 +13,12 @@
     <img src="images/IMG_Overview.jpg" alt="Logo" width="400">
   </a>
 
-  <h3 align="center">OM CoverUI Firmware for Stock YardForce Classic 500 PCB</h3>
+  <h3 align="center">OM CoverUI Firmware for Stock 'YardForce Classic 500' PCB</h3>
 
   <p align="center">
-    Yet only tested/working with PCB labeled "RM-ECOW-V1.3.0, 2020.05.08" with the STM32F030R8 MCU Variant!
+    Yet only tested/working with PCB labeled "RM-ECOW-V1.3.0, 2020.05.08" with STM32F030R8 or GD32F330R8 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant!
   </p>
 </div>
-
-> **Warning**
-> If your stock CoverUI PCB has a GD32... MCU, this FW does NOT work (yet), as the used framework does NOT support this GD32... MCU.
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -74,7 +71,7 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 ### Prerequisites
 
 * Stock *YardForce Classic 500* Cover-UI/Button-Board<br>
-  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with "STM32F030R8" MCU will work.<br>
+  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with 'STM32F030R8' or 'GD23F330R8' MCU is tested.<br>
 * Soldering Iron or Hot-Air Gun to move two SMD resistor
 * ST-Link or Picoprobe programmer/debugger
 
@@ -90,17 +87,23 @@ as well as R37 to (NP) R42 (Play).
 You might also simply bridge R34 and R42, but I thought it's more save to cut the route to the main 16 pin connector.
 
 ![Hardware Changes](images/IMG_PCB_Changes.jpg)
-BTW: The yellow cable on the picture (to R5/C2) might not harm you. This is the NRST signal which is only required if you bugged the code (like me) during development.
+BTW: The yellow cable on the picture (to R5/C2) might not harm you. This is the NRST signal which is only required if you bug the code (like me) during development.
 
 Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger.
 
-### Flash Firmware
+## Flash Firmware
 
 You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
 
+> **Note**
+> If you have a GD32 MCU, this is your only option
+
 <img src="images/IMG_ST-Link-V2-Clone.jpg" alt="My ST-Link (V2) clone" width="32%">
 
-Or use (build) a [Picoprobe][Picoprobe-url] (CMSIS-DAP debugger):
+Or use (build) a [Picoprobe][Picoprobe-url] (CMSIS-DAP debugger) if you have a STM32 MCU:
+
+> **Note**
+> Do **not** try this with a GD32 MCU, I bricked my lent one by this try and took me 3 hours to get it back running!
 
 <p float="left">
 <img src="images/IMG_Picoprobe.jpg" alt="My Picoprobe" width="32%">
@@ -113,13 +116,68 @@ and you're ready.
 
 (For sure, there might be more programmer/debugger options, but with these two variants I got it quickly running)
 
-There're two ways to get the Firmware into the MCU.<br>
-Either by self "compile and upload" via PlatformIO, or by a simple Upload via the ST-Link tool (for the latter you need an ST-Link Probe).
+> **Note**
+> Updated 05/07/2023
 
-#### PlatformIO
+There're two generic ways to get the Firmware into your MCU.<br>
+Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
+
+
+### ST-Link (flash binary)
 
 > **Note**
-> Updated 04/29/2023
+> Updated 05/07/2023
+
+It turns out that ST-Link GUI tool is some how flawy, why I recommend to use the `st-flash` console command.
+
+Open a terminal/console, then:
+
+* `st-info --descr` should return either:
+  * `F0xx`, which mean that your PCB has a 'STM32F030R8' MCU
+  * `F1xx Medium-density` which identify a 'GD32F330R8' MCU
+* Dependent on what kind of MCU you identified, download your matching [firmware binary](https://github.com/Apehaenger/CoverUI/tree/feature/Stock-YFC500-Arduino/Firmware/CoverUI/yfc500/bin)
+* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
+ `st-flash write firmware_<type>_<ver>.bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
+
+When done, re-plug your ST-Link and you should see a quick power-on animation.
+
+If st-flash fails with an error like "Flash memory is write protected", we need to unlock it.<br>
+I used [OpenOCD][OpenOCD-url] for unlocking it. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
+
+Unlock your flash via:
+
+```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
+
+Now, try again flashing by: `st-flash write firmware_<type>_<ver>.bin 0x08000000`
+
+
+### Picoprobe (flash binary) STM32 MCU only!
+
+> **Note**
+> Updated 05/08/2023
+
+Do **NOT** try this variant with a GD32 MCU. There's a high risk to brick it!!
+
+You need [OpenOCD][OpenOCD-url] for this. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
+
+Download [STM32 firmware binary](https://github.com/Apehaenger/CoverUI/tree/feature/Stock-YFC500-Arduino/Firmware/CoverUI/yfc500/bin).
+
+Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, CLK, DIO and 3V3.
+
+Open a terminal/console, then:
+
+* `openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_stm32_<ver>.bin verify exit 0x08000000 reset; exit;"`<br>
+  Take attention that you replace `<ver>` with your downloaded version!
+
+When done, re-plug your ST-Link and you should see a quick power-on animation.
+
+If st-flash fails with an error like "Flash memory is write protected", simply flash it again. On the second run it should work with this method.
+
+
+### PlatformIO
+
+> **Note**
+> Updated 05/08/2023
 
 [PlatformIO](https://platformio.org/) is a [Visual Studio Code](https://code.visualstudio.com/) extension. Once installed, do:
 
@@ -127,33 +185,13 @@ Either by self "compile and upload" via PlatformIO, or by a simple Upload via th
 - `PIO Home` -> `Open`
 - `Open Project` cloned repository branch -> CoverUI/Firmware/CoverUI (contains platformio.ini)
 - Wait till tools got loaded (bottom right status info)
-- In bottombar click `Switch PlatformIO Project Environment` and choose (whatever programmer/debugger- probe you use) either: `env:yfc500_stlink` or `env:yfc500_picoprobe` 
+
+* In bottombar click `Switch PlatformIO Project Environment` and choose (whatever MCU & programmer/debugger- probe you use) either: `env:YFC500-STM32_STLink`, `env:YFC500-STM32_Picoprobe` or `env:YFC500-GD32_STLink`
+
 - Wait till tools got loaded (bottom right status info)
 - Finally press `PlatformIO: Upload` (right arrow symbol) in bottombar. After it compiled, linked and uploaded, it should reboot and do a short power-on LED animation.
 - If you get an "Error: stm32x device protected", simply upload a second time. Look like I placed the "unlock" command some how to late. 
 
-#### ST-Link
-
-> **Note**
-> Updated 04/29/2023
-
-It turns out that ST-Link GUI tool is some how flawy, why I prefer to use the command line tools.
-
-Open a terminal/console, then:
- - `st-info --descr` has to return "F0xx"! If not you don't need to go on as you've a not (yet) supported MCU.
- - Download [firmware.bin](https://github.com/Apehaenger/CoverUI/raw/feature/Stock-YFC500/Firmware/CoverUI/yfc500/bin/firmware.bin)
- - `st-flash write firmware.bin 0x08000000` should log at the end something like 'Flash written and verified! jolly good!'
-
-When done, re-plug your ST-Link and you should see a quick power-on animation.
-
-If flashing fails with an error like "Flash memory is write protected", we need to unlock it before.<br>
-I used [OpenOCD][OpenOCD-url] for it. Try `openocd --version` to check if it's already installed.
-
-Unlock your flash via:
-
-```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
-
-Try again flashing by: `st-flash write firmware.bin 0x08000000`
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
