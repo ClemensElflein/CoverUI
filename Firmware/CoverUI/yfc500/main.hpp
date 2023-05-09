@@ -15,6 +15,7 @@
 #include "hwtimer.hpp"
 #include "LEDcontrol.h"
 #include "Buttons.h"
+#include "Rain.hpp"
 
 #define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
 
@@ -44,6 +45,7 @@ typedef bool *PIO;
 // YFC500 implementation specific
 LEDcontrol LedControl;      // Main LED controller object
 Buttons Btns;               // Main Buttons object
+Rain rain;
 HardwareTimer *Timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *Timer_fast;  // Used for blink-fast LEDs
 HardwareTimer *Timer_quick; // Button debouncer and LED sequences
@@ -54,10 +56,16 @@ HardwareSerial Serial_LL(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2
 HardwareSerial Serial_LL((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
+#define PIN_HALL_STOP_WHITE PC5
+#define PIN_HALL_WHEEL_RED PB7
+#define PIN_HALL_STOP_YELLOW PB6
+#define PIN_HALL_WHEEL_BLUE PB8
+
 void setup()
 {
     LedControl.setup();
     Btns.setup();
+    rain.setup();
 
     // We've hardware timer on mass, let's use them.
     Timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper);      //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
@@ -82,15 +90,56 @@ void setup()
     delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay
 
     // Dev test LEDs
-    /*LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
+    LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
     LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
-    LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);*/
+    LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
+
+    pinMode(PIN_HALL_STOP_WHITE, INPUT);
 }
+
+uint32_t next_rain = millis();
+const uint16_t interval_rain = 10000;
+int rain_val = 0;
+
+uint32_t next_emergency = millis();
+const uint16_t interval_emergency = 200;
 
 void loop() // This loop() doesn't loop!
 {
+    if (millis() >= next_emergency)
+    {
+        /*if (digitalRead(PIN_HALL_STOP_WHITE))
+            LedControl.set(LED_NUM_MON, LED_state::LED_on);
+        else
+            LedControl.set(LED_NUM_MON, LED_state::LED_off);
+
+        if (digitalRead(PIN_HALL_WHEEL_RED))
+            LedControl.set(LED_NUM_MON - 1, LED_state::LED_on);
+        else
+            LedControl.set(LED_NUM_MON - 1, LED_state::LED_off);
+
+        if (digitalRead(PIN_HALL_STOP_YELLOW))
+            LedControl.set(LED_NUM_MON - 2, LED_state::LED_on);
+        else
+            LedControl.set(LED_NUM_MON - 2, LED_state::LED_off);
+
+        if (digitalRead(PIN_HALL_WHEEL_BLUE))
+            LedControl.set(LED_NUM_MON - 3, LED_state::LED_on);
+        else
+            LedControl.set(LED_NUM_MON - 3, LED_state::LED_off);*/
+
+        next_emergency += interval_emergency;
+    }
+
+    if (millis() >= next_rain)
+    {
+        rain.read();
+        rain.send();
+        next_rain += interval_rain;
+    }
+
     // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry!)
-    core1();
+    // core1();
 }
 
 /**

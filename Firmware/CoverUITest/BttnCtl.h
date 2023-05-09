@@ -16,9 +16,10 @@ enum TYPE
     Get_Version = 0xB0,
     Set_Buzzer = 0xB1,
     Set_LEDs = 0xB2,
-    Get_Button = 0xB3
+    Get_Button = 0xB3,
+    Get_Emergency = 0xB4,
+    Get_Rain = 0xB5
 };
-
 
 // Function definiton for the 18 LEDS
 enum LED_id
@@ -104,7 +105,15 @@ struct msg_event_button
 } __attribute__((packed));
 #pragma pack(pop)
 
-
-
+#pragma pack(push, 1)
+struct msg_event_rain
+{
+    uint8_t type;     // command type
+    uint8_t reserved; // padding
+    uint32_t value;
+    uint32_t threshold; // If value < threshold then it rains
+    uint16_t crc;       // CRC 16
+} __attribute__((packed));
+#pragma pack(pop)
 
 #endif // _BttnCtl_HEADER_FILE_

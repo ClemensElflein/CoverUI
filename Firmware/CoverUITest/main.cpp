@@ -98,6 +98,18 @@ void PacketReceived()
             printf("GetVersion invalid CRC");
         }
     }
+    else if (decoded_buffer[0] == Get_Rain && data_size == sizeof(struct msg_event_rain))
+    {
+        struct msg_event_rain *message = (struct msg_event_rain *)decoded_buffer;
+        if (message->crc == calc_crc)
+        {
+            printf("rain value %d (threshold %d)\n", message->value, message->threshold);
+        }
+        else
+        {
+            printf("GetVersion invalid CRC");
+        }
+    }
 }
 
 
@@ -540,7 +552,7 @@ int main(int argc, char *argv[])
 
     getversion(com_port);
 
-    LEDstatic(com_port);
+    /*LEDstatic(com_port);
 
     LEDfastblink(com_port);
 
@@ -551,14 +563,12 @@ int main(int argc, char *argv[])
 
     LEDBar4test(com_port);
 
-    LEDBar7test(com_port);
+    LEDBar7test(com_port);*/
 
 
-    printf("Test Buttons\n");
+    printf("Test getters like Buttons or (Stock-CoverUI excl.) Rain, Emergency\n");
     while (true)
     {
-
-
         reply(com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
