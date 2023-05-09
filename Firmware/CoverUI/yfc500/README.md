@@ -75,7 +75,7 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 * Soldering Iron or Hot-Air Gun to move two SMD resistor
 * ST-Link or Picoprobe programmer/debugger
 
-### Hardware Modifications
+### Hardware Modifications: Buttons & LEDs (mandatory)
 
 With the stock component placement, Button-Home and Buttom-Play get routed to the main (black) 16 pin connector (JP2/J6).
 But we need them routed to the MCU.
@@ -90,6 +90,18 @@ You might also simply bridge R34 and R42, but I thought it's more save to cut th
 BTW: The yellow cable on the picture (to R5/C2) might not harm you. This is the NRST signal which is only required if you bug the code (like me) during development.
 
 Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger.
+
+### Hardware Modification: Rain Sensor (optional)
+
+If you also like to use the Stock-Rain-Sensor cabling, we need to solder a separate cable to the PCB, from FB2 to the non-placed R79.
+See the yellow cable on the following images:
+
+![Hardware Changes](images/IMG_Stock-Cables-overview.jpg)
+
+<p float="left">
+<img src="images/IMG_Stock-Cables-rain1.jpg" alt="Rain U5" width="48%">
+<img src="images/IMG_Stock-Cables-detail2.jpg" alt="Rain 2" width="48%">
+<p>
 
 ## Flash Firmware
 
