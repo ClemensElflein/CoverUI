@@ -8,13 +8,14 @@
  * @copyright Copyright (c) 2023
  *
  */
-/* 
- * Some measurements:
+
+/*
+ * Some measurements (AH20230509):
  *
  *                     | Simulate  |  Rain   | Still   |  Dry  |
  * MCU/Board | 23°C EU | APEC 35°C |  Water  |  Wet    | again |
  * ----------|---------|-----------|---------|---------|-------|
- * STM32F030 | 812-820 |  ~ 730    |  ~ 300  |         |       |
+ * STM32F030 | 812-883 |  ~ 730    |  ~ 300  |         |       |
  * GD32F330  | 930-950 | 928-932   | 350-387 | 445-466 | >800  |
  */
 #ifndef YFC500_RAIN_H
@@ -23,34 +24,57 @@
 #include <Arduino.h>
 #include "../BttnCtl.h"
 
-#define PIN_RAIN PB1
+#define PIN_RAIN PB1             // Need to be soldered with a cable bridge from FB2/JP2 to R79/PB1
+#define RAIN_ADC_THRESHOLD 700   // Why a threshold? Cause it could be made configurable on (Stock-)CoverUI (if i.e. required due to inaccuracy)
+#define RAIN_PROCESS_PERIOD 5000 // c.ez proposed "once a second or every 10 seconds"
 
 extern void sendMessage(void *message, size_t size);
 
 class Rain
 {
 private:
+    uint32_t m_next_period = 0;
     uint32_t m_val;
 
 public:
-    void setup()
-    {
-    }
+    void setup() {}
 
+    /**
+     * @brief Read ADC of rain-sensor (with previous C8 charge impulse)
+     *
+     */
     void read()
     {
-        pinMode(PIN_RAIN, INPUT_PULLUP); // Charge C
+        pinMode(PIN_RAIN, INPUT_PULLUP); // Charge C8 (FB1+FB2)
         delay(1);                        // Need a consistent delay for our different MCU clocks
         m_val = analogRead(PIN_RAIN);
     }
 
+    /**
+     * @brief Send 'rain' message via COBS with last read rain-sensor- value (together with (currently static) threshold)
+     *
+     */
     void send()
     {
         msg_event_rain msg = {
             .type = Get_Rain,
             .value = m_val,
-            .threshold = 300};
+            .threshold = RAIN_ADC_THRESHOLD};
         sendMessage(&msg, sizeof(msg));
+    }
+
+    /**
+     * @brief Process (read & send) rain-sensor- value together with (currently static) threshold
+     *
+     */
+    void process()
+    {
+        if (millis() < m_next_period)
+            return;
+
+        m_next_period += RAIN_PROCESS_PERIOD;
+        read();
+        send();
     }
 };
 

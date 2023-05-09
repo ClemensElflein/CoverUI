@@ -97,10 +97,6 @@ void setup()
     pinMode(PIN_HALL_STOP_WHITE, INPUT);
 }
 
-uint32_t next_rain = millis();
-const uint16_t interval_rain = 10000;
-int rain_val = 0;
-
 uint32_t next_emergency = millis();
 const uint16_t interval_emergency = 200;
 
@@ -129,13 +125,6 @@ void loop() // This loop() doesn't loop!
             LedControl.set(LED_NUM_MON - 3, LED_state::LED_off);*/
 
         next_emergency += interval_emergency;
-    }
-
-    if (millis() >= next_rain)
-    {
-        rain.read();
-        rain.send();
-        next_rain += interval_rain;
     }
 
     // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry!)
@@ -168,6 +157,7 @@ void timer_slow_callback_wrapper()
 {
     LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
     magic_buttons();
+    rain.process();
 }
 
 void timer_fast_callback_wrapper()

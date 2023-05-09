@@ -81,7 +81,7 @@ struct msg_event_rain
     uint8_t type; // command type
     uint8_t reserved; // padding
     uint32_t value;
-    uint32_t threshold; // If value < threshold then it rains
+    uint32_t threshold; // If value < threshold then it rains. Why a threshold? Cause there's an option to make it configurable on (Stock-)CoverUI
     uint16_t crc; // CRC 16
 } __attribute__((packed));
 #pragma pack(pop)
