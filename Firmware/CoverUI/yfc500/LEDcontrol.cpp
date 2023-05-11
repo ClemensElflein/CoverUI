@@ -13,20 +13,14 @@
 #include "LEDcontrol.h"
 #include "../BttnCtl.h" // LED_state is defined in BttnCtl.h
 
-LEDcontrol::LEDcontrol() {}
-
 /**
  * @brief Setup LED GPIOs
  *
  */
 void LEDcontrol::setup()
 {
-    printf("LedControl Setup\n");
-
-    for (uint32_t led_num : _leds)
-    {
+    for (uint32_t led_num : kLeds)
         pinMode(led_num, OUTPUT);
-    }
 }
 
 /**
@@ -34,17 +28,17 @@ void LEDcontrol::setup()
  *
  * @param led_num
  * @param state
- * @param change_state Indicate if the state get written to _led_states_bin buffer
+ * @param change_state Indicate if the state get written to led_states_bin_ buffer
  */
 void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 {
     switch (state)
     {
     case LED_state::LED_on:
-        digitalWrite(_leds[led_num], HIGH);
+        digitalWrite(kLeds[led_num], HIGH);
         break;
     case LED_state::LED_off:
-        digitalWrite(_leds[led_num], LOW);
+        digitalWrite(kLeds[led_num], LOW);
         break;
     case LED_state::LED_blink_slow:
     case LED_state::LED_blink_fast:
@@ -52,7 +46,7 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
         break;
     }
     if (change_state)
-        _change_led_states(led_num, state);
+        change_led_states_(led_num, state);
 }
 
 void LEDcontrol::set(uint64_t all_state)
@@ -69,33 +63,33 @@ void LEDcontrol::set(uint64_t all_state)
  *
  * @param digit numeric character
  */
-void LEDcontrol::_set_base10_leds(char digit)
+void LEDcontrol::set_base10_leds_(char digit)
 {
     for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
     {
-        bool on = (_base10_leds[digit - '0'] >> bit) & 0b1;
+        bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
         set(bit + 4, on ? LED_state::LED_on : LED_state::LED_off, false);
     }
 }
 
 LED_state LEDcontrol::get(uint8_t led_num)
 {
-    return (LED_state)((_led_states_bin >> (3 * led_num)) & 0b111);
+    return (LED_state)((led_states_bin_ >> (3 * led_num)) & 0b111);
 }
 
-void LEDcontrol::_force(uint8_t led_num, bool force, uint32_t *_force_type)
+void LEDcontrol::force_(uint8_t led_num, bool force, uint32_t *force_type_)
 {
     uint32_t led_bin = 1 << led_num;
 
     if (force)
-        *_force_type |= led_bin;
+        *force_type_ |= led_bin;
     else
-        *_force_type &= ~led_bin;
+        *force_type_ &= ~led_bin;
 }
 
 void LEDcontrol::force_off(uint8_t led_num, bool force)
 {
-    _force(led_num, force, &_force_led_off);
+    force_(led_num, force, &force_led_off_);
     if (force)
         set(led_num, LED_state::LED_off, false); // Directly set without changing state
     else
@@ -104,17 +98,17 @@ void LEDcontrol::force_off(uint8_t led_num, bool force)
 
 void LEDcontrol::force_on(uint8_t led_num, bool force)
 {
-    _force(led_num, force, &_force_led_on);
+    force_(led_num, force, &force_led_on_);
     if (force)
         set(led_num, LED_state::LED_on, false); // Directly set without changing state
     else
         set(led_num, get(led_num), false); // Restore state
 }
 
-void LEDcontrol::_change_led_states(uint8_t led_num, LED_state state)
+void LEDcontrol::change_led_states_(uint8_t led_num, LED_state state)
 {
-    _led_states_bin &= ~((uint64_t)(0b111) << (3 * led_num)); // Be safe for future LED_state changes and mask out the whole led
-    _led_states_bin |= (uint64_t)(state) << (3 * led_num);    // Set new state
+    led_states_bin_ &= ~((uint64_t)(0b111) << (3 * led_num)); // Be safe for future LED_state changes and mask out the whole led
+    led_states_bin_ |= (uint64_t)(state) << (3 * led_num);    // Set new state
 }
 
 /**
@@ -127,7 +121,7 @@ void LEDcontrol::_change_led_states(uint8_t led_num, LED_state state)
  */
 bool LEDcontrol::has(uint8_t led_num, LED_state state)
 {
-    return (_led_states_bin >> (3 * led_num) & (uint64_t)(0b111)) == (uint64_t)(state);
+    return (led_states_bin_ >> (3 * led_num) & (uint64_t)(0b111)) == (uint64_t)(state);
 }
 
 void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
@@ -142,7 +136,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
 
     for (uint8_t led_num = 0; led_num < NUM_LEDS; led_num++) // FIXME: Find some more efficient instead of looping through all NUM_LEDS
     {
-        if (has(led_num, blink_state) && !(_force_led_off & (1 << led_num)))
+        if (has(led_num, blink_state) && !(force_led_off_ & (1 << led_num)))
         {
             set(led_num, sync_blink_map[blink_state], false); // Set LED without state change
         }
@@ -163,11 +157,11 @@ void LEDcontrol::identify(uint8_t led_num)
 {
     force_off(led_num, false);
     force_on(led_num, true);
-    delay(100); // FIXME: Might fail in ISR
+    delay(100);
 
     force_off(led_num, true);
     force_on(led_num, false);
-    delay(100); // FIXME: Might fail in ISR
+    delay(100);
 
     // stop with forced off
     force_off(led_num, true);
@@ -176,17 +170,19 @@ void LEDcontrol::identify(uint8_t led_num)
 
 void LEDcontrol::show_num(uint16_t num)
 {
-    _seq_num_value = num;
-    sequence_start(&LEDcontrol::_seq_num_handler);
+    seq_num_value_ = num;
+    sequence_start(&LEDcontrol::seq_num_handler_);
 }
 
-/******************************************************************************************
- *                           LED "Sequence" stuff                                         *
- ******************************************************************************************
- * Timer based implementation for LED sequences like animation, FW version, ...           *
- * to overcome the tricky use of HAL_Delay() which is heavily ISR fragile.                *
- * Looks a little bit over-complicated, but ...                                           *
- ******************************************************************************************/
+/*******************************************************************************************
+ *                           LED "Sequence" stuff                                          *
+ *******************************************************************************************
+ * Timer based implementation for LED sequences like animation, FW version, ...            *
+ * to overcome the tricky use of HAL_Delay() which is heavily ISR fragile.                 *
+ * Looks a little bit over-complicated, but ...                                            *
+ * AH20230511: Not required anymore because arduino framework doesn't has this delay()/ISR *
+ *   anymore. But as it's already written and work, ...                                    *
+ *******************************************************************************************/
 
 /**
  * @brief Start the given sequence handler
@@ -195,12 +191,12 @@ void LEDcontrol::show_num(uint16_t num)
  */
 void LEDcontrol::sequence_start(void (LEDcontrol::*handler)())
 {
-    if (_seq_start_tick > 0)
+    if (seq_start_tick_ > 0)
         return; // There's already/still a running sequence
 
-    _seq_step = 0;
-    _seq_start_tick = millis();
-    _seq_handler = handler;
+    seq_step_ = 0;
+    seq_start_tick_ = millis();
+    seq_handler_ = handler;
 }
 
 /**
@@ -209,10 +205,10 @@ void LEDcontrol::sequence_start(void (LEDcontrol::*handler)())
  */
 void LEDcontrol::process_sequence()
 {
-    if (_seq_start_tick == 0)
+    if (seq_start_tick_ == 0)
         return; // No sequence
 
-    (this->*_seq_handler)(); // Call sequence handler
+    (this->*seq_handler_)(); // Call sequence handler
 }
 
 /**
@@ -221,16 +217,16 @@ void LEDcontrol::process_sequence()
  * @param step_rate in ms
  * @return uint16_t step (n>1) or 0 if the next step isn't reached now
  */
-uint16_t LEDcontrol::_seq_get_next_step(uint16_t step_rate)
+uint16_t LEDcontrol::seq_get_next_step_(uint16_t step_rate)
 {
     static uint16_t last_step_tick = 0;
 
-    uint16_t step_tick = ((((millis() - _seq_start_tick) + (step_rate - 1))) / step_rate) * step_rate; // Round to the next nearest multiple of <step_rate>
+    uint16_t step_tick = ((((millis() - seq_start_tick_) + (step_rate - 1))) / step_rate) * step_rate; // Round to the next nearest multiple of <step_rate>
     if (step_tick == last_step_tick)
         return 0; // Not a new <step_rate> step
 
     last_step_tick = step_tick;
-    return ++_seq_step;
+    return ++seq_step_;
 }
 
 /**
@@ -238,7 +234,7 @@ uint16_t LEDcontrol::_seq_get_next_step(uint16_t step_rate)
  */
 void LEDcontrol::sequence_animate_handler()
 {
-    uint16_t step = _seq_get_next_step(15); // Animation sequence runs in 15ms steps
+    uint16_t step = seq_get_next_step_(15); // Animation sequence runs in 15ms steps
 
     switch (step)
     {
@@ -251,13 +247,13 @@ void LEDcontrol::sequence_animate_handler()
         set((2 * NUM_LEDS) - step, LED_state::LED_off, false);
         return;
     default:
-        _seq_start_tick = 0;  // Sequence end
-        set(_led_states_bin); // Restore states
+        seq_start_tick_ = 0;  // Sequence end
+        set(led_states_bin_); // Restore states
         return;
     }
 }
 
-void LEDcontrol::_force_off_num_seq_leds(bool force)
+void LEDcontrol::force_off_num_seq_leds_(bool force)
 {
     force_off(LED_NUM_LIFTED, force);                    // Num change signalling LED
     for (uint8_t i = LED_NUM_MON; i >= LED_NUM_SUN; i--) // Base10 related LEDs
@@ -265,10 +261,10 @@ void LEDcontrol::_force_off_num_seq_leds(bool force)
 }
 
 /**
- * @brief Sequence handler for displaying an uint16_t <_seq_num_value> as base10 values
+ * @brief Sequence handler for displaying an uint16_t <seq_num_value_> as base10 values
  * number by number. Use i.e. for FW version, or error display
  */
-void LEDcontrol::_seq_num_handler()
+void LEDcontrol::seq_num_handler_()
 {
     const uint8_t steps_per_char = 10;
 
@@ -276,7 +272,7 @@ void LEDcontrol::_seq_num_handler()
     static uint8_t s_num_chars;
     static uint8_t s_cur_idx; // Current displaying digit index
 
-    uint16_t step = _seq_get_next_step(100); // Animation sequence runs in 100ms steps
+    uint16_t step = seq_get_next_step_(100); // Animation sequence runs in 100ms steps
 
     if (step == 0) // Next sequence step not reached now
         return;
@@ -284,16 +280,16 @@ void LEDcontrol::_seq_num_handler()
     if (step == 1) // Sequence start, init vars
     {
         s_cur_idx = 0;
-        itoa(_seq_num_value, s_buf, 10);
+        itoa(seq_num_value_, s_buf, 10);
         s_num_chars = std::strlen(s_buf);
-        _force_off_num_seq_leds(true); // Force related signalling LEDs off
+        force_off_num_seq_leds_(true); // Force related signalling LEDs off
         return;
     }
 
     if (step >= (s_num_chars + 1) * steps_per_char) // End (last char sent)
     {
-        _force_off_num_seq_leds(false); // Un-Force related signalling LEDs
-        _seq_start_tick = 0;            // Sequence end
+        force_off_num_seq_leds_(false); // Un-Force related signalling LEDs
+        seq_start_tick_ = 0;            // Sequence end
         return;
     }
 
@@ -302,7 +298,7 @@ void LEDcontrol::_seq_num_handler()
     if (step == sub_step) // Num Display start
     {
         set(LED_NUM_LIFTED, LED_state::LED_on, false); // New number indicator on
-        _set_base10_leds(s_buf[s_cur_idx]);
+        set_base10_leds_(s_buf[s_cur_idx]);
         return;
     }
 

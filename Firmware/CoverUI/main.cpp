@@ -179,7 +179,7 @@ void PacketReceived()
       // valid set_leds request
       printf("Got valid setled call\n");
 #ifdef HW_YFC500
-      LedControl.set(message->leds);
+      leds.set(message->leds);
 #else // HW Pico
       mutex_enter_blocking(&mx1);
       LED_activity = message->leds;
@@ -217,12 +217,12 @@ void PacketReceived()
 
 void getDataFromBuffer()
 {
-  while (Serial_LL.available() > 0)
+  while (serial_ll.available() > 0)
   {
 #ifdef HW_YFC500
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
     // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
-    u_int8_t readbyte = Serial_LL.read();
+    u_int8_t readbyte = serial_ll.read();
 #else
     u_int8_t readbyte = uart_getc(UART_1);
 #endif

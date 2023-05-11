@@ -43,7 +43,7 @@ private:
         Emergency_state state;
     };
 
-    const PinDef pin_defs_[4] = {
+    const PinDef kPinDefs[4] = {
         {PIN_HALL_STOP_WHITE, Emergency_state::Emergency_stop1},
         {PIN_HALL_STOP_YELLOW, Emergency_state::Emergency_stop2},
         {PIN_HALL_WHEEL_RED, Emergency_state::Emergency_lift1},
@@ -55,7 +55,7 @@ private:
 public:
     void setup()
     {
-        for (auto i : pin_defs_)
+        for (auto i : kPinDefs)
             pinMode(i.pin, INPUT);
     }
 
@@ -65,7 +65,7 @@ public:
      */
     void read()
     {
-        for (auto i : pin_defs_)
+        for (auto i : kPinDefs)
         {
             if (digitalRead(i.pin) == HIGH)
                 state_ |= i.state;

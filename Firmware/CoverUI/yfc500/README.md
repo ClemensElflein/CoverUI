@@ -232,6 +232,9 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+> **Note**
+> Updated 05/07/2023
+
 Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 There are also some, (I call it) magic-buttons. If you press:

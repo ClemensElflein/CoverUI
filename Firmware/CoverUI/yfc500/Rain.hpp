@@ -33,12 +33,10 @@ extern void sendMessage(void *message, size_t size);
 class Rain
 {
 private:
-    uint32_t m_next_period = 0;
-    uint32_t m_val;
+    uint32_t next_period_ = 0;
+    uint32_t val_;
 
 public:
-    void setup() {}
-
     /**
      * @brief Read ADC of rain-sensor (with previous C8 charge impulse)
      *
@@ -47,7 +45,7 @@ public:
     {
         pinMode(PIN_RAIN, INPUT_PULLUP); // Charge C8 (FB1+FB2)
         delay(1);                        // Need a consistent delay for our different MCU clocks
-        m_val = analogRead(PIN_RAIN);
+        val_ = analogRead(PIN_RAIN);
     }
 
     /**
@@ -58,7 +56,7 @@ public:
     {
         msg_event_rain msg = {
             .type = Get_Rain,
-            .value = m_val,
+            .value = val_,
             .threshold = RAIN_ADC_THRESHOLD};
         sendMessage(&msg, sizeof(msg));
     }
@@ -69,10 +67,10 @@ public:
      */
     void process()
     {
-        if (millis() < m_next_period)
+        if (millis() < next_period_)
             return;
 
-        m_next_period += RAIN_PROCESS_PERIOD;
+        next_period_ += RAIN_PROCESS_PERIOD;
         read();
         send();
     }
