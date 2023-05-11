@@ -72,8 +72,8 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 
 * Stock *YardForce Classic 500* Cover-UI/Button-Board<br>
   As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with 'STM32F030R8' or 'GD23F330R8' MCU is tested.<br>
-* Soldering Iron or Hot-Air Gun to move two SMD resistor
-* ST-Link or Picoprobe programmer/debugger
+* Soldering Iron
+* ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
 
 ### Hardware Modifications: Buttons & LEDs (mandatory)
 
@@ -93,7 +93,10 @@ Lastly, you need to solder some kind of connector (pin header or cables) to GND,
 
 ### Hardware Modification: Rain Sensor (optional)
 
-If you also like to use the Stock-Rain-Sensor cabling, we need to solder a separate cable to the PCB, from FB2 to the non-placed R79.
+> **Note**
+> The rain measurement is somehow tricky and need some practice to evaluate how good it work!
+
+If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
 See the yellow cable on the following images:
 
 ![Hardware Changes](images/IMG_Stock-Cables-overview.jpg)
@@ -102,6 +105,28 @@ See the yellow cable on the following images:
 <img src="images/IMG_Stock-Cables-rain1.jpg" alt="Rain U5" width="48%">
 <img src="images/IMG_Stock-Cables-detail2.jpg" alt="Rain 2" width="48%">
 <p>
+
+### Hardware Modification: Emergency Hall Sensors (optional)
+
+If you also like to use the Stock-Hall-Sensor cabling (2 * stop-button and 2 * wheel-lift), you need to solder one more R- bridge as well as 3 more separate cables. 
+Take into **attention** that you need to make all 4 steps:
+
+1. Move R52 to (non-placed) R57 (see green arrow on image), or simple bridge R57 (i.e. with 32kg solder)
+2. Solder a cable-bridge from Q4/R61 to U5/Pin3 (see left green cable)
+3. Solder a cable-bridge from the bottom end of R76 to U5/Pin2 (see white cable)
+4. Solder a cable-bridge from Q6/R83 to U5/Pin10 (see right green cable)
+
+![Hardware Changes Hall](images/IMG_Stock-Cables-overview-hall.jpg)
+
+<p float="left">
+<img src="images/IMG_Stock-Cables-detail3.jpg" alt="Hall 1" width="48%">
+<img src="images/IMG_Stock-Cables-detail4.jpg" alt="Hall 2" width="48%">
+<p>
+
+I only made it with colored cables for a more clear documentation.
+If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/draht-0-15mm-sortiert-pk-4/dp/5017233), it might look better, like this:
+
+![Hardware Changes Hall nice](images/IMG_Stock-Cables-nice.jpg)
 
 ## Flash Firmware
 
@@ -115,7 +140,7 @@ You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clo
 Or use (build) a [Picoprobe][Picoprobe-url] (CMSIS-DAP debugger) if you have a STM32 MCU:
 
 > **Note**
-> Do **not** try this with a GD32 MCU, I bricked my lent one by this try and took me 3 hours to get it back running!
+> Do **not** try this with a GD32 MCU! I bricked my lent one by trying it and it took me 3 hours to get it back running!
 
 <p float="left">
 <img src="images/IMG_Picoprobe.jpg" alt="My Picoprobe" width="32%">
@@ -127,9 +152,6 @@ Simply take a [Raspberry Pico][Pico-url], solder some cables, upload [Picoprobe]
 and you're ready.
 
 (For sure, there might be more programmer/debugger options, but with these two variants I got it quickly running)
-
-> **Note**
-> Updated 05/07/2023
 
 There're two generic ways to get the Firmware into your MCU.<br>
 Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
@@ -249,6 +271,12 @@ Now (if you've a more or less actual LowLevel Firmware in your Mainboard's Pico)
 - S2: >TODO<
 - Lifted: Show emergency states. >TODO<
 
+## Version History
+
+| Version | Changes | Date |
+| ------- | ------- | ---- |
+| 2.10    | Stock-Cable support for rain & hall sensors | 05/12/2023
+| 2.00    | First OM's Custom-CoverUI port | 05/01/2023
 
 <!-- CONTRIBUTING -->
 ## Contributing
