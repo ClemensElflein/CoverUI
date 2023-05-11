@@ -463,6 +463,6 @@
     ]
   ],
   "text_variables": {
-    "git_version": "WIP"
+    "git_version": "v0.13.x"
   }
 }
