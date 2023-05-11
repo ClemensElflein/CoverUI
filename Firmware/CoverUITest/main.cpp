@@ -34,6 +34,11 @@ using namespace std;
 COBS cobs;
 #define buffersize 256
 
+/* --- PRINTF_BYTE_TO_BINARY macro's --- */
+#define PRINTF_BINARY_PATTERN_INT8 "%c%c%c%c%c%c%c%c"
+#define PRINTF_BYTE_TO_BINARY_INT8(i) (((i)&0x80ll) ? '1' : '0'), (((i)&0x40ll) ? '1' : '0'), (((i)&0x20ll) ? '1' : '0'), (((i)&0x10ll) ? '1' : '0'), \
+                                      (((i)&0x08ll) ? '1' : '0'), (((i)&0x04ll) ? '1' : '0'), (((i)&0x02ll) ? '1' : '0'), (((i)&0x01ll) ? '1' : '0')
+/* --- end PRINTF_BYTE_TO_BINARY macros --- */
 
 static string VERSION         = "V 0.91";
 char  DEFAULT_SERIAL[]        = "/dev/ttyUSB0";
@@ -95,7 +100,7 @@ void PacketReceived()
         if(message->crc == calc_crc) {
             printf("button %d was pressed with duration %d\n", message->button_id,  message->press_duration);
         } else {
-            printf("GetVersion invalid CRC");
+            printf("Get_Button invalid CRC");
         }
     }
     else if (decoded_buffer[0] == Get_Rain && data_size == sizeof(struct msg_event_rain))
@@ -107,13 +112,22 @@ void PacketReceived()
         }
         else
         {
-            printf("GetVersion invalid CRC");
+            printf("Get_Rain invalid CRC");
+        }
+    }
+    else if (decoded_buffer[0] == Get_Emergency && data_size == sizeof(struct msg_event_emergency))
+    {
+        struct msg_event_emergency *message = (struct msg_event_emergency *)decoded_buffer;
+        if (message->crc == calc_crc)
+        {
+            printf("Emergency state " PRINTF_BINARY_PATTERN_INT8 "\n", PRINTF_BYTE_TO_BINARY_INT8(message->state));
+        }
+        else
+        {
+            printf("Get_Emergency invalid CRC");
         }
     }
 }
-
-
-
 
 /****************************************************************************************************
  * 
@@ -552,7 +566,7 @@ int main(int argc, char *argv[])
 
     getversion(com_port);
 
-    /*LEDstatic(com_port);
+    LEDstatic(com_port);
 
     LEDfastblink(com_port);
 
@@ -563,10 +577,10 @@ int main(int argc, char *argv[])
 
     LEDBar4test(com_port);
 
-    LEDBar7test(com_port);*/
+    LEDBar7test(com_port);
 
 
-    printf("Test getters like Buttons or (Stock-CoverUI excl.) Rain, Emergency\n");
+    printf("Test getters like Buttons or (Stock-CoverUI) Rain, Emergency\n");
     while (true)
     {
         reply(com_port);

@@ -16,6 +16,7 @@
 #include "LEDcontrol.h"
 #include "Buttons.h"
 #include "Rain.hpp"
+#include "Emergency.hpp"
 
 #define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
 
@@ -43,9 +44,10 @@ typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
 // YFC500 implementation specific
-LEDcontrol LedControl;      // Main LED controller object
-Buttons Btns;               // Main Buttons object
+LEDcontrol LedControl; // Main LED controller object
+Buttons Btns;          // Main Buttons object
 Rain rain;
+Emergency emergency;
 HardwareTimer *Timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *Timer_fast;  // Used for blink-fast LEDs
 HardwareTimer *Timer_quick; // Button debouncer and LED sequences
@@ -55,11 +57,6 @@ HardwareSerial Serial_LL(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2
 #else                               // MCU_GD32
 HardwareSerial Serial_LL((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
-
-#define PIN_HALL_STOP_WHITE PC5
-#define PIN_HALL_WHEEL_RED PB7
-#define PIN_HALL_STOP_YELLOW PB6
-#define PIN_HALL_WHEEL_BLUE PB8
 
 void setup()
 {
@@ -93,42 +90,12 @@ void setup()
     LedControl.set(LED_NUM_LIFTED, LED_state::LED_on);
     LedControl.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
     LedControl.set(LED_NUM_BAT, LED_state::LED_blink_fast);
-
-    pinMode(PIN_HALL_STOP_WHITE, INPUT);
 }
-
-uint32_t next_emergency = millis();
-const uint16_t interval_emergency = 200;
 
 void loop() // This loop() doesn't loop!
 {
-    if (millis() >= next_emergency)
-    {
-        /*if (digitalRead(PIN_HALL_STOP_WHITE))
-            LedControl.set(LED_NUM_MON, LED_state::LED_on);
-        else
-            LedControl.set(LED_NUM_MON, LED_state::LED_off);
-
-        if (digitalRead(PIN_HALL_WHEEL_RED))
-            LedControl.set(LED_NUM_MON - 1, LED_state::LED_on);
-        else
-            LedControl.set(LED_NUM_MON - 1, LED_state::LED_off);
-
-        if (digitalRead(PIN_HALL_STOP_YELLOW))
-            LedControl.set(LED_NUM_MON - 2, LED_state::LED_on);
-        else
-            LedControl.set(LED_NUM_MON - 2, LED_state::LED_off);
-
-        if (digitalRead(PIN_HALL_WHEEL_BLUE))
-            LedControl.set(LED_NUM_MON - 3, LED_state::LED_on);
-        else
-            LedControl.set(LED_NUM_MON - 3, LED_state::LED_off);*/
-
-        next_emergency += interval_emergency;
-    }
-
     // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry!)
-    // core1();
+    core1();
 }
 
 /**
@@ -162,12 +129,14 @@ void timer_slow_callback_wrapper()
 
 void timer_fast_callback_wrapper()
 {
+    emergency.periodic_send();
     LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
 }
 
 void timer_quick_callback_wrapper()
 {
     getDataFromBuffer();
+    emergency.read_and_send_if_emergency();
     Btns.process_states();
     LedControl.process_sequence();
 }
