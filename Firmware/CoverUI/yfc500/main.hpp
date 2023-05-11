@@ -23,6 +23,7 @@
 #endif
 
 #define FIRMWARE_VERSION 200 // FIXME: Should go into a common header, probably preferable as PROTOCOL_VERSION
+#define FIRMWARE_VERSION_THIS 100
 
 // STM32/GD32 are single cores without threads.
 // Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)?
@@ -123,6 +124,8 @@ void magic_buttons()
         LedControl.sequence_start(&LEDcontrol::sequence_animate_handler);
     else if (Btns.is_pressed(BTN_NUM_CLK))
         LedControl.show_num(FIRMWARE_VERSION);
+    else if (Btns.is_pressed(BTN_NUM_HOME))
+        LedControl.show_num(FIRMWARE_VERSION_THIS);
     return;
 }
 

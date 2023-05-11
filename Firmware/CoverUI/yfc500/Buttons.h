@@ -42,6 +42,7 @@
 
 // Some handy defines
 #define BTN_NUM_CLK 0
+#define BTN_NUM_HOME 1
 #define BTN_NUM_OK 6
 #define BTN_NUM_SUN 13
 

@@ -234,13 +234,19 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 
 Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
-There are also two, (I call it) magic-buttons. If you press:
+There are also some, (I call it) magic-buttons. If you press:
 
 - OK + Sun Button, you're able to trigger the power-on animation.<br>
   This is mainly for mounting validation, to ensure that you hit all LED guidance holes.
-- OK + Clock Button, will show you a firmware version sequence, which should
-  show (as of writing) 200.<br>
+- OK + Clock Button, will show you the Custom-CoverUI- firmware version on which this FW port is based.
+  It get display as a number sequence[^1], which should show (as of writing) 200.<br>
   Fully useless ATM ;-)
+- OK + Home Button, will show you this FW port version.
+  It get display as a number sequence[^1], which should show (as of writing) 100.
+
+[^1]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
+A digit > 6, get displayed with multiple digit LEDs.
+I.e. 9 = 'Sun(6)' together with 'Thu(3)'
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
