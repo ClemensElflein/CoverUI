@@ -219,9 +219,7 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 - `PIO Home` -> `Open`
 - `Open Project` cloned repository branch -> CoverUI/Firmware/CoverUI (contains platformio.ini)
 - Wait till tools got loaded (bottom right status info)
-
-* In bottombar click `Switch PlatformIO Project Environment` and choose (whatever MCU & programmer/debugger- probe you use) either: `env:YFC500-STM32_STLink`, `env:YFC500-STM32_Picoprobe` or `env:YFC500-GD32_STLink`
-
+- In bottombar click `Switch PlatformIO Project Environment` and choose whatever MCU, MOD & programmer/debugger- probe you use
 - Wait till tools got loaded (bottom right status info)
 - Finally press `PlatformIO: Upload` (right arrow symbol) in bottombar. After it compiled, linked and uploaded, it should reboot and do a short power-on LED animation.
 - If you get an "Error: stm32x device protected", simply upload a second time. Look like I placed the "unlock" command some how to late. 
@@ -273,10 +271,7 @@ Now (if you've a more or less actual LowLevel Firmware in your Mainboard's Pico)
 
 ## Version History
 
-| Version | Changes | Date |
-| ------- | ------- | ---- |
-| 2.10    | Stock-Cable support for rain & hall sensors | 05/12/2023
-| 2.00    | First OM's Custom-CoverUI port | 05/01/2023
+See [./bin/README.md](./bin/README.md)
 
 <!-- CONTRIBUTING -->
 ## Contributing
