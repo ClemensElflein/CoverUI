@@ -15,10 +15,14 @@
 #include "hwtimer.hpp"
 #include "LEDcontrol.h"
 #include "Buttons.h"
+#ifdef MOD_RAIN
 #include "Rain.hpp"
+#endif
+#ifdef MOD_HALL
 #include "Emergency.hpp"
+#endif
 
-#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
+#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header, probably preferable as PROTOCOL_VERSION
 
 // STM32/GD32 are single cores without threads.
 // Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)?
@@ -46,8 +50,12 @@ typedef bool *PIO;
 // YFC500 implementation specific
 LEDcontrol LedControl; // Main LED controller object
 Buttons Btns;          // Main Buttons object
+#ifdef MOD_RAIN
 Rain rain;
+#endif
+#ifdef MOD_HALL
 Emergency emergency;
+#endif
 HardwareTimer *Timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *Timer_fast;  // Used for blink-fast LEDs
 HardwareTimer *Timer_quick; // Button debouncer and LED sequences
@@ -62,7 +70,9 @@ void setup()
 {
     LedControl.setup();
     Btns.setup();
-    rain.setup();
+#ifdef MOD_HALL
+    emergency.setup();
+#endif
 
     // We've hardware timer on mass, let's use them.
     Timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper);      //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
@@ -124,19 +134,25 @@ void timer_slow_callback_wrapper()
 {
     LedControl.blink_timer_elapsed(LED_state::LED_blink_slow);
     magic_buttons();
+#ifdef MOD_RAIN
     rain.process();
+#endif
 }
 
 void timer_fast_callback_wrapper()
 {
+#ifdef MOD_HALL
     emergency.periodic_send();
+#endif
     LedControl.blink_timer_elapsed(LED_state::LED_blink_fast);
 }
 
 void timer_quick_callback_wrapper()
 {
     getDataFromBuffer();
+#ifdef MOD_HALL
     emergency.read_and_send_if_emergency();
+#endif
     Btns.process_states();
     LedControl.process_sequence();
 }
