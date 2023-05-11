@@ -22,15 +22,13 @@
 class ButtonDebouncer
 {
 private:
-    uint16_t _states[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 5ms)
-    uint8_t _state_index = 0;            // Index for next _states store positions
-    uint16_t _state_debounced;           // Debounced buttons state
-    uint16_t _state_changed;             // Just changed buttons
+    uint16_t states_[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 5ms)
+    uint8_t state_index_ = 0;            // Index for next states_ store positions
+    uint16_t state_debounced_;           // Debounced buttons state
+    uint16_t state_changed_;             // Just changed buttons
 
 public:
-    ButtonDebouncer();
-    
-    void process_state(const uint32_t gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within _states array
+    void process_state(const uint32_t gpio_port); // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
     uint16_t get_status();
     uint16_t get_pressed();
 };

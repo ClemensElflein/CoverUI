@@ -51,21 +51,21 @@ class Buttons
 private:
     // Somehow static initialization, but's not expected that the PCB will change anymore ;-)
     // All ports with a button get debounced per port, via timer callback
-    // const GPIO_TypeDef *_gpio_ports[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF};
-    const uint32_t _gpio_ports[NUM_GPIO_PORTS] = {GPIOA_BASE, GPIOB_BASE, GPIOC_BASE, GPIOF_BASE};
-    ButtonDebouncer *_debouncers[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as _gpio_ports
+    // const GPIO_TypeDef *kGpioPorts[NUM_GPIO_PORTS] = {GPIOA, GPIOB, GPIOC, GPIOF};
+    const uint32_t kGpioPorts[NUM_GPIO_PORTS] = {GPIOA_BASE, GPIOB_BASE, GPIOC_BASE, GPIOF_BASE};
+    ButtonDebouncer *debouncers_[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as kGpioPorts
         new ButtonDebouncer(), new ButtonDebouncer(),
         new ButtonDebouncer(), new ButtonDebouncer()};
 
-    struct _Button_Def
+    struct ButtonDef
     {
-        uint8_t debouncer_index; // Debouncer index as defined in _debouncers array
+        uint8_t debouncer_index; // Debouncer index as defined in debouncers_ array
         uint8_t digital_pin;
     };
 
     // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper main.hpp::bit_getbutton())
     // Again: Some-how static with debouncer_index
-    const _Button_Def _button_nrs[NUM_BUTTONS] = {
+    const ButtonDef ButtonNrs[NUM_BUTTONS] = {
         {3, BTN_CLK_PIN},  //  0
         {0, BTN_HOME_PIN}, //  1
         {0, BTN_PLAY_PIN}, //  2
@@ -83,11 +83,9 @@ private:
     };
 
 public:
-    Buttons();
-
     void setup();
     void process_states();                        // Has to get called regulary i.e. by timer (5ms)
-    uint16_t get_status(uint8_t debouncer_index); // Get status of all pins on the given debouncer index (as declared in *_gpio_ports)
+    uint16_t get_status(uint8_t debouncer_index); // Get status of all pins on the given debouncer index (as declared in *kGpioPorts)
     bool is_pressed(uint8_t button_nr);           // Return boolean if the given button number is pressed
 };
 

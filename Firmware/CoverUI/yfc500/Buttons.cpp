@@ -11,8 +11,6 @@
 #include "Buttons.h"
 #include "ButtonDebouncer.h"
 
-Buttons::Buttons() {}
-
 /**
  * @brief Setup LED GPIOs
  *
@@ -21,26 +19,26 @@ void Buttons::setup()
 {
     printf("Buttons Setup\n");
 
-    for (_Button_Def btn_def : _button_nrs)
+    for (ButtonDef btn_def : ButtonNrs)
         pinMode(btn_def.digital_pin, INPUT_PULLUP);
 }
 
 void Buttons::process_states()
 {
     for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
-        _debouncers[i]->process_state(_gpio_ports[i]);
+        debouncers_[i]->process_state(kGpioPorts[i]);
 }
 
 /**
  * @brief Get (debounced) status of the given GPIO index.
- * See Buttons.h: _gpio_ports for the GPIO indexes.
+ * See Buttons.h: kGpioPorts for the GPIO indexes.
  *
  * @param gpio_index
  * @return uint16_t
  */
 uint16_t Buttons::get_status(uint8_t gpio_index)
 {
-    return _debouncers[gpio_index]->get_status();
+    return debouncers_[gpio_index]->get_status();
 }
 
 /**
@@ -53,5 +51,5 @@ uint16_t Buttons::get_status(uint8_t gpio_index)
  */
 bool Buttons::is_pressed(uint8_t button_nr)
 {
-    return get_status(_button_nrs[button_nr].debouncer_index) & digitalPinToBitMask(_button_nrs[button_nr].digital_pin);
+    return get_status(ButtonNrs[button_nr].debouncer_index) & digitalPinToBitMask(ButtonNrs[button_nr].digital_pin);
 };

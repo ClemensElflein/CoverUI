@@ -11,38 +11,35 @@
 #include <stdio.h>
 #include "ButtonDebouncer.h"
 
-ButtonDebouncer::ButtonDebouncer() {}
-
 void ButtonDebouncer::process_state(const uint32_t gpio_port)
 {
-    uint8_t i;
-    uint16_t last_state_debounced = _state_debounced;
-
 #ifdef MCU_STM32
-    _states[_state_index] = ((GPIO_TypeDef *)gpio_port)->IDR ^ 0xFFFF; // XOR changes for pull-up _states
+    states_[state_index_] = ((GPIO_TypeDef *)gpio_port)->IDR ^ 0xFFFF; // XOR changes for pull-up states_
 #else
-    _states[_state_index] = GPIO_ISTAT(gpio_port) ^ 0xFFFF; // XOR changes for pull-up _states
+    states_[state_index_] = GPIO_ISTAT(gpio_port) ^ 0xFFFF; // XOR changes for pull-up states_
 #endif
 
     // Debounce
-    for (i = 0, _state_debounced = 0xFFFF; i < NUM_BUTTON_STATES; i++)
-        _state_debounced &= _states[i];
+    uint16_t laststate_debounced_ = state_debounced_;
+    uint8_t i;
+    for (i = 0, state_debounced_ = 0xFFFF; i < NUM_BUTTON_STATES; i++)
+        state_debounced_ &= states_[i];
 
     // Circular buffer index
-    _state_index++;
-    if (_state_index >= NUM_BUTTON_STATES)
-        _state_index = 0;
+    state_index_++;
+    if (state_index_ >= NUM_BUTTON_STATES)
+        state_index_ = 0;
 
     // Save what changed
-    _state_changed = _state_debounced ^ last_state_debounced;
+    state_changed_ = state_debounced_ ^ laststate_debounced_;
 }
 
 uint16_t ButtonDebouncer::get_pressed()
 {
-    return (_state_changed & _state_debounced);
+    return (state_changed_ & state_debounced_);
 }
 
 uint16_t ButtonDebouncer::get_status()
 {
-    return _state_debounced;
+    return state_debounced_;
 }
