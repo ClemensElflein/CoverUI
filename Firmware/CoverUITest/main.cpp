@@ -129,6 +129,9 @@ void PacketReceived()
     }
 }
 
+
+
+
 /****************************************************************************************************
  * 
  * reply wait for timeout ms if return with result   
@@ -382,8 +385,7 @@ void setLed(struct msg_set_leds &msg, int led, uint8_t state) {
     msg.leds |= ((uint64_t)(state&0b111)) << (led*3);
 }
 
-void setBars7(struct msg_set_leds &msg, double value)
-{
+void setBars7(struct msg_set_leds &msg, double value) {
     int on_leds = round(value * 7.0);
     for (int i = 0; i < 7; i++)
     {
@@ -391,8 +393,7 @@ void setBars7(struct msg_set_leds &msg, double value)
     }
 }
 
-void setBars4(struct msg_set_leds &msg, double value)
-{
+void setBars4(struct msg_set_leds &msg, double value) {
     int on_leds = round(value * 4.0);
     for (int i = 0; i < 4; i++)
     {

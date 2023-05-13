@@ -242,7 +242,7 @@ void getDataFromBuffer()
       write = 0;
       return;
     }
-    }
+  }
 }
 
 int getLedForButton(int button)
@@ -354,7 +354,7 @@ int main(void)
   uart_set_fifo_enabled(UART_1, true);
 
   init_button_scan(); // Init hardware for button matix
-                      // init_LED_driver();
+  // init_LED_driver();
 
   float ver = (float)FIRMWARE_VERSION / 100.0;
   printf("\n\n\n\rMower Button-LED-Control Version %2.2f\n", ver);

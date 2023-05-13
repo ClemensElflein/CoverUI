@@ -27,7 +27,6 @@ fp-info-cache
 
 # Stock YF CoverUI
 Firmware/CoverUI/.pio/*
-Firmware/CoverUI/yfc500/stm32cube/src/main.c
 
 # In my opinion these should not be in repository
 Firmware/CoverUI/.vscode/*
