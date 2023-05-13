@@ -217,7 +217,7 @@ void PacketReceived()
 
 void getDataFromBuffer()
 {
-  while (serial_ll.available() > 0)
+  while (uart_is_readable(UART_1))
   {
 #ifdef HW_YFC500
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.

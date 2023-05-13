@@ -26,26 +26,25 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#hardware-modifications">Hardware Modifications</a></li>
+        <li><a href="#hardware-modifications-buttons--leds-mandatory">Mandatory Hardware Modifications</a></li>
+        <li><a href="#hardware-modification-rain-sensor-optional">Optional Rain-Sensor Hardware Modifications</a></li>
+        <li><a href="#hardware-modification-emergency-hall-sensors-optional">Optional Hall-Sensor Hardware Modifications</a></li>
         <li><a href="#flash-firmware">Flash Firmware</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#final-work">Final work</a></li>
+    <li><a href="#version-history">Version History</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
 
 
 <!-- ABOUT THE PROJECT -->
@@ -326,11 +325,9 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 * [OpenMower](https://github.com/ClemensElflein/OpenMower)
 * [Mowgli](https://github.com/cloudn1ne/Mowgli)
 * [PlatformIO](https://platformio.org/)
-* [STM32F0x0](https://www.st.com/en/microcontrollers-microprocessors/stm32f0x0-value-line.html)
 * [Picoprobe](https://github.com/raspberrypi/picoprobe)
 * [Picoprobe housing](https://www.printables.com/de/model/217523-raspberry-pi-pico-picoprobe-housing)
 * [Maximilian Gerhardt](https://community.platformio.org/u/maxgerhardt)
-* [YardForce](https://www.yardforce.eu)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -25,8 +25,8 @@
 #define FIRMWARE_VERSION 200 // FIXME: Should go into a common header, probably preferable as PROTOCOL_VERSION
 #define FIRMWARE_VERSION_THIS 100
 
-// STM32/GD32 are single cores without threads.
-// Send mutex calls of main.cpp to nirvana. Dangerous? // FIXME: Does Arduino has/need mutexes so that we can honor mutex calls (even if only one core)?
+// STM32/GD32 are single cores, also without threads.
+// Send mutex calls of main.cpp to nirvana. Dangerous?
 #define auto_init_mutex(name)
 #define mutex_enter_blocking(ptr)
 #define mutex_exit(ptr)
@@ -82,7 +82,7 @@ void setup()
 
     serial_ll.begin(115200);
 
-    leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay or similar as a timer might walk on even if main crashed
+    leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
 
     delay(100); // Some required stupid delay, dunno why :-/
 
@@ -96,11 +96,6 @@ void setup()
 
     } while (bit_getbutton(500, tmp));
     delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay
-
-    // Dev test LEDs
-    leds.set(LED_NUM_LIFTED, LED_state::LED_on);
-    leds.set(LED_NUM_WIRE, LED_state::LED_blink_slow);
-    leds.set(LED_NUM_BAT, LED_state::LED_blink_fast);
 }
 
 void loop() // This loop() doesn't loop!
@@ -112,7 +107,8 @@ void loop() // This loop() doesn't loop!
 /**
  * @brief Check if one of the "magic buttons" got pressed and do his function.
  * At the moment the following magic buttons exists:
- * OK + Clock = Display FW version
+ * OK + Clock = Display base FW version
+ * OK + Home  = Display this FW version
  * OK + Sun   = LED animation
  */
 void magic_buttons()
@@ -130,7 +126,7 @@ void magic_buttons()
 }
 
 /**
- * @brief Stupid timer callback wrapper to work-around callback_function_t and timerCallback_t framework differences.
+ * @brief Stupid timer callback wrapper to work-around callback_function_t and timerCallback_t framework-arduino differences.
  *   Also, framework-arduinogd32 implementation doesn't support callback arguments nor std::bind and thus no ptr to member functionality!
  */
 void timer_slow_callback_wrapper()
@@ -164,9 +160,9 @@ void timer_quick_callback_wrapper()
  * Some dump OM wrapper for not polluting original code to much *
  ****************************************************************/
 
-bool uart_is_readable(HardwareSerial Serial)
+bool uart_is_readable(HardwareSerial *Serial)
 {
-    return Serial.available();
+    return Serial->available();
 }
 
 void uart_putc(HardwareSerial *Serial, uint8_t c)

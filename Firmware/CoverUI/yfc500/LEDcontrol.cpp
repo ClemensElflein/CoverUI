@@ -134,7 +134,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
     if (blink_state != LED_state::LED_blink_fast && blink_state != LED_state::LED_blink_slow) // Ensure that this method only get called for blinking LED states
         return;
 
-    for (uint8_t led_num = 0; led_num < NUM_LEDS; led_num++) // FIXME: Find some more efficient instead of looping through all NUM_LEDS
+    for (uint8_t led_num = 0; led_num < NUM_LEDS; led_num++)
     {
         if (has(led_num, blink_state) && !(force_led_off_ & (1 << led_num)))
         {
@@ -268,7 +268,7 @@ void LEDcontrol::seq_num_handler_()
 {
     const uint8_t steps_per_char = 10;
 
-    static char s_buf[6]; // FIXME: uint16_t max = 65535 but should be made dynamic!!
+    static char s_buf[6]; // Current largest number is a uint16_t, whose max. = 65535 but probably need to be made dynamic!!
     static uint8_t s_num_chars;
     static uint8_t s_cur_idx; // Current displaying digit index
 

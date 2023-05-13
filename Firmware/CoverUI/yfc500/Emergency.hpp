@@ -56,7 +56,13 @@ public:
     void setup()
     {
         for (auto i : kPinDefs)
+        {
+#ifdef MCU_STM32
             pinMode(i.pin, INPUT);
+#else // MCU_GD32
+            pinMode(i.pin, INPUT_PULLUP); // FIXME: As of writing 05/13/2023 GD32 has a bug with 'INPUT', which would switch the GPIO to 0V!
+#endif
+        }
     }
 
     /**
