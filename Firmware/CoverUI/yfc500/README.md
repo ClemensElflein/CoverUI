@@ -92,9 +92,6 @@ Lastly, you need to solder some kind of connector (pin header or cables) to GND,
 
 ### Hardware Modification: Rain Sensor (optional)
 
-> **Note**
-> The rain measurement is somehow tricky and need some practice to evaluate how good it work!
-
 If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
 See the yellow cable on the following images:
 
