@@ -1,6 +1,6 @@
 ## Firmware for YardForce Classic 500 - **Stock**-CoverUI @ [OpenMower](https://github.com/ClemensElflein/OpenMower)
 
-File syntax = `firmware_<VER>_<MCU>_[_<MOD>, ...].bin`
+File syntax = `firmware_<VER>_<MCU>_[<opt MOD>, ...].bin`
 
 > **Warning**
 > Only install the \<MOD> version, for which you also made the required hardware modifications!

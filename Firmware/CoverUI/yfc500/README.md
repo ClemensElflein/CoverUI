@@ -167,7 +167,7 @@ Open a terminal/console, then:
   * `F1xx Medium-density` which identify a 'GD32F330R8' MCU
 * Dependent on what kind of MCU you identified, download your matching [firmware binary](https://github.com/Apehaenger/CoverUI/tree/feature/Stock-YFC500-Arduino/Firmware/CoverUI/yfc500/bin)
 * Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
- `st-flash write firmware_<type>_<ver>.bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
+ `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
@@ -178,7 +178,7 @@ Unlock your flash via:
 
 ```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
 
-Now, try again flashing by: `st-flash write firmware_<type>_<ver>.bin 0x08000000`
+Now, try again flashing by: `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
 
 
 ### Picoprobe (flash binary) STM32 MCU only!
@@ -196,7 +196,7 @@ Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, 
 
 Open a terminal/console, then:
 
-* `openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_stm32_<ver>.bin verify exit 0x08000000 reset; exit;"`<br>
+* `openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<ver>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`<br>
   Take attention that you replace `<ver>` with your downloaded version!
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
