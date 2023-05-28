@@ -165,7 +165,7 @@ Open a terminal/console, then:
 * `st-info --descr` should return either:
   * `F0xx`, which mean that your PCB has a 'STM32F030R8' MCU
   * `F1xx Medium-density` which identify a 'GD32F330R8' MCU
-* Dependent on what kind of MCU you identified, download your matching [firmware binary](https://github.com/Apehaenger/CoverUI/tree/feature/Stock-YFC500-Arduino/Firmware/CoverUI/yfc500/bin)
+* Dependent on what kind of MCU you identified, download your matching [firmware binary](./bin)
 * Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
  `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
@@ -190,7 +190,7 @@ Do **NOT** try this variant with a GD32 MCU. There's a high risk to brick it!!
 
 You need [OpenOCD][OpenOCD-url] for this. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
 
-Download [STM32 firmware binary](https://github.com/Apehaenger/CoverUI/tree/feature/Stock-YFC500-Arduino/Firmware/CoverUI/yfc500/bin).
+Download [STM32 firmware binary](./bin).
 
 Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, CLK, DIO and 3V3.
 
