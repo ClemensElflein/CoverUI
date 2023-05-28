@@ -24,3 +24,9 @@ fp-info-cache
 # Exported BOM files
 *.xml
 *.csv
+
+# Stock YF CoverUI
+Firmware/CoverUI/.pio/*
+
+# In my opinion these should not be in repository
+Firmware/CoverUI/.vscode/*

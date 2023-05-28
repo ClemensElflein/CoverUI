@@ -3,22 +3,30 @@
 
 #include <stdio.h>
 
+#ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
+#include "yfc500/main.hpp"
+#else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "pico/multicore.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
-
+#endif
 #include <cstdio>
 #include "COBS.h"
-#include "CRC.h"
+#ifdef CRC // i.e. defined by STM32 HAL or STM32 CMSIS
+#undef CRC
+#endif
+#include "CRC.h" // TODO STM32: might/should use STM32 embedded crc unit
 
 #include <cstring>
 
+#ifndef HW_YFC500 // HW Pico
 #include "LEDcontrol.h"
 #include "statemachine.h"
 #include "buttonscan.h"
+#endif
 #include "BttnCtl.h"
 
 #define bufflen 1000
@@ -96,7 +104,7 @@ void sendMessage(void *message, size_t size)
 #ifdef _serial_debug_
   printf("\nprint struct before encoding %d byte : ", (int)size);
   uint8_t *temp = data_pointer;
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
   {
     printf("0x%02x , ", *temp);
     temp++;
@@ -170,10 +178,14 @@ void PacketReceived()
     {
       // valid set_leds request
       printf("Got valid setled call\n");
+#ifdef HW_YFC500
+      leds.set(message->leds);
+#else // HW Pico
       mutex_enter_blocking(&mx1);
       LED_activity = message->leds;
       LEDs_refresh(pio_Block1, sm_LEDmux);
       mutex_exit(&mx1);
+#endif
     }
     else
     {
@@ -188,7 +200,7 @@ void PacketReceived()
 #ifdef _serial_debug_
   printf("packet received with %d bytes : ", (int)data_size);
   uint8_t *temp = decoded_buffer;
-  for (int i = 0; i < data_size; i++)
+  for (size_t i = 0; i < data_size; i++)
   {
     printf("0x%02x , ", *temp);
     temp++;
@@ -207,7 +219,14 @@ void getDataFromBuffer()
 {
   while (uart_is_readable(UART_1))
   {
+#ifdef HW_YFC500
+    // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
+    // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
+    u_int8_t readbyte = serial_ll.read();
+#else
     u_int8_t readbyte = uart_getc(UART_1);
+#endif
+
     buffer_serial[write] = readbyte;
     write++;
     if (write >= bufflen)
@@ -319,6 +338,7 @@ void core1()
   }
 }
 
+#ifndef HW_YFC500 // HW_Pico (HW_YFC500 is arduino based. See setup() & loop() in yfc500/main.hpp)
 int main(void)
 {
   uint32_t last_led_update = 0;
@@ -399,3 +419,4 @@ int main(void)
     }
   }
 }
+#endif

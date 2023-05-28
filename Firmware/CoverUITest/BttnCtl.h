@@ -16,17 +16,18 @@ enum TYPE
     Get_Version = 0xB0,
     Set_Buzzer = 0xB1,
     Set_LEDs = 0xB2,
-    Get_Button = 0xB3
+    Get_Button = 0xB3,
+    Get_Emergency = 0xB4,
+    Get_Rain = 0xB5
 };
-
 
 // Function definiton for the 18 LEDS
 enum LED_id
 {
-    MOWER_LIFTED = 0,
-    POOR_GPS = 1,
-    BATTERY_LOW = 2,
-    CHARGING = 3,
+    LED_CHARGING = 0,
+    LED_BATTERY_LOW = 1,
+    LED_POOR_GPS = 2,
+    LED_MOWER_LIFTED = 3,
     LED5 = 4,
     LED6 = 5,
     LED7 = 6,
@@ -34,15 +35,13 @@ enum LED_id
     LED9 = 8,
     LED10 = 9,
     LED11 = 10,
-    LED12 = 11,
-    LED13 = 12,
-    LED14 = 13,
+    LED_LOCK = 11,
+    LED_S2 = 12,
+    LED_S1 = 13,
     LED15 = 14,
     LED16 = 15,
     LED17 = 16,
-    LED18 = 17,
-    LED_BAR = 18,
-    LED_BAR1 = 19
+    LED18 = 17
 };
 
 enum LED_state {
@@ -51,6 +50,18 @@ enum LED_state {
     LED_blink_fast = 0b110,
     LED_on = 0b111
 };
+
+// Used only by Stock-CoverUI
+// Same bitmask as in ll_status.emergency_bitmask (LowLevel, datatypes.h)
+enum Emergency_state
+{
+    Emergency_latch = 0b00001,
+    Emergency_stop1 = 0b00010,
+    Emergency_stop2 = 0b00100,
+    Emergency_lift1 = 0b01000,
+    Emergency_lift2 = 0b10000
+};
+
 #pragma pack(push, 1)
 struct msg_get_version
 {
@@ -106,7 +117,25 @@ struct msg_event_button
 } __attribute__((packed));
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct msg_event_rain
+{
+    uint8_t type;       // Command type
+    uint8_t reserved;   // Padding
+    uint32_t value;
+    uint32_t threshold; // If value < threshold then it rains
+    uint16_t crc;       // CRC 16
+} __attribute__((packed));
+#pragma pack(pop)
 
-
+// Used only by Stock-CoverUI
+#pragma pack(push, 1)
+struct msg_event_emergency
+{
+    uint8_t type;  // Command type
+    uint8_t state; // State (same as in ll_status.emergency_bitmask (LowLevel, datatypes.h))
+    uint16_t crc;  // CRC 16
+} __attribute__((packed));
+#pragma pack(pop)
 
 #endif // _BttnCtl_HEADER_FILE_

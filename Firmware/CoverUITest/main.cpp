@@ -34,6 +34,11 @@ using namespace std;
 COBS cobs;
 #define buffersize 256
 
+/* --- PRINTF_BYTE_TO_BINARY macro's --- */
+#define PRINTF_BINARY_PATTERN_INT8 "%c%c%c%c%c%c%c%c"
+#define PRINTF_BYTE_TO_BINARY_INT8(i) (((i)&0x80ll) ? '1' : '0'), (((i)&0x40ll) ? '1' : '0'), (((i)&0x20ll) ? '1' : '0'), (((i)&0x10ll) ? '1' : '0'), \
+                                      (((i)&0x08ll) ? '1' : '0'), (((i)&0x04ll) ? '1' : '0'), (((i)&0x02ll) ? '1' : '0'), (((i)&0x01ll) ? '1' : '0')
+/* --- end PRINTF_BYTE_TO_BINARY macros --- */
 
 static string VERSION         = "V 0.91";
 char  DEFAULT_SERIAL[]        = "/dev/ttyUSB0";
@@ -74,7 +79,7 @@ void PacketReceived()
     printf("\nafter decode count = %d values are ",(int)data_size);
     for (int i=0; i<data_size; i++)
     {
-      printf(", 0x%02x",encoded_buffer[i]);
+      printf(", 0x%02x",decoded_buffer[i]);
 
     }
 #endif
@@ -95,7 +100,31 @@ void PacketReceived()
         if(message->crc == calc_crc) {
             printf("button %d was pressed with duration %d\n", message->button_id,  message->press_duration);
         } else {
-            printf("GetVersion invalid CRC");
+            printf("Get_Button invalid CRC");
+        }
+    }
+    else if (decoded_buffer[0] == Get_Rain && data_size == sizeof(struct msg_event_rain))
+    {
+        struct msg_event_rain *message = (struct msg_event_rain *)decoded_buffer;
+        if (message->crc == calc_crc)
+        {
+            printf("rain value %d (threshold %d)\n", message->value, message->threshold);
+        }
+        else
+        {
+            printf("Get_Rain invalid CRC");
+        }
+    }
+    else if (decoded_buffer[0] == Get_Emergency && data_size == sizeof(struct msg_event_emergency))
+    {
+        struct msg_event_emergency *message = (struct msg_event_emergency *)decoded_buffer;
+        if (message->crc == calc_crc)
+        {
+            printf("Emergency state " PRINTF_BINARY_PATTERN_INT8 "\n", PRINTF_BYTE_TO_BINARY_INT8(message->state));
+        }
+        else
+        {
+            printf("Get_Emergency invalid CRC");
         }
     }
 }
@@ -358,15 +387,17 @@ void setLed(struct msg_set_leds &msg, int led, uint8_t state) {
 
 void setBars7(struct msg_set_leds &msg, double value) {
     int on_leds = round(value * 7.0);
-    for(int i = 0; i < 7; i++) {
-        setLed(msg, 4+i, i < on_leds ? LED_on : LED_off);
+    for (int i = 0; i < 7; i++)
+    {
+        setLed(msg, LED11 - i, i < on_leds ? LED_on : LED_off);
     }
 }
 
 void setBars4(struct msg_set_leds &msg, double value) {
     int on_leds = round(value * 4.0);
-    for(int i = 0; i < 7; i++) {
-        setLed(msg, i, i < on_leds ? LED_on : LED_off);
+    for (int i = 0; i < 4; i++)
+    {
+        setLed(msg, LED18 - i, i < on_leds ? LED_on : LED_off);
     }
 }
 
@@ -378,10 +409,10 @@ void LEDstatic(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_on);
+        setLed(msg, LED18-led, LED_on);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
         sendMessage(&msg, sizeof(msg), com_port);
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
         sendMessage(&msg, sizeof(msg), com_port);
     }
@@ -396,13 +427,13 @@ void LEDfastblink(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_blink_fast);
+        setLed(msg, LED18-led, LED_blink_fast);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     }
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -418,7 +449,7 @@ void LEDslowblink(int com_port)
     msg.leds = 0;
 
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_blink_slow);
+        setLed(msg, LED18-led, LED_blink_slow);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -426,7 +457,7 @@ void LEDslowblink(int com_port)
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     for(int led = 0; led < 18; led++) {
-        setLed(msg, led, LED_off);
+        setLed(msg, LED18-led, LED_off);
         sendMessage(&msg, sizeof(msg), com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -550,11 +581,9 @@ int main(int argc, char *argv[])
     LEDBar7test(com_port);
 
 
-    printf("Test Buttons\n");
+    printf("Test getters like Buttons or (Stock-CoverUI) Rain, Emergency\n");
     while (true)
     {
-
-
         reply(com_port);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
