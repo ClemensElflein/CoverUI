@@ -70,7 +70,7 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 ### Prerequisites
 
 * Stock *YardForce Classic 500* Cover-UI/Button-Board<br>
-  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with 'STM32F030R8' or 'GD23F330R8' MCU is tested.<br>
+  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with 'STM32F030R8' or 'GD32F330R8' MCU is tested.<br>
 * Soldering Iron
 * ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
 
@@ -265,14 +265,18 @@ Plug it into `UI Board` connector of your OM mainboard.
 
 Now (if you've a more or less actual LowLevel Firmware in your Mainboard's Pico) Clemens developed it the following clever way:
 
-- Charging LED: Fast blink = empty. Slow blink = approx. 1/2 charged. On = Fully charged.
-- Battery: On = Battery empty
-- Mon-Sun as 7 digit progressbar for battery charge state (only in undocked state)
-- 2hr-8hr as 4 digit progressbar for GPS quality. Blink = uncalibrated 
-- Wire: Also indicate a poor GPS. On = < 25%, Blink-fast = < 50%, Blink-slow < 75%, Off >= 75%
-- S1: On = ROS is running but idle, Blink-slow = ROS in autonomous mode, Blink-fast = ROS in nirvana?
-- S2: >TODO<
-- Lifted: Show emergency states. >TODO<
+* 2hr-8hr LEDs act as 4 digit progressbar for GPS quality. Blink = uncalibrated
+* Home button: Stop mowing and go back home to dock
+* Play button: Start mowing of recorded area(s)
+* S1: On = ROS is running but idle, Blink-slow = ROS in autonomous mode, Blink-fast = ROS in nirvana?
+* S2 LED: >TODO<
+* S2 Button: Short press, skip over to next mowing area. Long press (>= 3s), delete all recorded areas!
+* Lock Button: Clear emergency state (probably long press >=3s)
+* Mon-Sun as 7 digit progressbar for battery charge state (only in undocked state)
+* Lifted: Show emergency states. >TODO<
+* Wire: Also indicate a poor GPS. On = < 25%, Blink-fast = < 50%, Blink-slow < 75%, Off >= 75%
+* Battery: On = Battery empty
+* Charging LED: Fast blink = empty. Slow blink = approx. 1/2 charged. On = Fully charged.
 
 ## Version History
 
