@@ -13,12 +13,21 @@
     <img src="images/IMG_Overview.jpg" alt="Logo" width="400">
   </a>
 
-  <h3 align="center">OM CoverUI Firmware for Stock 'YardForce Classic 500' PCB</h3>
+  <h3 align="center">OM CoverUI Firmware for Stock 'YardForce Classic 500(A/B)' PCB</h3>
 
   <p align="center">
-    Yet only tested/working with PCB labeled "RM-ECOW-V1.3.0, 2020.05.08" with STM32F030R8 or GD32F330R8 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant!
+    <b>Tested/working with</b>
+
+| YardForce Model | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
+| --------------- | :------------------------: | :---: |
+| Classic 500     | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
+| Classic 500B    | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
+
+  [^1]: Not yet tested, but it's expected that it will also work flawless
+
   </p>
 </div>
+
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -50,11 +59,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Board available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI FW functionality to it.
+For those, who still have their stock *YardForce Classic 500 (A/B)* Cover-UI/Botton-Board available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to it.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -69,42 +76,48 @@ For those, who still have their stock *YardForce Classic 500* Cover-UI/Botton-Bo
 
 ### Prerequisites
 
-* Stock *YardForce Classic 500* Cover-UI/Button-Board<br>
-  As of writing, only PCB version "RM-ECOW-V1.3.0, 2020.05.08" with 'STM32F030R8' or 'GD32F330R8' MCU is tested.<br>
+* Stock *YardForce Classic 500 (A/B)* Cover-UI/Button-Board
 * Soldering Iron
 * ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
 
-### Hardware Modifications: Buttons & LEDs (mandatory)
+### Hardware Modifications: Buttons & LEDs ($\textcolor{red}{\textsf{mandatory}}$)
 
 With the stock component placement, Button-Home and Buttom-Play get routed to the main (black) 16 pin connector (JP2/J6).
 But we need them routed to the MCU.
 Luckily the PCB is already prepared for this.
 
-We only need to move the 0 Ohm (bridge) resistors R33 to the non-placed R34 position (Home),
-as well as R37 to (NP) R42 (Play).
+We only need to move the 0 Ohm (bridge) resistors
+1. R33 to the NonPlaced R34 position (Button-Home)
+2. R37 to (NP) R42 (Button-Play)
 
-You might also simply bridge R34 and R42, but I thought it's more save to cut the route to the main 16 pin connector.
+You might also simply bridge R34 and R42, but I felt it's simpler to move them.
 
-![Hardware Changes](images/IMG_PCB_Changes.jpg)
-BTW: The yellow cable on the picture (to R5/C2) might not harm you. This is the NRST signal which is only required if you bug the code (like me) during development.
+| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
+| ----------- | ------------ |
+| [![Mandatory Hardware Modification](images/IMG_PCB_Changes.jpg "Open in browser")](images/IMG_PCB_Changes.jpg) | [![Mandatory Hardware Modification](images/IMG_PCB_Changes_500B.jpg "Open in browser")](images/IMG_PCB_Changes_500B.jpg) |
 
-Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger.
+<sup>(The yellow cable on the left picture (to R5/C2) should not harm you. This is the NRST signal which is only required if you bug the code (like me) during development)</sup>
 
-### Hardware Modification: Rain Sensor (optional)
+Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger (if not already exist).
+
+### Hardware Modification: Rain Sensor ($\textcolor{blue}{\textsf{optional}}$)
 
 If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
 See the yellow cable on the following images:
 
-![Hardware Changes](images/IMG_Stock-Cables-overview.jpg)
+| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
+| ----------- | ------------ |
+| See yellow cable | See white cable |
+| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview.jpg "Open in browser")](images/IMG_Stock-Cables-overview.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview_500B.jpg) |
+| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2.jpg "Open in browser")](images/IMG_Stock-Cables-detail2.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail2_500B.jpg) |
+| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1.jpg "Open in browser")](images/IMG_Stock-Cables-rain1.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg) |
 
-<p float="left">
-<img src="images/IMG_Stock-Cables-rain1.jpg" alt="Rain U5" width="48%">
-<img src="images/IMG_Stock-Cables-detail2.jpg" alt="Rain 2" width="48%">
-<p>
 
-### Hardware Modification: Emergency Hall Sensors (optional)
+### Hardware Modification: Emergency Hall Sensors ($\textcolor{blue}{\textsf{optional}}$)
 
-If you also like to use the Stock-Hall-Sensor cabling (2 * stop-button and 2 * wheel-lift), you need to solder one more R- bridge as well as 3 more separate cables. 
+If you also like to use your Stock-Hall-Sensor cabling (2 * stop-button and 2 * wheel-lift):
+![Optional Rain Hardware Modification](images/IMG_Stock-Cables_500B.jpg)
+you need to solder one more R- bridge as well as 3 more separate cables. 
 Take into **attention** that you need to make all 4 steps:
 
 1. Move R52 to (non-placed) R57 (see green arrow on image), or simple bridge R57 (i.e. with 32kg solder)
@@ -112,12 +125,12 @@ Take into **attention** that you need to make all 4 steps:
 3. Solder a cable-bridge from the bottom end of R76 to U5/Pin2 (see white cable)
 4. Solder a cable-bridge from Q6/R83 to U5/Pin10 (see right green cable)
 
-![Hardware Changes Hall](images/IMG_Stock-Cables-overview-hall.jpg)
-
-<p float="left">
-<img src="images/IMG_Stock-Cables-detail3.jpg" alt="Hall 1" width="48%">
-<img src="images/IMG_Stock-Cables-detail4.jpg" alt="Hall 2" width="48%">
-<p>
+| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
+| ----------- | ------------ |
+| See green and white cables | See green cables |
+| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall_500B.jpg) |
+| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3.jpg "Open in browser")](images/IMG_Stock-Cables-detail3.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail3_500B.jpg) |
+| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail4.jpg "Open in browser")](images/IMG_Stock-Cables-detail4.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg) |
 
 I only made it with colored cables for a more clear documentation.
 If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/draht-0-15mm-sortiert-pk-4/dp/5017233), it might look better, like this:
@@ -238,12 +251,12 @@ There are also some, (I call it) magic-buttons. If you press:
 - OK + Sun Button, you're able to trigger the power-on animation.<br>
   This is mainly for mounting validation, to ensure that you hit all LED guidance holes.
 - OK + Clock Button, will show you the Custom-CoverUI- firmware version on which this FW port is based.
-  It get display as a number sequence[^1], which should show (as of writing) 200.<br>
+  It get display as a number sequence[^2], which should show (as of writing) 200.<br>
   Fully useless ATM ;-)
 - OK + Home Button, will show you this FW port version.
-  It get display as a number sequence[^1], which should show (as of writing) 100.
+  It get display as a number sequence[^2], which should show (as of writing) 100.
 
-[^1]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
+[^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
 A digit > 6, get displayed with multiple digit LEDs.
 I.e. 9 = 'Sun(6)' together with 'Thu(3)'
 
@@ -261,22 +274,9 @@ I simply cropped the 16 pin connector from my original cable and crimped OM's pl
 
 You're done!
 
-Plug it into `UI Board` connector of your OM mainboard.
+Plug it into `UI Board` connector of your OM mainboard and
+check the official [CoverUI documentation](https://openmower.de/docs/cover-ui-assembly/) about the [LED](https://openmower.de/docs/cover-ui-assembly/#meaning-of-the-leds) and [Button](https://openmower.de/docs/cover-ui-assembly/#button-usage) usage
 
-Now (if you've a more or less actual LowLevel Firmware in your Mainboard's Pico) Clemens developed it the following clever way:
-
-* 2hr-8hr LEDs act as 4 digit progressbar for GPS quality. Blink = uncalibrated
-* Home button: Stop mowing and go back home to dock
-* Play button: Start mowing of recorded area(s)
-* S1: On = ROS is running but idle, Blink-slow = ROS in autonomous mode, Blink-fast = ROS in nirvana?
-* S2 LED: >TODO<
-* S2 Button: Short press, skip over to next mowing area. Long press (>= 3s), delete all recorded areas!
-* Lock Button: Clear emergency state (probably long press >=3s)
-* Mon-Sun as 7 digit progressbar for battery charge state (only in undocked state)
-* Lifted: Show emergency states. >TODO<
-* Wire: Also indicate a poor GPS. On = < 25%, Blink-fast = < 50%, Blink-slow < 75%, Off >= 75%
-* Battery: On = Battery empty
-* Charging LED: Fast blink = empty. Slow blink = approx. 1/2 charged. On = Fully charged.
 
 ## Version History
 
