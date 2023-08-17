@@ -1,4 +1,4 @@
-## Firmware for YardForce Classic 500 - **Stock**-CoverUI @ [OpenMower](https://github.com/ClemensElflein/OpenMower)
+## Firmware for YardForce Classic 500 (A/B) - **Stock**-CoverUI @ [OpenMower](https://github.com/ClemensElflein/OpenMower)
 
 File syntax = `firmware_<VER>_<MCU>_[<opt MOD>, ...].bin`
 
