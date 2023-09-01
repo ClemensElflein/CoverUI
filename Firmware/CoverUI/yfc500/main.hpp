@@ -67,9 +67,12 @@ HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2
 HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
+#define LCD_ROW PA12
+#define LCD_COL PC8
+
 void setup()
 {
-    leds.setup();
+    /* FIXME: leds.setup();
     buttons.setup();
 #ifdef MOD_HALL
     emergency.setup();
@@ -95,13 +98,42 @@ void setup()
         leds.sequence_start(&LEDcontrol::sequence_animate_handler);
 
     } while (bit_getbutton(500, tmp));
-    delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay
+    delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay */
+
+    // Backlight
+    pinMode(PA11, OUTPUT);
+
+    // Row
+    pinMode(LCD_ROW, OUTPUT);
+    // Row
+    pinMode(LCD_COL, OUTPUT);
 }
 
 void loop() // This loop() doesn't loop!
 {
     // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry!)
-    core1();
+    // FIXME: core1();
+
+    uint32_t start_ms = millis();
+    uint32_t lc_ms = millis();
+    uint16_t blink_t = 2000;
+    uint8_t ac = 100; // 10 Hz = 100ms LCD frequence
+
+    digitalWrite(PA11, HIGH); // BL on
+
+    while (millis() <  start_ms + blink_t)
+    {
+        digitalWrite(LCD_ROW, HIGH);
+        digitalWrite(LCD_COL, LOW);
+        delay(ac);
+        digitalWrite(LCD_ROW, LOW);
+        digitalWrite(LCD_COL, HIGH);
+        delay(ac);
+    }
+
+    // Switch off
+    digitalWrite(PA11, LOW); // BL off
+    delay(1000);
 }
 
 /**

@@ -19,8 +19,8 @@
  */
 void LEDcontrol::setup()
 {
-    for (uint32_t led_num : kLeds)
-        pinMode(led_num, OUTPUT);
+    /* FIXME: for (uint32_t led_num : kLeds)
+        pinMode(led_num, OUTPUT);*/
 }
 
 /**
@@ -35,10 +35,10 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
     switch (state)
     {
     case LED_state::LED_on:
-        digitalWrite(kLeds[led_num], HIGH);
+        // FIXME: digitalWrite(kLeds[led_num], HIGH);
         break;
     case LED_state::LED_off:
-        digitalWrite(kLeds[led_num], LOW);
+        // FIXME: digitalWrite(kLeds[led_num], LOW);
         break;
     case LED_state::LED_blink_slow:
     case LED_state::LED_blink_fast:

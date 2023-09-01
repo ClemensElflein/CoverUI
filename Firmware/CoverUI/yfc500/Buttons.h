@@ -66,7 +66,7 @@ private:
     // Map OM button number to YFC500 Button-definiton (but we index n=0 and not n>0, which get handled in OM wrapper main.hpp::bit_getbutton())
     // Again: Some-how static with debouncer_index
     const ButtonDef ButtonNrs[NUM_BUTTONS] = {
-        {3, BTN_CLK_PIN},  //  0
+        /* FIXME: {3, BTN_CLK_PIN},  //  0
         {0, BTN_HOME_PIN}, //  1
         {0, BTN_PLAY_PIN}, //  2
         {1, BTN_S1_PIN},   //  3
@@ -79,7 +79,7 @@ private:
         {1, BTN_THU_PIN},  // 10
         {2, BTN_FRI_PIN},  // 11
         {2, BTN_SAT_PIN},  // 12
-        {2, BTN_SUN_PIN}   // 13
+        {2, BTN_SUN_PIN}   // 13 */
     };
 
 public:
