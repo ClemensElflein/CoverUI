@@ -5,7 +5,7 @@
   (paper "A4")
 
   (title_block
-    (title "YardForce SA600H LCD CoverUI HS49067")
+    (title "YardForce SAxxxPRO Dot-Matrix LCD CoverUI HS49067")
     (date "2023-08-22")
     (rev "0.1")
     (comment 1 "(c) Apehaenger")
