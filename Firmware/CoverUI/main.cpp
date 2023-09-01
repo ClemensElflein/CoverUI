@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
-#include "yfc500/main.hpp"
+#include "YardForce/main.hpp"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
@@ -338,7 +338,7 @@ void core1()
   }
 }
 
-#ifndef HW_YFC500 // HW_Pico (HW_YFC500 is arduino based. See setup() & loop() in yfc500/main.hpp)
+#ifndef HW_YFC500 // HW_Pico (HW_YFC500 is arduino based. See setup() & loop() in YardForce/main.hpp)
 int main(void)
 {
   uint32_t last_led_update = 0;
