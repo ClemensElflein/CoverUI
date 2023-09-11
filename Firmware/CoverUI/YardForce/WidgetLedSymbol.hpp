@@ -1,5 +1,5 @@
 /**
- * @file GuiLedSymbol.hpp
+ * @file WidgetLedSymbol.hpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief Tiny class/wrapper for a virtual LED, which get displayed as symbol (LVGL label) for OpenMower https://github.com/ClemensElflein/OpenMower
  * @version 0.1
@@ -29,16 +29,55 @@ namespace display
             lv_obj_align(label, align, x_ofs, y_ofs);
         }
 
-        void set(LED_state state)
+        static void anim_blink_cb(void *var, int32_t v)
         {
-            if (state == LED_off)
-                lv_obj_add_flag(label, LV_OBJ_FLAG_HIDDEN);
-            else if (state == LED_on)
+            if (v)
+                lv_obj_clear_flag((lv_obj_t *)var, LV_OBJ_FLAG_HIDDEN);
+            else
+                lv_obj_add_flag((lv_obj_t *)var, LV_OBJ_FLAG_HIDDEN);
+        }
+
+        void set(LED_state t_state)
+        {
+            if (t_state == state)
+                return;
+
+            switch (t_state)
+            {
+            case LED_on:
+                lv_anim_del(label, (lv_anim_exec_xcb_t)anim_blink_cb);
                 lv_obj_clear_flag(label, LV_OBJ_FLAG_HIDDEN);
+                break;
+            case LED_blink_slow:
+                startBlinkAnim(600); // Somehow slower than originals 500ms (because of increased blink_fast period)
+                break;
+            case LED_blink_fast:
+                startBlinkAnim(200); // 100ms fast blink is to quick for the cheap WYM240128K1
+                break;
+            default: // off
+                lv_anim_del(label, (lv_anim_exec_xcb_t)anim_blink_cb);
+                lv_obj_add_flag(label, LV_OBJ_FLAG_HIDDEN);
+                break;
+            }
+            state = t_state;
         }
 
     private:
         lv_obj_t *label;
+        lv_anim_t anim;
+        LED_state state = LED_on;
+
+        void startBlinkAnim(uint16_t t_period_ms)
+        {
+            lv_anim_init(&anim);
+            lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)anim_blink_cb);
+            lv_anim_set_var(&anim, label);
+            lv_anim_set_time(&anim, t_period_ms);
+            lv_anim_set_repeat_delay(&anim, t_period_ms);
+            lv_anim_set_values(&anim, 0, 1);
+            lv_anim_set_repeat_count(&anim, LV_ANIM_REPEAT_INFINITE);
+            lv_anim_start(&anim);
+        }
     };
 } // namespace display
 

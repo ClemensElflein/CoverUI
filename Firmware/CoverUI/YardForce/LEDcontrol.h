@@ -76,7 +76,7 @@ class LEDcontrol
 private:
 #ifdef MDL_C500 // Model Classic 500
     const uint32_t kLeds[NUM_LEDS] = {
-        // FIXME: Why is it uint32_t large? Test with C500 in STM & GD variant. Should become uint16_t (because of NC case)
+        // FIXME: Why is it uint32_t large? Test with C500 in STM & GD variant. Should become uint16_t (not uint8_t because of NC case)
         // Order derived from LowLevel "enum LED_id"
         LED_PIN_CHARGE, //  0
         LED_PIN_BAT,    //  1

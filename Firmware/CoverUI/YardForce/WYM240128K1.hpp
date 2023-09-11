@@ -21,6 +21,7 @@
 #include <lvgl.h>
 #include "LEDcontrol.h"
 #include "WidgetLedSymbol.hpp"
+#include "WidgetBar.hpp"
 
 // C images
 LV_IMG_DECLARE(OM_Logo_Inv_120x54x1);
@@ -37,16 +38,9 @@ namespace display
 
     lv_disp_drv_t lv_disp_drv; // LVGL driver
 
-    // Widgets
-    lv_obj_t *gps_bar = nullptr; // GPS Bar
-    const std::string gps_bar_label_format = FA_SYMBOL_GPS2 " %d %%";
-    lv_obj_t *bat_bar = nullptr; // Battery Bar
-    const std::string bat_bar_label_format = FA_SYMBOL_BATTERY " %d %%";
-    lv_style_t bar_style_bg;
-    lv_style_t bar_style_indic;
-
-    // Status symbols
+    // Status Screen Widgets
     WidgetLedSymbol *v_led_ros, *v_led_charge;
+    WidgetBar *bar_gps, *bar_bat;
 
     /**
      * @brief Rounder callback will round the display area to a multiple of 3, on x axis (RGB control lines of a pixel are connected to 3 monochrome pixels)
@@ -87,80 +81,14 @@ namespace display
         lv_disp_flush_ready(disp_drv);
     }
 
-    static void event_bar_label_cb(lv_event_t *e)
-    {
-        lv_obj_draw_part_dsc_t *dsc = lv_event_get_draw_part_dsc(e);
-        if (dsc->part != LV_PART_INDICATOR)
-            return;
-
-        lv_obj_t *obj = lv_event_get_target(e);
-        int32_t bar_value = lv_bar_get_value(obj);
-        lv_draw_label_dsc_t label_dsc;
-        lv_draw_label_dsc_init(&label_dsc);
-
-        char buf[12];
-        lv_snprintf(buf, sizeof(buf), (const char *)lv_obj_get_user_data(obj), bar_value);
-
-        lv_point_t txt_size;
-        lv_txt_get_size(&txt_size, buf, label_dsc.font, label_dsc.letter_space, label_dsc.line_space, LV_COORD_MAX,
-                        label_dsc.flag);
-
-        lv_area_t txt_area;
-        // If the indicator is long enough put the text inside on the right
-        if (lv_area_get_width(dsc->draw_area) > txt_size.x + 20)
-        {
-            txt_area.x2 = dsc->draw_area->x2 - 5;
-            txt_area.x1 = txt_area.x2 - txt_size.x + 1;
-            label_dsc.color = lv_color_black();
-        }
-        // If the indicator is still short put the text out of it on the right
-        else
-        {
-            txt_area.x1 = dsc->draw_area->x2 + 5;
-            txt_area.x2 = txt_area.x1 + txt_size.x - 1;
-            label_dsc.color = lv_color_white();
-        }
-
-        txt_area.y1 = (dsc->draw_area->y1 + (lv_area_get_height(dsc->draw_area) - txt_size.y) / 2) + 1;
-        txt_area.y2 = txt_area.y1 + txt_size.y;
-
-        lv_draw_label(dsc->draw_ctx, &label_dsc, &txt_area, buf, NULL);
-    }
-
-    static void drawGPSBar()
-    {
-        gps_bar = lv_bar_create(lv_scr_act());
-        lv_obj_set_user_data(gps_bar, (void *)gps_bar_label_format.c_str()); // Save label prefix to object user data
-        lv_obj_remove_style_all(gps_bar);                                    // To have a clean start
-        lv_obj_add_style(gps_bar, &bar_style_bg, 0);
-        lv_obj_add_style(gps_bar, &bar_style_indic, LV_PART_INDICATOR);
-
-        lv_obj_add_event_cb(gps_bar, event_bar_label_cb, LV_EVENT_DRAW_PART_END, NULL);
-        lv_obj_set_size(gps_bar, UC1698_DISPLAY_WIDTH, 21);
-        lv_obj_align(gps_bar, LV_ALIGN_TOP_MID, 0, 30);
-    }
-
-    static void drawBatBar()
-    {
-        bat_bar = lv_bar_create(lv_scr_act());
-        lv_obj_set_user_data(bat_bar, (void *)bat_bar_label_format.c_str()); // Save label prefix to object user data
-        lv_obj_remove_style_all(bat_bar);                                    // To have a clean start
-        lv_obj_add_style(bat_bar, &bar_style_bg, 0);
-        lv_obj_add_style(bat_bar, &bar_style_indic, LV_PART_INDICATOR);
-
-        lv_obj_add_event_cb(bat_bar, event_bar_label_cb, LV_EVENT_DRAW_PART_END, NULL);
-        lv_obj_set_size(bat_bar, UC1698_DISPLAY_WIDTH, 21);
-        lv_obj_align(bat_bar, LV_ALIGN_TOP_MID, 0, 60);
-    }
-
     static void mainStatusScreen()
     {
         // Status symbols, from right to left
         v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0);
         v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_OUT_TOP_RIGHT, (240 - (2 * 14) - 5), 0);
-
-        drawGPSBar();
-        drawBatBar();
+        // GPS & Battery bars
+        bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 30, UC1698_DISPLAY_WIDTH, 21);
+        bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 60, UC1698_DISPLAY_WIDTH, 21);
     }
 
     static void anim_x_cb(void *var, int32_t v)
@@ -195,7 +123,7 @@ namespace display
         lv_anim_t aw;
         lv_anim_init(&aw);
         lv_anim_set_var(&aw, img_wordmark);
-        lv_anim_set_values(&aw, 0, (UC1698_DISPLAY_WIDTH / 2) + (OM_Wordmark_Inv_240x35x1.header.w / 2));
+        lv_anim_set_values(&aw, 0, (UC1698_DISPLAY_WIDTH / 2) + (OM_Wordmark_Inv_240x35x1.header.w / 2) + 20);
         lv_anim_set_time(&aw, 2500);
         lv_anim_set_delay(&aw, 1700);
         lv_anim_set_exec_cb(&aw, (lv_anim_exec_xcb_t)anim_x_cb);
@@ -232,18 +160,6 @@ namespace display
         lv_disp_t *disp;
         disp = lv_disp_drv_register(&lv_disp_drv);                                     // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), LV_PART_MAIN); // No background color
-
-        // Init bar style settings
-        lv_style_init(&bar_style_bg);
-        lv_style_set_border_color(&bar_style_bg, lv_color_hex(0xffffff));
-        lv_style_set_border_width(&bar_style_bg, 2);
-        lv_style_set_pad_all(&bar_style_bg, 3); // To make the indicator smaller
-        lv_style_set_radius(&bar_style_bg, 4);
-
-        lv_style_init(&bar_style_indic);
-        lv_style_set_bg_opa(&bar_style_indic, LV_OPA_COVER);
-        lv_style_set_bg_color(&bar_style_indic, lv_color_hex(0xffffff));
-        lv_style_set_radius(&bar_style_indic, 1);
 
         openmower_anim();
         //mainStatusScreen();
@@ -286,7 +202,7 @@ namespace display
         {
             next_display_data_ms = now + 100; // 100ms display data refresh
 
-            if (gps_bar != nullptr)
+            if (bar_gps != nullptr)
             {
                 // Rev-calc GPS LEDs to percent
                 int8_t gps_perc = 0;
@@ -302,10 +218,11 @@ namespace display
                         gps_perc += 25; // One LED represents 25%
                     }
                 }
-                lv_bar_set_value(gps_bar, gps_perc, LV_ANIM_OFF);
+                //lv_bar_set_value(gps_bar, gps_perc, LV_ANIM_OFF);
+                bar_gps->set_value(gps_perc);
             }
 
-            if (bat_bar != nullptr)
+            if (bar_bat != nullptr)
             {
                 // Rev-calc Battery LEDs to percent
                 uint8_t bat_perc = 0;
@@ -315,12 +232,14 @@ namespace display
                         continue;
                     bat_perc += 15; // One LED represents 14.3%
                 }
-                lv_bar_set_value(bat_bar, bat_perc, LV_ANIM_OFF);
+                //lv_bar_set_value(bat_bar, bat_perc, LV_ANIM_OFF);
+                bar_bat->set_value(bat_perc);
             }
 
-            if (v_led_charge != nullptr)
+            if (v_led_charge != nullptr && v_led_ros != nullptr)
             {
                 v_led_charge->set(leds.get(LED_NUM_CHARGE));
+                v_led_ros->set(leds.get(LED_NUM_S1));
             }
         }
     }
