@@ -19,8 +19,9 @@
  */
 void LEDcontrol::setup()
 {
-    for (uint32_t led_num : kLeds)
-        pinMode(led_num, OUTPUT);
+    for (uint32_t led_pin : kLeds)
+        if (led_pin != LED_PIN_NC)
+            pinMode(led_pin, OUTPUT);
 }
 
 /**
@@ -32,18 +33,22 @@ void LEDcontrol::setup()
  */
 void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 {
-    switch (state)
+    uint32_t led_pin = kLeds[led_num];
+    if (led_pin != LED_PIN_NC)
     {
-    case LED_state::LED_on:
-        digitalWrite(kLeds[led_num], HIGH);
-        break;
-    case LED_state::LED_off:
-        digitalWrite(kLeds[led_num], LOW);
-        break;
-    case LED_state::LED_blink_slow:
-    case LED_state::LED_blink_fast:
-        // Get handled by timers
-        break;
+        switch (state)
+        {
+        case LED_state::LED_on:
+            digitalWrite(led_pin, HIGH);
+            break;
+        case LED_state::LED_off:
+            digitalWrite(led_pin, LOW);
+            break;
+        case LED_state::LED_blink_slow:
+        case LED_state::LED_blink_fast:
+            // Get handled by timers
+            break;
+        }
     }
     if (change_state)
         change_led_states_(led_num, state);
@@ -55,20 +60,6 @@ void LEDcontrol::set(uint64_t all_state)
     {
         uint8_t led_state = (all_state >> (3 * led)) & 0b111;
         set(led, static_cast<LED_state>(led_state));
-    }
-}
-
-/**
- * @brief Set base10 related LEDs for the given (numeric) character
- *
- * @param digit numeric character
- */
-void LEDcontrol::set_base10_leds_(char digit)
-{
-    for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
-    {
-        bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
-        set(bit + 4, on ? LED_state::LED_on : LED_state::LED_off, false);
     }
 }
 
@@ -168,12 +159,6 @@ void LEDcontrol::identify(uint8_t led_num)
     force_on(led_num, false);
 }
 
-void LEDcontrol::show_num(uint16_t num)
-{
-    seq_num_value_ = num;
-    sequence_start(&LEDcontrol::seq_num_handler_);
-}
-
 /*******************************************************************************************
  *                           LED "Sequence" stuff                                          *
  *******************************************************************************************
@@ -181,17 +166,23 @@ void LEDcontrol::show_num(uint16_t num)
  * to overcome the tricky use of HAL_Delay() which is heavily ISR fragile.                 *
  * Looks a little bit over-complicated, but ...                                            *
  * AH20230511: Not required anymore because arduino framework doesn't has this delay()/ISR *
- *   anymore. But as it's already written and work, ...                                    *
+ *   issue anymore. But as it's already written and works, ...                             *
  *******************************************************************************************/
 
 /**
  * @brief Start the given sequence handler
  *
  * @param handler
+ * @param boolean abort_running aborts a currently running sequence
  */
-void LEDcontrol::sequence_start(void (LEDcontrol::*handler)())
+void LEDcontrol::sequence_start(void (LEDcontrol::*handler)(), bool abort_running)
 {
-    if (seq_start_tick_ > 0)
+    if (abort_running)
+    {
+        set(led_states_bin_); // Restore states
+    }
+
+    if (seq_start_tick_ > 0 && !abort_running)
         return; // There's already/still a running sequence
 
     seq_step_ = 0;
@@ -229,6 +220,7 @@ uint16_t LEDcontrol::seq_get_next_step_(uint16_t step_rate)
     return ++seq_step_;
 }
 
+#ifdef MDL_C500 // Classic 500 FIXME: Should go either into a superclass or need a more generic parent class, on next mower model
 /**
  * @brief Animate sequence handler. Has to be started by sequence_start()
  */
@@ -253,11 +245,31 @@ void LEDcontrol::sequence_animate_handler()
     }
 }
 
+void LEDcontrol::show_num(uint16_t num)
+{
+    seq_num_value_ = num;
+    sequence_start(&LEDcontrol::seq_num_handler_);
+}
+
 void LEDcontrol::force_off_num_seq_leds_(bool force)
 {
     force_off(LED_NUM_LIFTED, force);                    // Num change signalling LED
     for (uint8_t i = LED_NUM_MON; i >= LED_NUM_SUN; i--) // Base10 related LEDs
         force_off(i, force);
+}
+
+/**
+ * @brief Set base10 related LEDs for the given (numeric) character
+ *
+ * @param digit numeric character
+ */
+void LEDcontrol::set_base10_leds_(char digit)
+{
+    for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
+    {
+        bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
+        set(bit + 4, on ? LED_state::LED_on : LED_state::LED_off, false);
+    }
 }
 
 /**
@@ -309,3 +321,33 @@ void LEDcontrol::seq_num_handler_()
         return;
     }
 }
+
+#elif defined(MDL_SAXPRO) // Model SAxPRO
+
+/**
+ * @brief Animate sequence handler. Has to be started by sequence_start()
+ */
+void LEDcontrol::sequence_backlight_timeout_handler()
+{
+    uint16_t step = seq_get_next_step_(BACKLIGHT_TIMEOUT_STEP_RATE_MS); // Animation sequence runs in 100ms steps, which is also the trigger rate
+
+    switch (step)
+    {
+    case 0: // Next sequence step not reached now
+        return;
+    case 1: // LED Backlight on
+        set(LED_NUM_BACKLIGHT, LED_state::LED_on, false);
+        return;
+    case 2 ...(BACKLIGHT_TIMEOUT_MS / BACKLIGHT_TIMEOUT_STEP_RATE_MS):
+        return;
+    case (BACKLIGHT_TIMEOUT_MS / BACKLIGHT_TIMEOUT_STEP_RATE_MS) + 1: // LED off
+        set(LED_NUM_BACKLIGHT, LED_state::LED_off, false);
+        return;
+    default:
+        seq_start_tick_ = 0; // Sequence end
+        // set(led_states_bin_); // Restore states
+        return;
+    }
+}
+
+#endif // MDL_...
