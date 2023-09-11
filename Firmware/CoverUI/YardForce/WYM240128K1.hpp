@@ -245,8 +245,8 @@ namespace display
         lv_style_set_bg_color(&bar_style_indic, lv_color_hex(0xffffff));
         lv_style_set_radius(&bar_style_indic, 1);
 
-        // openmower_anim();
-        mainStatusScreen();
+        openmower_anim();
+        //mainStatusScreen();
         // test1();
         // testCanvas();
 
@@ -318,7 +318,10 @@ namespace display
                 lv_bar_set_value(bat_bar, bat_perc, LV_ANIM_OFF);
             }
 
-            v_led_charge->set(leds.get(LED_NUM_CHARGE));
+            if (v_led_charge != nullptr)
+            {
+                v_led_charge->set(leds.get(LED_NUM_CHARGE));
+            }
         }
     }
 } // namespace display
