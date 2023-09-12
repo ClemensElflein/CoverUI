@@ -25,6 +25,7 @@ namespace display
         {
             label = lv_label_create(lv_scr_act());
             lv_label_set_text(label, symbol_str.c_str());
+            lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_set_style_text_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
             lv_obj_align(label, align, x_ofs, y_ofs);
         }

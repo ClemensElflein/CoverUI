@@ -15,6 +15,8 @@
 #define LVGL_BUFFER_MULTIPLIER 10
 #define LVGL_TIMER_HANDLER_PERIOD_MS 10 // 10ms lv_timer_handler() soft period
 
+#define TOP_STATUS_BAR_GAP_PX 5 // Amount of (gap) pixels between top status-bar icons/symbols
+
 #include "UC1698.h"
 
 #include <Arduino.h>
@@ -40,7 +42,9 @@ namespace display
     lv_disp_drv_t lv_disp_drv; // LVGL driver
 
     // Status Screen Widgets
-    WidgetLedSymbol *v_led_ros, *v_led_charge;
+    WidgetLedSymbol *v_led_heartbeat, *v_led_ros,
+        *v_led_emergency_wheel, *v_led_emergency, *v_led_emergency_stop,
+        *v_led_charge;
     WidgetBar *bar_gps, *bar_bat;
     WidgetTextTicker *text_ticker_status;
 
@@ -85,15 +89,25 @@ namespace display
 
     static void mainStatusScreen()
     {
-        // Status symbols, from right to left
-        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0);
-        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_OUT_TOP_RIGHT, (240 - (2 * 14) - 5), 0);
+        // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
+        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
+        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 14 + TOP_STATUS_BAR_GAP_PX, 0);
+
+        // In the middle, we do have emergencies
+        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
+        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
+        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
+
+        // On the right side, mowing status like, charging, docking, ...
+        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
+
         // GPS & Battery bars
         bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 30, UC1698_DISPLAY_WIDTH, 21);
         bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 60, UC1698_DISPLAY_WIDTH, 21);
+
         // Mower status text (ticker)
         text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
-        text_ticker_status->set_text("Long text should ticker: Lorem Ipsum Bla bla bla");
+        text_ticker_status->set_text("Mower status like Idle, Mowing, Emergency, ...");
     }
 
     static void anim_x_cb(void *var, int32_t v)
@@ -160,8 +174,6 @@ namespace display
 
         openmower_anim();
         //mainStatusScreen();
-        // test1();
-        // testCanvas();
 
         return true;
     }

@@ -400,12 +400,24 @@
 /* PerfectPixel font, Size 14, 1 Bpp, Characters:
  *  !"#       %-...      Bullet
  * 0x20-0x23, 0x25-0x7E, 0x2022
- * + FontAwesome location-arrow (GPS), bolt (charge), umbrella (rain), exclamation-triangle (emergency), anchor (home?), plug (docking or charge?)
- *              0xF124, 0xF0E7, 0xF0E9, 0xF071, 0xF13D, 0xF1E6
- *   battery-full, battery 3/4, battery 1/2,  battery 1/4,  battery-empty
- *   0xF240-0xF244
- *   charging-station (charge), brain (ROS?), sattelite-dish (GPS), car-battery
- *   0xf5e7, 0xf5dc, 0xf7c0, 0xf5df
+ * + FontAwesome5-Solid+Brands+Regular
+ *   location-arrow (GPS),
+ *           bolt (charge),
+ *                   umbrella (rain),
+ *                           exclamation-triangle (emergency),
+ *                                   anchor (home?),
+ *                                           plug (docking or charge?)
+ *                                                   battery-full, battery 3/4, battery 1/2,  battery 1/4,  battery-empty
+ *   0xF124, 0xF0E7, 0xF0E9, 0xF071, 0xF13D, 0xF1E6, 0xF240-0xF244, 
+ *      
+ *   charging-station (charge),
+ *           brain (ROS?),
+ *                   sattelite-dish (GPS),
+ *                           car-battery,
+ *                                   car-crash (Wheel lift Hall1-2),
+ *                                           heartbeat,
+ *                                                   exclamation-circle (stop pressed)
+ *   0xf5e7, 0xf5dc, 0xf7c0, 0xf5df, 0xf5e1, 0xf21e, 0xf06a
  */
 #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(PerfectPixel_FA_14)
 #define FA_SYMBOL_GPS1 "\xEF\x9F\x80"
@@ -413,6 +425,10 @@
 #define FA_SYMBOL_BATTERY "\xEF\x97\x9F"
 #define FA_SYMBOL_CHARGE "\xEF\x87\xA6"
 #define FA_SYMBOL_ROS "\xEF\x97\x9C" // Brain
+#define FA_SYMBOL_EMERGENCY "\xEF\x81\xB1"
+#define FA_SYMBOL_EMERGENCY_WHEEL "\xEF\x97\xA1" // Car-crash
+#define FA_SYMBOL_EMERGENCY_STOP "\xEF\x81\xAA" // Exclamation-circle
+#define FA_SYMBOL_HEARTBEAT "\xEF\x88\x9E"
 
 /*Always set a default font*/
 #define LV_FONT_DEFAULT &PerfectPixel_FA_14
