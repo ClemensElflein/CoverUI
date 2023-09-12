@@ -46,6 +46,7 @@ extern void getDataFromBuffer();
 uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed);
 void timer_slow_callback_wrapper();
 void timer_fast_callback_wrapper();
+void timer_event_callback_wrapper();
 void timer_quick_callback_wrapper();
 
 // OM names. Could also use those, but I prefer logic names instead of physical ones
@@ -67,6 +68,9 @@ Emergency emergency;
 #endif
 HardwareTimer *timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *timer_fast;  // Used for blink-fast LEDs
+#ifdef MDL_SAXPRO           // Model SAxPRO
+HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display logic
+#endif
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
 #ifdef MCU_STM32
@@ -93,9 +97,12 @@ void setup()
 #endif
 
     // We've hardware timer on mass, let's use them.
-    timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper);                      //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
-    timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper);                     //  10Hz (100ms) timer, used for LED-blink-fast
-    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
+    timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper, 20);  //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
+    timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper, 15); //  10Hz (100ms) timer, used for LED-blink-fast
+#ifdef MDL_SAXPRO
+    timer_event = hwtimer(TIM_EVENT, 100, timer_event_callback_wrapper, 10); // 100Hz   (10ms) timer, used for displays lv_timer_handler() and LED-2-Display logic
+#endif
+    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper, 5); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
 
     serial_ll.begin(115200);
 
@@ -119,10 +126,12 @@ void setup()
 
 void loop() // This loop() doesn't loop!
 {
-#ifdef MDL_C500 // Model Classic 500
-    // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry!)
+    // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry! but let remain original code untouched)
     core1();
-#elif defined(MDL_SAXPRO) // Model SAxPRO
+
+    /***** TODO: Migrate below code *****/
+
+#ifdef MDL_SAXPRO // Model SAxPRO
     // FIXME: Test code! Need to be merged into core1() or similar
     if (buttons.is_pressed(BTN_UP_NUM))
     {
@@ -224,7 +233,7 @@ void loop() // This loop() doesn't loop!
         leds.set(LED_NUM_CHARGE, vled_state);
     }
 
-    display::loop(); // FIXME: has to go to core1() or a lower priority timer (than the one of tick_inc())
+    // display::loop(); // FIXME: has to go to core1() or a lower priority timer (than the one of tick_inc())
 #endif
 }
 
@@ -263,6 +272,13 @@ void timer_slow_callback_wrapper()
 #endif
 #ifdef MOD_RAIN
     rain.process();
+#endif
+}
+
+void timer_event_callback_wrapper()
+{
+#ifdef MDL_SAXPRO
+    display::loop_low_prio();
 #endif
 }
 

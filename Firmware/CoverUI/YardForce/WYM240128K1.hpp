@@ -190,21 +190,18 @@ namespace display
     }
 
     /**
-     * @brief Regular loop() function, has to be called in Arduino's main loop.
-     * Handles i.e. LVGL timers.
+     * @brief Regular loop() function, which get called by a low priority hardware timer.
+     * Handles i.e. LVGL timers or LED-2-Display logic.
      * Has to be a lower priority routine than tick_inc(), otherwise all LVGL timers (or animations) do not work
      */
-    void loop()
+    void loop_low_prio()
     {
-        static uint32_t next_lv_timer_ms = 0;
         static uint32_t next_display_data_ms = 0;
         uint32_t now = millis();
 
-        if (now >= next_lv_timer_ms)
-        {
-            next_lv_timer_ms = now + LVGL_TIMER_HANDLER_PERIOD_MS;
-            lv_timer_handler();
-        }
+        lv_timer_handler();
+
+        /***** TODO: Migrate below code *****/
 
         // Refresh display data
         if (now >= next_display_data_ms)
