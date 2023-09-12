@@ -208,7 +208,7 @@ void loop() // This loop() doesn't loop!
     static LED_state vled_state = LED_state::LED_off;
     if (now > next_vled_test_step_ms)
     {
-        next_vled_test_step_ms = now + 2000;
+        next_vled_test_step_ms = now + 4000;
 
         leds.set(LED_NUM_S1, vled_state);
 

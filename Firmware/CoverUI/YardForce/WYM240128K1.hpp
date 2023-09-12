@@ -25,8 +25,8 @@
 #include "WidgetTextTicker.hpp"
 
 // C images
-LV_IMG_DECLARE(OM_Logo_Inv_120x54x1);
-LV_IMG_DECLARE(OM_Wordmark_Inv_240x35x1);
+LV_IMG_DECLARE(OM_Logo_120x54x1);
+LV_IMG_DECLARE(OM_Wordmark_240x35x1);
 
 namespace display
 {
@@ -73,9 +73,9 @@ namespace display
 
         for (y = area->y1; y <= area->y2; y++)
         {
-            // color_p = t_color_p + (y * UC1698_DISPLAY_WIDTH) + area->x1;
             for (x = area->x1; x <= area->x2; x += 3) // FIXME: Might overflow buffer if area->x2 is not dividable by 3
             {
+                // Color is inverted (0 = black but pixel off / >0 = white but pixel on) but UC1698 "[16] Set Inverse Display" is set
                 uc1698.drawPixelTriplet(t_color_p->full, (t_color_p + 1)->full, (t_color_p + 2)->full);
                 t_color_p += 3;
             }
@@ -93,7 +93,7 @@ namespace display
         bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 60, UC1698_DISPLAY_WIDTH, 21);
         // Mower status text (ticker)
         text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
-        text_ticker_status->set_text("Bla bla");
+        text_ticker_status->set_text("Long text should ticker: Lorem Ipsum Bla bla bla");
     }
 
     static void anim_x_cb(void *var, int32_t v)
@@ -105,19 +105,19 @@ namespace display
     {
         // Mower Logo - img_logo
         lv_obj_t *img_logo = lv_img_create(lv_scr_act());
-        lv_img_set_src(img_logo, &OM_Logo_Inv_120x54x1);
+        lv_img_set_src(img_logo, &OM_Logo_120x54x1);
         lv_obj_align(img_logo, LV_ALIGN_CENTER, 0, -25);
 
         // OpenMower Wordmark - img_wordmark
         lv_obj_t *img_wordmark = lv_img_create(lv_scr_act());
-        lv_img_set_src(img_wordmark, &OM_Wordmark_Inv_240x35x1);
+        lv_img_set_src(img_wordmark, &OM_Wordmark_240x35x1);
         lv_obj_align(img_wordmark, LV_ALIGN_CENTER, 0, 25);
 
         // Anim of logo
         lv_anim_t al;
         lv_anim_init(&al);
         lv_anim_set_var(&al, img_logo);
-        lv_anim_set_values(&al, 0, -((UC1698_DISPLAY_WIDTH / 2) + (OM_Logo_Inv_120x54x1.header.w / 2)));
+        lv_anim_set_values(&al, 0, -((UC1698_DISPLAY_WIDTH / 2) + (OM_Logo_120x54x1.header.w / 2)));
         lv_anim_set_time(&al, 2000);
         lv_anim_set_delay(&al, 1000);
         lv_anim_set_exec_cb(&al, (lv_anim_exec_xcb_t)anim_x_cb);
@@ -128,21 +128,13 @@ namespace display
         lv_anim_t aw;
         lv_anim_init(&aw);
         lv_anim_set_var(&aw, img_wordmark);
-        lv_anim_set_values(&aw, 0, (UC1698_DISPLAY_WIDTH / 2) + (OM_Wordmark_Inv_240x35x1.header.w / 2) + 20);
+        lv_anim_set_values(&aw, 0, (UC1698_DISPLAY_WIDTH / 2) + (OM_Wordmark_240x35x1.header.w / 2) + 20);
         lv_anim_set_time(&aw, 2500);
         lv_anim_set_delay(&aw, 1700);
         lv_anim_set_exec_cb(&aw, (lv_anim_exec_xcb_t)anim_x_cb);
         lv_anim_set_path_cb(&aw, lv_anim_path_ease_in);
         lv_anim_set_deleted_cb(&aw, (lv_anim_ready_cb_t)mainStatusScreen); // Set a callback to indicate when the animation is deleted (idle)
         lv_anim_start(&aw);
-    }
-
-    static void test1()
-    {
-        lv_obj_t *label = lv_label_create(lv_scr_act());
-        lv_label_set_text(label, "test1() " FA_SYMBOL_GPS1 " " FA_SYMBOL_GPS2 " " FA_SYMBOL_BATTERY);
-        lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
-        lv_obj_align(label, LV_ALIGN_CENTER, 0, -20);
     }
 
     bool init()
@@ -163,11 +155,11 @@ namespace display
         lv_disp_drv.ver_res = UC1698_DISPLAY_HEIGHT;                                                            // Set the vertical resolution in pixels
         lv_disp_draw_buf_init(&lv_disp_buf, lv_buf_1, lv_buf_2, UC1698_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER); // Initialize `disp_buf` with the buffer(s)
         lv_disp_t *disp;
-        disp = lv_disp_drv_register(&lv_disp_drv);                                     // Register the driver and save the created display objects
-        lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), LV_PART_MAIN); // No background color
+        disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
+        lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        //openmower_anim();
-        mainStatusScreen();
+        openmower_anim();
+        //mainStatusScreen();
         // test1();
         // testCanvas();
 
@@ -223,7 +215,6 @@ namespace display
                         gps_perc += 25; // One LED represents 25%
                     }
                 }
-                //lv_bar_set_value(gps_bar, gps_perc, LV_ANIM_OFF);
                 bar_gps->set_value(gps_perc);
             }
 
@@ -237,7 +228,6 @@ namespace display
                         continue;
                     bat_perc += 15; // One LED represents 14.3%
                 }
-                //lv_bar_set_value(bat_bar, bat_perc, LV_ANIM_OFF);
                 bar_bat->set_value(bat_perc);
             }
 

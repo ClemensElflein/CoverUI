@@ -24,7 +24,6 @@ namespace display
         WidgetTextTicker(lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs, lv_coord_t w)
         {
             label = lv_label_create(lv_scr_act());
-            //lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
             lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_set_style_text_font(label, &PerfectPixel_20, LV_PART_MAIN);
             lv_obj_align(label, align, x_ofs, y_ofs);

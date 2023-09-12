@@ -64,8 +64,8 @@ namespace display
         this->writeCommand(0x24 | 1); // 0x24 = temperature control (-0.05%/C)
         this->setLCDMappingControl(0, 1);
         // this->setVBiasPotentiometer(127);
-        this->writeCommand(0b10100110 | 0); // Set Inverse Display
-        this->writeCommand(0b11010001);     // [20] Set Color Pattern to R-G-B
+        this->writeCommand(0b10100110 | 1); // [16] Set Inverse Display. Will save inversion logic in LVGL's flush_cb()
+        this->writeCommand(0b11010000 | 1); // [20] Set Color Pattern to R-G-B
         this->writeCommand(0b11010110);     // [21] Set Color Mode to RRRRR-GGGGGG-BBBBB, 64k-color
 
         this->fillScreen(false); // Clear Screen
@@ -228,11 +228,11 @@ namespace display
             (uint8_t)(0x60 | ((uint8_t)t_y1 & 0b00001111)),     // Set Row LSB Address
 
             // Set Windows Program
-            (0xf5), (t_y1),                                 // Starting Row Address
-            (0xf7), (t_y2),                                 // Ending Row Address
-            (0xf4), (uint8_t)(t_x1 / 3),                    // Starting Column Address
+            (0xf5), (t_y1),                                  // Starting Row Address
+            (0xf7), (t_y2),                                  // Ending Row Address
+            (0xf4), (uint8_t)(t_x1 / 3),                     // Starting Column Address
             (0xf6), (uint8_t)((int8_t)((t_x2 + 1) / 3) - 1), // Ending Column Address
-            (uint8_t)(0xf8 | t_outside_mode)                // Windows Program Mode (0 = inside, 1 = outside)
+            (uint8_t)(0xf8 | t_outside_mode)                 // Windows Program Mode (0 = inside, 1 = outside)
         };
         writeCommand(data, sizeof(data) / sizeof(uint8_t));
     }

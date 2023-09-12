@@ -25,14 +25,14 @@ namespace display
         {
             // Init bar style settings for custom (labeled) bar graph
             lv_style_init(&bar_style_bg);
-            lv_style_set_border_color(&bar_style_bg, lv_color_white());
+            lv_style_set_border_color(&bar_style_bg, lv_color_black());
             lv_style_set_border_width(&bar_style_bg, 2);
             lv_style_set_pad_all(&bar_style_bg, 3); // To make the indicator smaller
             lv_style_set_radius(&bar_style_bg, 4);
 
             lv_style_init(&bar_style_indic);
             lv_style_set_bg_opa(&bar_style_indic, LV_OPA_COVER);
-            lv_style_set_bg_color(&bar_style_indic, lv_color_white());
+            lv_style_set_bg_color(&bar_style_indic, lv_color_black());
             lv_style_set_radius(&bar_style_indic, 1);
 
             // Draw bar
@@ -71,8 +71,7 @@ namespace display
             lv_snprintf(buf, sizeof(buf), (const char *)lv_obj_get_user_data(obj), bar_value);
 
             lv_point_t txt_size;
-            lv_txt_get_size(&txt_size, buf, label_dsc.font, label_dsc.letter_space, label_dsc.line_space, LV_COORD_MAX,
-                            label_dsc.flag);
+            lv_txt_get_size(&txt_size, buf, label_dsc.font, label_dsc.letter_space, label_dsc.line_space, LV_COORD_MAX, label_dsc.flag);
 
             lv_area_t txt_area;
             // If the indicator is long enough put the text inside on the right
@@ -80,14 +79,14 @@ namespace display
             {
                 txt_area.x2 = dsc->draw_area->x2 - 5;
                 txt_area.x1 = txt_area.x2 - txt_size.x + 1;
-                label_dsc.color = lv_color_black();
+                label_dsc.color = lv_color_white();
             }
             // If the indicator is still short put the text out of it on the right
             else
             {
                 txt_area.x1 = dsc->draw_area->x2 + 5;
                 txt_area.x2 = txt_area.x1 + txt_size.x - 1;
-                label_dsc.color = lv_color_white();
+                label_dsc.color = lv_color_black();
             }
 
             txt_area.y1 = (dsc->draw_area->y1 + (lv_area_get_height(dsc->draw_area) - txt_size.y) / 2) + 1;
