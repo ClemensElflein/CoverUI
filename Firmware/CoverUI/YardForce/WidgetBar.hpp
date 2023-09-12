@@ -25,20 +25,20 @@ namespace display
         {
             // Init bar style settings for custom (labeled) bar graph
             lv_style_init(&bar_style_bg);
-            lv_style_set_border_color(&bar_style_bg, lv_color_hex(0xffffff));
+            lv_style_set_border_color(&bar_style_bg, lv_color_white());
             lv_style_set_border_width(&bar_style_bg, 2);
             lv_style_set_pad_all(&bar_style_bg, 3); // To make the indicator smaller
             lv_style_set_radius(&bar_style_bg, 4);
 
             lv_style_init(&bar_style_indic);
             lv_style_set_bg_opa(&bar_style_indic, LV_OPA_COVER);
-            lv_style_set_bg_color(&bar_style_indic, lv_color_hex(0xffffff));
+            lv_style_set_bg_color(&bar_style_indic, lv_color_white());
             lv_style_set_radius(&bar_style_indic, 1);
 
             // Draw bar
             bar = lv_bar_create(lv_scr_act());
             lv_obj_set_user_data(bar, (void *)bar_label.c_str()); // Store bar label to object user data
-            lv_obj_remove_style_all(bar);                                    // To have a clean start
+            lv_obj_remove_style_all(bar);                         // To have a clean start
             lv_obj_add_style(bar, &bar_style_bg, 0);
             lv_obj_add_style(bar, &bar_style_indic, LV_PART_INDICATOR);
 
@@ -51,7 +51,6 @@ namespace display
         {
             lv_bar_set_value(bar, value, LV_ANIM_OFF);
         }
-
 
     private:
         lv_obj_t *bar;

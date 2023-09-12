@@ -22,6 +22,7 @@
 #include "LEDcontrol.h"
 #include "WidgetLedSymbol.hpp"
 #include "WidgetBar.hpp"
+#include "WidgetTextTicker.hpp"
 
 // C images
 LV_IMG_DECLARE(OM_Logo_Inv_120x54x1);
@@ -41,6 +42,7 @@ namespace display
     // Status Screen Widgets
     WidgetLedSymbol *v_led_ros, *v_led_charge;
     WidgetBar *bar_gps, *bar_bat;
+    WidgetTextTicker *text_ticker_status;
 
     /**
      * @brief Rounder callback will round the display area to a multiple of 3, on x axis (RGB control lines of a pixel are connected to 3 monochrome pixels)
@@ -89,6 +91,9 @@ namespace display
         // GPS & Battery bars
         bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 30, UC1698_DISPLAY_WIDTH, 21);
         bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 60, UC1698_DISPLAY_WIDTH, 21);
+        // Mower status text (ticker)
+        text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
+        text_ticker_status->set_text("Bla bla");
     }
 
     static void anim_x_cb(void *var, int32_t v)
@@ -161,8 +166,8 @@ namespace display
         disp = lv_disp_drv_register(&lv_disp_drv);                                     // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), LV_PART_MAIN); // No background color
 
-        openmower_anim();
-        //mainStatusScreen();
+        //openmower_anim();
+        mainStatusScreen();
         // test1();
         // testCanvas();
 
