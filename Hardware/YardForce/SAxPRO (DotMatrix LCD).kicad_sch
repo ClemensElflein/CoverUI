@@ -2714,7 +2714,7 @@
     (stroke (width 0.1524) (type solid) (color 0 0 0 0))
     (fill (color 0 0 0 0.0000))
     (uuid 6f8d9ecb-cf0e-4216-a06b-57d9741d7238)
-    (property "Sheet name" "MCU STM32F030" (id 0) (at 176.53 88.9 0)
+    (property "Sheet name" "MCU STM32F030 + Flash" (id 0) (at 172.72 88.9 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Sheet file" "Subsheets/saxpro_mcu_stm32f030.kicad_sch" (id 1) (at 160.02 137.16 0)
@@ -2974,22 +2974,22 @@
     (path "/6f8d9ecb-cf0e-4216-a06b-57d9741d7238/8c11f17d-e469-4ae9-b440-fff80aeae4c4"
       (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
     )
-    (path "/f943ab76-06db-4228-8039-ceb5eee988d2/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/38d2f403-0b05-41d5-9367-693053e593f2/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
+    (path "/32dee119-3232-4883-92dd-b6a76c2a2576/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
     (path "/cce85892-34db-41da-93ff-f2d70e2cec22/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
-    (path "/32dee119-3232-4883-92dd-b6a76c2a2576/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
+    (path "/38d2f403-0b05-41d5-9367-693053e593f2/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
-    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
+    (path "/f943ab76-06db-4228-8039-ceb5eee988d2/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
     (path "/bb04b720-fddd-43a5-b689-bd08749bb66d/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/8c3e7104-aa64-42e5-84e0-e6cc833b580c"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
     (path "/9058010e-db2d-4e94-ad6e-a534dc60d75b"
@@ -3097,16 +3097,10 @@
     (path "/38d2f403-0b05-41d5-9367-693053e593f2/39abff33-50ea-4971-a0a3-b359beb69394"
       (reference "D4") (unit 1) (value "D") (footprint "")
     )
-    (path "/bb04b720-fddd-43a5-b689-bd08749bb66d/39abff33-50ea-4971-a0a3-b359beb69394"
+    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/39abff33-50ea-4971-a0a3-b359beb69394"
       (reference "D?") (unit 1) (value "D") (footprint "")
     )
     (path "/32dee119-3232-4883-92dd-b6a76c2a2576/39abff33-50ea-4971-a0a3-b359beb69394"
-      (reference "D?") (unit 1) (value "D") (footprint "")
-    )
-    (path "/cce85892-34db-41da-93ff-f2d70e2cec22/39abff33-50ea-4971-a0a3-b359beb69394"
-      (reference "D?") (unit 1) (value "D") (footprint "")
-    )
-    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/39abff33-50ea-4971-a0a3-b359beb69394"
       (reference "D?") (unit 1) (value "D") (footprint "")
     )
     (path "/98ec378d-9cd0-45fd-882c-58a94a607bdf/f3169df7-c84c-4574-887e-9b30698ba6a5"
@@ -3135,6 +3129,12 @@
     )
     (path "/98ec378d-9cd0-45fd-882c-58a94a607bdf/dd2052cb-9c9b-4b8f-889b-2a94955fc3f0"
       (reference "JP7") (unit 1) (value "Conn_01x08_Female") (footprint "")
+    )
+    (path "/cce85892-34db-41da-93ff-f2d70e2cec22/39abff33-50ea-4971-a0a3-b359beb69394"
+      (reference "NP") (unit 1) (value "D") (footprint "")
+    )
+    (path "/bb04b720-fddd-43a5-b689-bd08749bb66d/39abff33-50ea-4971-a0a3-b359beb69394"
+      (reference "NP") (unit 1) (value "D") (footprint "")
     )
     (path "/98ec378d-9cd0-45fd-882c-58a94a607bdf/4d62c368-251e-43c6-b114-b4cc2109e592"
       (reference "Q1") (unit 1) (value "Q_NPN_BEC") (footprint "")
@@ -3226,11 +3226,14 @@
     (path "/98ec378d-9cd0-45fd-882c-58a94a607bdf/fff67521-6f9b-44e1-8a2a-3a67b1aa8862"
       (reference "Rb1") (unit 1) (value "4R7") (footprint "")
     )
-    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
-      (reference "S3") (unit 1) (value "BTN") (footprint "")
+    (path "/cce85892-34db-41da-93ff-f2d70e2cec22/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
+      (reference "S1") (unit 1) (value "BTN") (footprint "")
     )
     (path "/bb04b720-fddd-43a5-b689-bd08749bb66d/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
-      (reference "S?") (unit 1) (value "BTN") (footprint "")
+      (reference "S2") (unit 1) (value "BTN") (footprint "")
+    )
+    (path "/ac3e26fc-5bee-413c-8a13-d3e2f8176b67/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
+      (reference "S3") (unit 1) (value "BTN") (footprint "")
     )
     (path "/32dee119-3232-4883-92dd-b6a76c2a2576/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
       (reference "S?") (unit 1) (value "BTN") (footprint "")
@@ -3241,9 +3244,6 @@
     (path "/38d2f403-0b05-41d5-9367-693053e593f2/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
       (reference "S?") (unit 1) (value "BTN") (footprint "")
     )
-    (path "/cce85892-34db-41da-93ff-f2d70e2cec22/f3b812c2-a0fc-4a10-813c-b7868a9843a7"
-      (reference "S?") (unit 1) (value "BTN") (footprint "")
-    )
     (path "/395e2a64-9334-4df7-8ce2-0c2b64ad8634"
       (reference "U1") (unit 1) (value "AMS1117-3.3") (footprint "Package_TO_SOT_SMD:SOT-223-3_TabPin2")
     )
@@ -3252,6 +3252,9 @@
     )
     (path "/6f8d9ecb-cf0e-4216-a06b-57d9741d7238/ad5cece6-4980-4282-85ac-ae6465044282"
       (reference "U3") (unit 1) (value "STM32F030RCTx") (footprint "Package_QFP:LQFP-64_10x10mm_P0.5mm")
+    )
+    (path "/6f8d9ecb-cf0e-4216-a06b-57d9741d7238/f7fa3a72-bcbb-49cc-8ab0-92c04ed847b1"
+      (reference "U4") (unit 1) (value "SST25VF512A") (footprint "Package_SO:SOP-8_3.9x4.9mm_P1.27mm")
     )
   )
 )
