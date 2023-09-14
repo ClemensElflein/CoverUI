@@ -24,6 +24,7 @@
 #include <errno.h>   // Error integer and strerror() function
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
+#include <getopt.h>  // GNU getopt to parse command-line options
 
 #include "COBS.h"
 #include "BttnCtl.h"
@@ -40,7 +41,7 @@ COBS cobs;
                                       (((i)&0x08ll) ? '1' : '0'), (((i)&0x04ll) ? '1' : '0'), (((i)&0x02ll) ? '1' : '0'), (((i)&0x01ll) ? '1' : '0')
 /* --- end PRINTF_BYTE_TO_BINARY macros --- */
 
-static string VERSION         = "V 0.91";
+static string VERSION         = "V 0.92";
 char  DEFAULT_SERIAL[]        = "/dev/ttyUSB0";
 
 
@@ -50,7 +51,7 @@ uint8_t serial_buf [buffersize];
 uint32_t read_ptr = 0;
 uint32_t write_ptr = 0;
 uint8_t COBS_buf [buffersize];
-
+uint bar_test_delay = 20;
 
 /****************************************************************************************************
  * 
@@ -486,12 +487,12 @@ void LEDBar7test(int com_port)
         for (double d = 0; d < 1.0; d += 0.05) {
             setBars7(msg, d);
             sendMessage(&msg, sizeof(msg), com_port);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(bar_test_delay));
         }
         for (double d = 0; d < 1.0; d += 0.05) {
             setBars7(msg, 1.0 - d);
             sendMessage(&msg, sizeof(msg), com_port);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(bar_test_delay));
         }
     }
 }
@@ -506,18 +507,36 @@ void LEDBar4test(int com_port)
         for (double d = 0; d < 1.0; d += 0.05) {
             setBars4(msg, d);
             sendMessage(&msg, sizeof(msg), com_port);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(bar_test_delay));
         }
 
         for (double d = 0; d < 1.0; d += 0.05) {
             setBars4(msg, 1.0 - d);
             sendMessage(&msg, sizeof(msg), com_port);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(bar_test_delay));
         }
     }
 }
 
+/**
+ * @brief Brief usage of this command with infos about the possible options
+ * 
+ * @param fp 
+ * @param path 
+ * @return * print 
+ */
+void usage(FILE *fp, const char *path)
+{
+    // Get command name (last portion of the path)
+    const char *basename = strrchr(path, '/');
+    basename = basename ? basename + 1 : path;
 
+    fprintf(fp, "usage: %s [OPTION] [serial channel {%s}]\n", basename, DEFAULT_SERIAL);
+    fprintf(fp, "  -h, --help\t"
+                "Print this help and exit.\n");
+    fprintf(fp, "  -l, --lcd\t"
+                "Test LCD display (limited set of tests and slower rates to get recognized on slow liquid).\n");
+}
 
 /****************************************************************************************************
  * 
@@ -528,27 +547,66 @@ void LEDBar4test(int com_port)
 
 int main(int argc, char *argv[])
 {
-
-    printf("Testprogramm OpnMower UI-Board Version %s\n",VERSION.c_str() );
-
+    printf("Testprogramm OpenMower UI-Board Version %s\n",VERSION.c_str() );
 
     char serialchannel[80];
-    if ( argc == 1)
-    {
-        printf("No command line parameter for serial channel, using default value : %s\n",DEFAULT_SERIAL);
-        strcpy(serialchannel,DEFAULT_SERIAL);
+    int help_flag = 0;
+    int lcd_flag = 0;
+    int opt;
 
+    // getopt long options
+    struct option longopts[] = {
+        {"help", no_argument, &help_flag, 1},
+        {"lcd", no_argument, &lcd_flag, 'l'},
+        {0}};
+
+    // infinite loop, to be broken when we are done parsing options
+    while (1)
+    {
+        // One colon after an option indicates that it has an argument, two indicates that the argument is optional. order is unimportant.
+        opt = getopt_long(argc, argv, "hl", longopts, 0);
+
+        if (opt == -1) // indicates that there are no more options
+            break;
+
+        switch (opt)
+        {
+        case 'h':
+            help_flag = 1;
+            break;
+        case 'l':
+            lcd_flag = 1;
+            break;
+        case '?': // malformed option
+            usage(stderr, argv[0]);
+            return 1;
+        default:
+            break;
+        }
     }
-    else if (argc > 2)
+
+    if (help_flag)
     {
-        printf("To many agruments, try cobstest <serialport>\n");
+        usage(stdout, argv[0]);
+        return 0;
     }
-    else
+
+    if (lcd_flag)
+        bar_test_delay = 60;
+
+    // Non-option args
+    if (optind < argc)
     {
-        strcpy(serialchannel,argv[1]);
-        printf("using serial channel: %s \n",serialchannel);
-
-
+        if (argc - optind > 2)
+        {
+            printf("To many agruments, try cobstest <serialport>\n");
+            return 1;
+        }
+        strcpy(serialchannel, argv[optind++]);
+        printf("using serial channel: %s \n", serialchannel);
+    } else {
+        printf("No command line parameter for serial channel, using default value : %s\n", DEFAULT_SERIAL);
+        strcpy(serialchannel, DEFAULT_SERIAL);
     }
 
 
@@ -569,12 +627,13 @@ int main(int argc, char *argv[])
 
     LEDstatic(com_port);
 
-    LEDfastblink(com_port);
+    if (!lcd_flag)
+        LEDfastblink(com_port);
 
     LEDslowblink(com_port);
 
-    Buzzertest(com_port);
-
+    if (!lcd_flag)
+        Buzzertest(com_port);
 
     LEDBar4test(com_port);
 
