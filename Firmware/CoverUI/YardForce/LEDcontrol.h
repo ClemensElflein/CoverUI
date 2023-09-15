@@ -52,7 +52,7 @@
 
 #define LED_NUM_BACKLIGHT 18
 #define BACKLIGHT_TIMEOUT_STEP_RATE_MS 100
-#define BACKLIGHT_TIMEOUT_MS 20000 // Should be int dividable by BACKLIGHT_TIMEOUT_STEP_RATE_MS
+#define BACKLIGHT_TIMEOUT_MS 30000 // Should be int dividable by BACKLIGHT_TIMEOUT_STEP_RATE_MS
 
 #else
 #define NUM_LEDS 0
@@ -60,14 +60,17 @@
 #endif
 
 // Some handy LED-num defines
-#define LED_NUM_LIFTED 3
-#define LED_NUM_WIRE 2
-#define LED_NUM_BAT 1
 #define LED_NUM_CHARGE 0
-#define LED_NUM_REAR 18
-#define LED_NUM_MON 10
+#define LED_NUM_BAT 1
+#define LED_NUM_WIRE 2
+#define LED_NUM_LIFTED 3
 #define LED_NUM_SUN 4
+#define LED_NUM_MON 10
+#define LED_NUM_S2 12
 #define LED_NUM_S1 13
+#define LED_NUM_8HR 14
+#define LED_NUM_2HR 17
+#define LED_NUM_REAR 18
 
 #define LED_PIN_NC 0xffffffff // Not Connected (virtual LED)
 

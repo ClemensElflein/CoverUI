@@ -43,7 +43,7 @@
 #define NUM_GPIO_PORTS 4
 
 #elif defined(MDL_SAXPRO) // Model SAxPRO
-#define BTN_PLAY_PIN PC3  // or Start
+#define BTN_PLAY_PIN PC0  // or Start
 #define BTN_HOME_PIN PC1
 #define BTN_UP_PIN PB14
 #define BTN_DOWN_PIN PB13
@@ -55,6 +55,7 @@
 #endif
 
 // Logic button numbers. Take attention that OM known buttons need to have the same logic number!
+// 0 is reserved for no-button return
 #define BTN_CLK_NUM 1
 #define BTN_HOME_NUM 2
 #define BTN_PLAY_NUM 3 // or Start
@@ -138,6 +139,20 @@ public:
         {
             return false;
         }
+    };
+
+    /**
+     * @brief Return ButtonNum of the first detected pressed button.
+     *        Take into notice that the returned state is already debounced.
+     *
+     * @return ButtonNum 0 = none pressed, >0 = ButtonNum
+     */
+    ButtonNum is_pressed()
+    {
+        for (auto const &btn_def : kButtonNum2DefMap)
+            if(get_status(btn_def.second.debouncer_index) & digitalPinToBitMask(btn_def.second.digital_pin))
+                return btn_def.first;
+        return 0;
     };
 
 private:

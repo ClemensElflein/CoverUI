@@ -592,7 +592,7 @@ int main(int argc, char *argv[])
     }
 
     if (lcd_flag)
-        bar_test_delay = 60;
+        bar_test_delay = 100;
 
     // Non-option args
     if (optind < argc)
@@ -627,8 +627,7 @@ int main(int argc, char *argv[])
 
     LEDstatic(com_port);
 
-    if (!lcd_flag)
-        LEDfastblink(com_port);
+    LEDfastblink(com_port);
 
     LEDslowblink(com_port);
 

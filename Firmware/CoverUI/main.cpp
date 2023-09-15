@@ -286,7 +286,7 @@ void core1()
         {
           // user indeed held the button
           pressed_count++;
-          // if button is still held, we flash and rety
+          // if button is still held, we flash and retry
           for (int i = 0; i < pressed_count; i++)
           {
             mutex_enter_blocking(&mx1);

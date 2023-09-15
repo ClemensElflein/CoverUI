@@ -32,7 +32,8 @@ LV_IMG_DECLARE(OM_Wordmark_240x35x1);
 
 namespace display
 {
-    UC1698 uc1698; // Display controller
+    UC1698 uc1698;                   // Display controller
+    bool main_screen_active = false; // Initialized and active
 
     // LVGL buffers
     static lv_disp_draw_buf_t lv_disp_buf;
@@ -44,7 +45,7 @@ namespace display
     // Status Screen Widgets
     WidgetLedSymbol *v_led_heartbeat, *v_led_ros,
         *v_led_emergency_wheel, *v_led_emergency, *v_led_emergency_stop,
-        *v_led_charge;
+        *v_led_bat, *v_led_gps, *v_led_charge, *v_led_power;
     WidgetBar *bar_gps, *bar_bat;
     WidgetTextTicker *text_ticker_status;
 
@@ -87,7 +88,7 @@ namespace display
         lv_disp_flush_ready(disp_drv);
     }
 
-    static void mainStatusScreen()
+    static void mainScreen()
     {
         // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
         v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
@@ -99,7 +100,10 @@ namespace display
         v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
-        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
+        v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
+        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (2 * 14) - TOP_STATUS_BAR_GAP_PX), 0);
+        v_led_gps = new WidgetLedSymbol(FA_SYMBOL_GPS1, LV_ALIGN_OUT_TOP_RIGHT, (240 - (3 * 14) - (2*TOP_STATUS_BAR_GAP_PX)), 0);
+        v_led_bat = new WidgetLedSymbol(FA_SYMBOL_BATTERY, LV_ALIGN_OUT_TOP_RIGHT, (240 - (4 * 14) - (3 * TOP_STATUS_BAR_GAP_PX)), 0);
 
         // GPS & Battery bars
         bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 30, UC1698_DISPLAY_WIDTH, 21);
@@ -107,7 +111,8 @@ namespace display
 
         // Mower status text (ticker)
         text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
-        text_ticker_status->set_text("Mower status like Idle, Mowing, Emergency, ...");
+
+        main_screen_active = true;
     }
 
     static void anim_x_cb(void *var, int32_t v)
@@ -147,7 +152,7 @@ namespace display
         lv_anim_set_delay(&aw, 1700);
         lv_anim_set_exec_cb(&aw, (lv_anim_exec_xcb_t)anim_x_cb);
         lv_anim_set_path_cb(&aw, lv_anim_path_ease_in);
-        lv_anim_set_deleted_cb(&aw, (lv_anim_ready_cb_t)mainStatusScreen); // Set a callback to indicate when the animation is deleted (idle)
+        lv_anim_set_deleted_cb(&aw, (lv_anim_ready_cb_t)mainScreen); // Set a callback to indicate when the animation is deleted (idle)
         lv_anim_start(&aw);
     }
 
@@ -172,8 +177,8 @@ namespace display
         disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        openmower_anim();
-        //mainStatusScreen();
+        // openmower_anim();
+        mainScreen();
 
         return true;
     }
@@ -190,61 +195,137 @@ namespace display
     }
 
     /**
-     * @brief Regular loop() function, which get called by a low priority hardware timer.
+     * @brief Regular loop() function, which get called by a low priority hardware timer (approx. 10ms).
      * Handles i.e. LVGL timers or LED-2-Display logic.
      * Has to be a lower priority routine than tick_inc(), otherwise all LVGL timers (or animations) do not work
      */
     void loop_low_prio()
     {
-        static uint32_t next_display_data_ms = 0;
-        uint32_t now = millis();
-
         lv_timer_handler();
 
-        /***** TODO: Migrate below code *****/
-
-        // Refresh display data
-        if (now >= next_display_data_ms)
+        // Backlight on, on any button press
+        if (buttons.is_pressed())
         {
-            next_display_data_ms = now + 100; // 100ms display data refresh
+            leds.sequence_start(&LEDcontrol::sequence_backlight_timeout_handler, true);
+        }
 
-            if (bar_gps != nullptr)
-            {
-                // Rev-calc GPS LEDs to percent
-                int8_t gps_perc = 0;
-                for (uint8_t i = 0; i < 4; i++)
-                {
-                    if (::leds.get(17 - i) == LED_state::LED_blink_fast) // 17 = LED_2HR
-                    {
-                        gps_perc = -1; // No fix?
-                        break;
-                    }
-                    if (::leds.get(17 - i) != LED_state::LED_on) // 17 =
-                    {
-                        gps_perc += 25; // One LED represents 25%
-                    }
-                }
-                bar_gps->set_value(gps_perc);
-            }
+        // LEDs & Buttons to main status screen conversion
+        if (!main_screen_active)
+            return; // Still in OM anim
 
-            if (bar_bat != nullptr)
+        // GPS quality = LED_2HR - LED_8HR
+        int val = 0;
+        for (int i = LED_NUM_2HR; i >= LED_NUM_8HR; i--)
+        {
+            if (::leds.get(i) == LED_state::LED_blink_fast)
             {
-                // Rev-calc Battery LEDs to percent
-                uint8_t bat_perc = 0;
-                for (uint8_t i = 0; i < 7; i++)
-                {
-                    if (::leds.get(10 - i) != LED_state::LED_on) // 10 = LED_MON
-                        continue;
-                    bat_perc += 15; // One LED represents 14.3%
-                }
-                bar_bat->set_value(bat_perc);
+                v_led_gps->set(LED_blink_slow);
+                val = 0;
+                break;
             }
+            if (::leds.get(i) == LED_state::LED_on)
+            {
+                v_led_gps->set(LED_on);
+                val += 25; // 1 (of 4) LEDs represents 25%
+            }
+        }
+        bar_gps->set_value(val);
 
-            if (v_led_charge != nullptr && v_led_ros != nullptr)
+        // Battery = LED_MON - LED_SUN
+        val = 0;
+        for (int i = LED_NUM_MON; i >= LED_NUM_SUN; i--)
+        {
+            if (::leds.get(i) == LED_state::LED_on)
             {
-                v_led_charge->set(leds.get(LED_NUM_CHARGE));
-                v_led_ros->set(leds.get(LED_NUM_S1));
+                val += 15; // 1 (of 7) LEDs represents 14.3%
             }
+        }
+        bar_bat->set_value(val);
+
+        // ROS Status = S1 => Brain Symbol
+        v_led_ros->set(::leds.get(LED_NUM_S1));
+        // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
+        switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
+        {
+        case LED_on<<3 | LED_off:
+            text_ticker_status->set_text("Idle");
+            break;
+        // S1 = Autonomous mode (mowing, docking, undocking)
+        case LED_blink_slow << 3 | LED_off:
+            text_ticker_status->set_text("Mowing");
+            break;
+        case LED_blink_slow << 3 | LED_blink_slow:
+            text_ticker_status->set_text("Docking");
+            break;
+        case LED_blink_slow << 3 | LED_blink_fast:
+            text_ticker_status->set_text("Undocking");
+            break;
+        // S1 = Recording mode
+        case LED_blink_fast << 3 | LED_blink_slow:
+            text_ticker_status->set_text("Record area outline");
+            break;
+        case LED_blink_fast << 3 | LED_blink_fast:
+            text_ticker_status->set_text("Record obstacle");
+            break;
+        default:
+            text_ticker_status->set_text("");
+            break;
+        }
+
+        // Lifted LED = Emergencies
+        switch (::leds.get(LED_NUM_LIFTED))
+        {
+        case LED_on: // No heart beat for more than 0.5s
+            v_led_heartbeat->set(LED_blink_slow);
+            break;
+        case LED_blink_fast:
+            v_led_emergency_stop->set(LED_blink_slow);
+            v_led_emergency->set(LED_blink_slow);
+            v_led_heartbeat->set(LED_on);
+            break;
+        case LED_blink_slow:
+            v_led_emergency_wheel->set(LED_blink_slow);
+            v_led_emergency->set(LED_blink_slow);
+            v_led_heartbeat->set(LED_on);
+            break;
+        default:
+            v_led_heartbeat->set(LED_on);
+            v_led_emergency->set(LED_off);
+            v_led_emergency_stop->set(LED_off);
+            v_led_emergency_wheel->set(LED_off);
+            break;
+        }
+
+        // Wire LED = Sattelite
+        switch (::leds.get(LED_NUM_BAT))
+        {
+        case LED_on:
+            v_led_bat->set(LED_blink_slow);
+            break;
+        default:
+            v_led_bat->set(LED_on);
+            break;
+        }
+
+        // Charging LED = charge-station & Plug
+        switch (::leds.get(LED_NUM_CHARGE))
+        {
+        case LED_on: // Fully charged
+            v_led_charge->set(LED_off);
+            v_led_power->set(LED_on);
+            break;
+        case LED_blink_fast: // Empty
+            v_led_charge->set(LED_blink_fast);
+            v_led_power->set(LED_on);
+            break;
+        case LED_blink_slow: // 1/2 charged
+            v_led_charge->set(LED_blink_slow);
+            v_led_power->set(LED_on);
+            break;
+        default:
+            v_led_charge->set(LED_off);
+            v_led_power->set(LED_off);
+            break;
         }
     }
 } // namespace display

@@ -13,10 +13,13 @@
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
 #include "hwtimer.hpp"
+
 #include "LEDcontrol.h"
 LEDcontrol leds; // Main LED controller object
 
 #include "Buttons.hpp"
+Buttons buttons; // Main Buttons object
+
 #ifdef MDL_SAXPRO // Model SAxPRO
 #include "WYM240128K1.hpp"
 #endif
@@ -59,7 +62,6 @@ typedef bool *PIO;
 #define buzzer_SM_CYCLE 10800
 
 // YardForce implementation specific
-Buttons buttons; // Main Buttons object
 #ifdef MOD_RAIN
 Rain rain;
 #endif
@@ -74,8 +76,12 @@ HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display log
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
 #ifdef MCU_STM32
-HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
-#else                               // MCU_GD32
+#ifdef MDL_C500
+HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+#elif defined(MDL_SAXPRO)
+HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+#endif
+#else // MCU_GD32
 HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
@@ -97,16 +103,19 @@ void setup()
 #endif
 
     // We've hardware timer on mass, let's use them.
-    timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper, 20);  //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
-    timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper, 15); //  10Hz (100ms) timer, used for LED-blink-fast
+    timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper, 30);  //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
+    timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper, 20); //  10Hz (100ms) timer, used for LED-blink-fast
 #ifdef MDL_SAXPRO
     timer_event = hwtimer(TIM_EVENT, 100, timer_event_callback_wrapper, 10); // 100Hz   (10ms) timer, used for displays lv_timer_handler() and LED-2-Display logic
 #endif
-    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper, 5); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
+    // Don't increase value of this timers preemptPriority parameter higher than the default,
+    // as this timer callback also handles HardwareSerial as well as button-debouncer,
+    // which would mess expected processing of those.
+    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
 
     serial_ll.begin(115200);
 
-#ifdef MDL_C500                                        // Model Classic 500
+#ifdef MDL_C500
     leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
 
     delay(100); // Some required stupid delay, dunno why :-/
@@ -133,14 +142,6 @@ void loop() // This loop() doesn't loop!
 
 #ifdef MDL_SAXPRO // Model SAxPRO
     // FIXME: Test code! Need to be merged into core1() or similar
-    if (buttons.is_pressed(BTN_UP_NUM))
-    {
-        leds.sequence_start(&LEDcontrol::sequence_backlight_timeout_handler, true);
-    }
-    else if (buttons.is_pressed(BTN_DOWN_NUM))
-    {
-        leds.sequence_start(&LEDcontrol::sequence_backlight_timeout_handler, true);
-    }
 
     // Test steps
     static uint32_t next_bar_test_step_ms = 0;
@@ -232,8 +233,6 @@ void loop() // This loop() doesn't loop!
 
         leds.set(LED_NUM_CHARGE, vled_state);
     }
-
-    // display::loop(); // FIXME: has to go to core1() or a lower priority timer (than the one of tick_inc())
 #endif
 }
 

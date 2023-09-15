@@ -401,7 +401,7 @@
  *  !"#       %-...      Bullet
  * 0x20-0x23, 0x25-0x7E, 0x2022
  * + FontAwesome5-Solid+Brands+Regular
- *   location-arrow (GPS),
+ *   location-arrow (GPS2),
  *           bolt (charge),
  *                   umbrella (rain),
  *                           exclamation-triangle (emergency),
@@ -412,7 +412,7 @@
  *      
  *   charging-station (charge),
  *           brain (ROS?),
- *                   sattelite-dish (GPS),
+ *                   sattelite-dish (GPS1),
  *                           car-battery,
  *                                   car-crash (Wheel lift Hall1-2),
  *                                           heartbeat,
@@ -423,7 +423,8 @@
 #define FA_SYMBOL_GPS1 "\xEF\x9F\x80"
 #define FA_SYMBOL_GPS2 "\xEF\x84\xA4"
 #define FA_SYMBOL_BATTERY "\xEF\x97\x9F"
-#define FA_SYMBOL_CHARGE "\xEF\x87\xA6"
+#define FA_SYMBOL_PLUG "\xEF\x87\xA6"
+#define FA_SYMBOL_CHARGE "\xEF\x97\xA7"
 #define FA_SYMBOL_ROS "\xEF\x97\x9C" // Brain
 #define FA_SYMBOL_EMERGENCY "\xEF\x81\xB1"
 #define FA_SYMBOL_EMERGENCY_WHEEL "\xEF\x97\xA1" // Car-crash
