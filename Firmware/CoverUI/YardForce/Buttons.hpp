@@ -14,7 +14,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "ButtonDebouncer.h"
+#include "ButtonDebouncer.hpp"
 
 #ifdef MCU_GD32
 #define GPIOA_BASE GPIOA
