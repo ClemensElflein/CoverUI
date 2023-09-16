@@ -91,18 +91,18 @@ namespace display
     static void mainScreen()
     {
         // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
-        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
-        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 14 + TOP_STATUS_BAR_GAP_PX, 0);
+        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
 
         // In the middle, we do have emergencies
-        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
-        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
-        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
+        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                            // Centered
+        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0);  // Left of centered
+        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_LEFT, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
+        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);         // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
         v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
         v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (2 * 14) - TOP_STATUS_BAR_GAP_PX), 0);
-        v_led_gps = new WidgetLedSymbol(FA_SYMBOL_GPS1, LV_ALIGN_OUT_TOP_RIGHT, (240 - (3 * 14) - (2*TOP_STATUS_BAR_GAP_PX)), 0);
+        v_led_gps = new WidgetLedSymbol(FA_SYMBOL_GPS1, LV_ALIGN_OUT_TOP_RIGHT, (240 - (3 * 14) - (2 * TOP_STATUS_BAR_GAP_PX)), 0);
         v_led_bat = new WidgetLedSymbol(FA_SYMBOL_BATTERY, LV_ALIGN_OUT_TOP_RIGHT, (240 - (4 * 14) - (3 * TOP_STATUS_BAR_GAP_PX)), 0);
 
         // GPS & Battery bars
@@ -247,7 +247,7 @@ namespace display
         // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
         switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
         {
-        case LED_on<<3 | LED_off:
+        case LED_on << 3 | LED_off:
             text_ticker_status->set_text("Idle");
             break;
         // S1 = Autonomous mode (mowing, docking, undocking)
@@ -281,29 +281,29 @@ namespace display
         case LED_blink_fast:
             v_led_emergency_stop->set(LED_blink_slow);
             v_led_emergency->set(LED_blink_slow);
-            v_led_heartbeat->set(LED_on);
+            v_led_heartbeat->set(LED_off);
             break;
         case LED_blink_slow:
             v_led_emergency_wheel->set(LED_blink_slow);
             v_led_emergency->set(LED_blink_slow);
-            v_led_heartbeat->set(LED_on);
+            v_led_heartbeat->set(LED_off);
             break;
         default:
-            v_led_heartbeat->set(LED_on);
+            v_led_heartbeat->set(LED_off);
             v_led_emergency->set(LED_off);
             v_led_emergency_stop->set(LED_off);
             v_led_emergency_wheel->set(LED_off);
             break;
         }
 
-        // Wire LED = Sattelite
+        // Battery LED
         switch (::leds.get(LED_NUM_BAT))
         {
         case LED_on:
             v_led_bat->set(LED_blink_slow);
             break;
         default:
-            v_led_bat->set(LED_on);
+            v_led_bat->set(LED_off);
             break;
         }
 
