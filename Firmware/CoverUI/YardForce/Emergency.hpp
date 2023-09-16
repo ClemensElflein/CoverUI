@@ -114,7 +114,7 @@ public:
      */
     void periodic_send()
     {
-        static uint8_t call_cnt_ = 0;
+        static uint call_cnt_ = 0;
 
         call_cnt_++;
 

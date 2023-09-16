@@ -116,7 +116,7 @@ public:
      */
     void process_states()
     {
-        for (uint8_t i = 0; i < NUM_GPIO_PORTS; i++)
+        for (uint i = 0; i < NUM_GPIO_PORTS; i++)
             debouncers_[i]->process_state(kGpioPorts[i]);
     };
 

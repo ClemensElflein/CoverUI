@@ -21,8 +21,7 @@ void ButtonDebouncer::process_state(const uint32_t gpio_port)
 
     // Debounce
     uint16_t laststate_debounced_ = state_debounced_;
-    uint8_t i;
-    for (i = 0, state_debounced_ = 0xFFFF; i < NUM_BUTTON_STATES; i++)
+    for (uint i = 0, state_debounced_ = 0xFFFF; i < NUM_BUTTON_STATES; i++)
         state_debounced_ &= states_[i];
 
     // Circular buffer index

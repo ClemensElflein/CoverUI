@@ -72,7 +72,7 @@ namespace display
      */
     static void flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *t_color_p)
     {
-        uint8_t x, y;
+        uint x, y;
         lv_color_t *color_p;
         uc1698.setWindowProgramArea(area->x1, area->x2, area->y1, area->y2);
 

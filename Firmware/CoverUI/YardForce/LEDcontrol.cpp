@@ -56,7 +56,7 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 
 void LEDcontrol::set(uint64_t all_state)
 {
-    for (uint8_t led = 0; led < NUM_LEDS; led++)
+    for (uint led = 0; led < NUM_LEDS; led++)
     {
         uint8_t led_state = (all_state >> (3 * led)) & 0b111;
         set(led, static_cast<LED_state>(led_state));
@@ -125,7 +125,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
     if (blink_state != LED_state::LED_blink_fast && blink_state != LED_state::LED_blink_slow) // Ensure that this method only get called for blinking LED states
         return;
 
-    for (uint8_t led_num = 0; led_num < NUM_LEDS; led_num++)
+    for (uint led_num = 0; led_num < NUM_LEDS; led_num++)
     {
         if (has(led_num, blink_state) && !(force_led_off_ & (1 << led_num)))
         {

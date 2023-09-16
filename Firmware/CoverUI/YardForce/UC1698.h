@@ -56,23 +56,23 @@ namespace display
 
         uint8_t *getStatus();
 
-        void setColumnAddress(uint8_t t_col);
+        void setColumnAddress(uint t_col);
         void setDisplayEnable(bool t_sleep_mode);
         void setLCDMappingControl(bool mirrorX, bool mirrorY);
-        void setRowAddress(uint8_t t_row);
-        void setVBiasPotentiometer(uint8_t vBiasPotentiometer);
+        void setRowAddress(uint t_row);
+        void setVBiasPotentiometer(uint vBiasPotentiometer);
         void setWindowProgramArea(uint8_t t_x1, uint8_t t_x2, uint8_t t_y1, uint8_t t_y2, bool t_outside_mode = false);
 
         void writeCommand(uint8_t data);
-        void writeCommand(const uint8_t *data_array, uint32_t length);
+        void writeCommand(const uint8_t *data_array, uint length);
         void writeData(uint16_t data);
-        void writeData(const uint8_t *data_array, uint32_t length);
+        void writeData(const uint8_t *data_array, uint length);
 
     private:
         void initConnection_();
         void initDisplay_();
 
-        void nopDelay_(uint_fast16_t t_ns);
+        void nopDelay_(uint t_ns);
         uint8_t read_();
         void writeSeq_(uint8_t data);
     };

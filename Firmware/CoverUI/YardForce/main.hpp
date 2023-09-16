@@ -137,103 +137,6 @@ void loop() // This loop() doesn't loop!
 {
     // Drop off into infinite core1() at main.cpp, for button processing (waste (one more?) stack entry! but let remain original code untouched)
     core1();
-
-    /***** TODO: Migrate below code *****/
-
-#ifdef MDL_SAXPRO // Model SAxPRO
-    // FIXME: Test code! Need to be merged into core1() or similar
-
-    // Test steps
-    static uint32_t next_bar_test_step_ms = 0;
-    static uint32_t next_vled_test_step_ms = 0;
-    uint32_t now = millis();
-
-    // Test bar4
-    static double gps_val = 0;
-    static const double gps_step = 0.25;
-    static bool gps_inc = true;
-
-    // Test bar7
-    static double bat_val = 0;
-    static const double bat_step = 0.1;
-    static bool bat_inc = true;
-
-    if (now > next_bar_test_step_ms)
-    {
-        next_bar_test_step_ms = now + 500;
-        int on_leds;
-
-        // GPS wobble between -0.5 to 1.0
-        if (gps_inc)
-        {
-            if (gps_val < 1.0)
-                gps_val += gps_step;
-            else
-                gps_inc = false;
-        }
-        else
-        {
-            if (gps_val > -0.5)
-                gps_val -= gps_step;
-            else
-                gps_inc = true;
-        }
-
-        // gps_val = -0.5;
-        //  Simulate current LL behavior for GPS
-        if (gps_val < 0)
-        {
-            for (int i = 17; i > 14; i--)
-            {
-                leds.set(i, LED_blink_fast); // = Bad GPS quality (no cm accuracy = no fix?)
-            }
-        }
-        else
-        {
-            on_leds = round(gps_val * 4.0);
-            for (int i = 0; i < 4; i++)
-            {
-                leds.set(17 - i, i < on_leds ? LED_on : LED_off); // 17 = LED_2HR
-            }
-        }
-
-        // Bat wobble between 0 to 1.0
-        if (bat_inc && bat_val < 1.0)
-            bat_val += bat_step;
-        else
-            bat_inc = false;
-        if (!bat_inc && bat_val > 0)
-            bat_val -= bat_step;
-        else
-            bat_inc = true;
-
-        // Simulate current LL behavior for Battery
-        on_leds = round(bat_val * 7.0);
-        for (int i = 0; i < 7; i++)
-        {
-            leds.set(10 - i, i < on_leds ? LED_on : LED_off); // 10 = LED_MON
-        }
-    }
-
-    static LED_state vled_state = LED_state::LED_off;
-    if (now > next_vled_test_step_ms)
-    {
-        next_vled_test_step_ms = now + 4000;
-
-        leds.set(LED_NUM_S1, vled_state);
-
-        if (vled_state == LED_off)
-            vled_state = LED_blink_slow;
-        else if (vled_state == LED_blink_slow)
-            vled_state = LED_blink_fast;
-        else if (vled_state == LED_blink_fast)
-            vled_state = LED_on;
-        else if (vled_state == LED_on)
-            vled_state = LED_off;
-
-        leds.set(LED_NUM_CHARGE, vled_state);
-    }
-#endif
 }
 
 #ifdef MDL_C500 // Model Classic 500
@@ -336,7 +239,7 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     still_pressed = false;
 
     // Scan the buttons in the same order as original OM FW does
-    for (uint8_t i : buttons.kOMButtonNrs)
+    for (uint i : buttons.kOMButtonNrs)
     {
         uint32_t start = millis(); // start press_timeout measurement
         if (buttons.is_pressed(i))

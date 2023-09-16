@@ -81,7 +81,7 @@ namespace display
         digitalWrite(PIN_CS, 1); // Chip deselect
     }
 
-    void UC1698::writeCommand(const uint8_t *data_array, uint32_t length)
+    void UC1698::writeCommand(const uint8_t *data_array, uint length)
     {
         digitalWrite(PIN_CS, 0); // Chip select
         digitalWrite(PIN_CD, 0); // Command
@@ -118,7 +118,7 @@ namespace display
         digitalWrite(PIN_CS, 1); // Chip deselect
     }
 
-    void UC1698::writeData(const uint8_t *data_array, uint32_t length)
+    void UC1698::writeData(const uint8_t *data_array, uint length)
     {
         digitalWrite(PIN_CS, 0); // Chip select
         digitalWrite(PIN_CD, 1); // Data
@@ -151,7 +151,7 @@ namespace display
 
         digitalWrite(PIN_CS, 0); // Chip select
         digitalWrite(PIN_CD, 0); // Command
-        for (uint8_t i = 0; i < UC1698_GET_STATUS_SIZE; i++)
+        for (uint i = 0; i < UC1698_GET_STATUS_SIZE; i++)
         {
             status[i] = read_();
         }
@@ -161,21 +161,21 @@ namespace display
     }
 
     // [4] Set Column Address
-    void UC1698::setColumnAddress(uint8_t t_col)
+    void UC1698::setColumnAddress(uint t_col)
     {
         this->writeCommand(0b00000000 | (t_col & 0b00001111));
         this->writeCommand(0b00010000 | (t_col & 0b01110000) >> 4);
     }
 
     // [9] Set Row Address
-    void UC1698::setRowAddress(uint8_t t_row)
+    void UC1698::setRowAddress(uint t_row)
     {
         this->writeCommand(0b01100000 | (t_row & 0b00001111));
         this->writeCommand(0b01110000 | (t_row & 0b11110000) >> 4);
     }
 
     // [10] Set VBias Potentiometer
-    void UC1698::setVBiasPotentiometer(uint8_t vBiasPotentiometer)
+    void UC1698::setVBiasPotentiometer(uint vBiasPotentiometer)
     {
         this->writeCommand(0b10000001);
         this->writeCommand(vBiasPotentiometer);
@@ -195,7 +195,7 @@ namespace display
     }
 
     // NOP delay to fullfil ns timing requirements. Only useful for values > 100ns, otherwise use single NOOP's
-    void UC1698::nopDelay_(uint_fast16_t t_ns)
+    void UC1698::nopDelay_(uint t_ns)
     {
         int16_t i = t_ns / NOP_CYCLE_NS;
         i -= 6; // Already consumed (or more)
