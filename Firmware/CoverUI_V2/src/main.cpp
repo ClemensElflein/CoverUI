@@ -213,7 +213,7 @@ void setup() {
     }
 
 #ifndef TEST_MODE
-    for (int i = 0; i < 13; ++i) {
+    for (int i = 0; i < 14; ++i) {
         SW[i].onPress([](int idx, int v, int up) {
             // v is 0 for release, 1-2-3 for press length
             if (v > 0)
