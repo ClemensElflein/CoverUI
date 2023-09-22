@@ -54,9 +54,15 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
         change_led_states_(led_num, state);
 }
 
+/**
+ * @brief Set LED based on binary state representation.
+ * This method set only the OM controlled LEDs
+ * 
+ * @param all_state 
+ */
 void LEDcontrol::set(uint64_t all_state)
 {
-    for (uint led = 0; led < NUM_LEDS; led++)
+    for (uint led = 0; led <= LED_NUM_OM_MAX; led++)
     {
         uint8_t led_state = (all_state >> (3 * led)) & 0b111;
         set(led, static_cast<LED_state>(led_state));
@@ -329,7 +335,7 @@ void LEDcontrol::seq_num_handler_()
  */
 void LEDcontrol::sequence_backlight_timeout_handler()
 {
-    uint16_t step = seq_get_next_step_(BACKLIGHT_TIMEOUT_STEP_RATE_MS); // Animation sequence runs in 100ms steps, which is also the trigger rate
+    uint16_t step = seq_get_next_step_(BACKLIGHT_TIMEOUT_STEP_RATE_MS); // Animation sequence runs in 100ms steps, which is also the max. trigger rate
 
     switch (step)
     {
@@ -345,7 +351,6 @@ void LEDcontrol::sequence_backlight_timeout_handler()
         return;
     default:
         seq_start_tick_ = 0; // Sequence end
-        // set(led_states_bin_); // Restore states
         return;
     }
 }

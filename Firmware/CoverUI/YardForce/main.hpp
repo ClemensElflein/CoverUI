@@ -96,7 +96,6 @@ void setup()
         // FIXME: Failure/Assert handling
     }
     leds.sequence_start(&LEDcontrol::sequence_backlight_timeout_handler);
-    // leds.set(LED_NUM_BACKLIGHT, LED_state::LED_on);
 #endif
 #ifdef MOD_HALL
     emergency.setup();

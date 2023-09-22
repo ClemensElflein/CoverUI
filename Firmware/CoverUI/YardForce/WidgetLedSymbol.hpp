@@ -50,10 +50,10 @@ namespace display
                 lv_obj_clear_flag(label, LV_OBJ_FLAG_HIDDEN);
                 break;
             case LED_blink_slow:
-                startBlinkAnim(600); // Somehow slower than originals 500ms (because of increased blink_fast period)
+                startBlinkAnim(500);
                 break;
             case LED_blink_fast:
-                startBlinkAnim(200); // 100ms fast blink is to quick for the cheap WYM240128K1
+                startBlinkAnim(100);
                 break;
             default: // off
                 lv_anim_del(label, (lv_anim_exec_xcb_t)anim_blink_cb);

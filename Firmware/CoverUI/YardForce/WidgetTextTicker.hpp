@@ -24,9 +24,10 @@ namespace display
         WidgetTextTicker(lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs, lv_coord_t w)
         {
             label = lv_label_create(lv_scr_act());
-            set_text("");
+            set_text(""); // Don't show "Text" during initialization
             lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_set_style_text_font(label, &PerfectPixel_20, LV_PART_MAIN);
+            lv_obj_set_style_anim_speed(label, 100, LV_PART_MAIN);
             lv_obj_align(label, align, x_ofs, y_ofs);
             lv_obj_set_width(label, w);
             lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR);
@@ -34,6 +35,9 @@ namespace display
 
         void set_text(const char *t_text)
         {
+            if(strcmp(t_text, lv_label_get_text(label)) == 0)
+                return; // Same string as before, do not set again as it would disturb long-text- circular animation
+
             lv_label_set_text(label, t_text);
         }
 

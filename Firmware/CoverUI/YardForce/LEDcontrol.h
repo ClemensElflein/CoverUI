@@ -59,6 +59,8 @@
 
 #endif
 
+#define LED_NUM_OM_MAX 17 // Highest LED num controlled by OM LL FW
+
 // Some handy LED-num defines
 #define LED_NUM_CHARGE 0
 #define LED_NUM_BAT 1

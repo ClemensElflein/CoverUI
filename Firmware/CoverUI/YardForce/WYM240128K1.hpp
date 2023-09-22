@@ -16,6 +16,7 @@
 #define LVGL_TIMER_HANDLER_PERIOD_MS 10 // 10ms lv_timer_handler() soft period
 
 #define TOP_STATUS_BAR_GAP_PX 5 // Amount of (gap) pixels between top status-bar icons/symbols
+#define EMERGENCY_CLEAR_TEXT "Emergency! Press [Enter], close cover and stay back, to clear emergency state."
 
 #include "UC1698.h"
 
@@ -201,6 +202,8 @@ namespace display
      */
     void loop_low_prio()
     {
+        const char *status_ticker = ""; // For ease of coding, most important status should be assigned last
+
         lv_timer_handler();
 
         // Backlight on, on any button press
@@ -242,60 +245,6 @@ namespace display
         }
         bar_bat->set_value(val);
 
-        // ROS Status = S1 => Brain Symbol
-        v_led_ros->set(::leds.get(LED_NUM_S1));
-        // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
-        switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
-        {
-        case LED_on << 3 | LED_off:
-            text_ticker_status->set_text("Idle");
-            break;
-        // S1 = Autonomous mode (mowing, docking, undocking)
-        case LED_blink_slow << 3 | LED_off:
-            text_ticker_status->set_text("Mowing");
-            break;
-        case LED_blink_slow << 3 | LED_blink_slow:
-            text_ticker_status->set_text("Docking");
-            break;
-        case LED_blink_slow << 3 | LED_blink_fast:
-            text_ticker_status->set_text("Undocking");
-            break;
-        // S1 = Recording mode
-        case LED_blink_fast << 3 | LED_blink_slow:
-            text_ticker_status->set_text("Record area outline");
-            break;
-        case LED_blink_fast << 3 | LED_blink_fast:
-            text_ticker_status->set_text("Record obstacle");
-            break;
-        default:
-            text_ticker_status->set_text("");
-            break;
-        }
-
-        // Lifted LED = Emergencies
-        switch (::leds.get(LED_NUM_LIFTED))
-        {
-        case LED_on: // No heart beat for more than 0.5s
-            v_led_heartbeat->set(LED_blink_slow);
-            break;
-        case LED_blink_fast:
-            v_led_emergency_stop->set(LED_blink_slow);
-            v_led_emergency->set(LED_blink_slow);
-            v_led_heartbeat->set(LED_off);
-            break;
-        case LED_blink_slow:
-            v_led_emergency_wheel->set(LED_blink_slow);
-            v_led_emergency->set(LED_blink_slow);
-            v_led_heartbeat->set(LED_off);
-            break;
-        default:
-            v_led_heartbeat->set(LED_off);
-            v_led_emergency->set(LED_off);
-            v_led_emergency_stop->set(LED_off);
-            v_led_emergency_wheel->set(LED_off);
-            break;
-        }
-
         // Battery LED
         switch (::leds.get(LED_NUM_BAT))
         {
@@ -327,6 +276,65 @@ namespace display
             v_led_power->set(LED_off);
             break;
         }
+
+        // ROS Status = S1 => Brain Symbol
+        v_led_ros->set(::leds.get(LED_NUM_S1));
+        // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
+        switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
+        {
+        case LED_on << 3 | LED_off:
+            status_ticker = "Idle";
+            break;
+        // S1 = Autonomous mode (mowing, docking, undocking)
+        case LED_blink_slow << 3 | LED_off:
+            status_ticker = "Mowing";
+            break;
+        case LED_blink_slow << 3 | LED_blink_slow:
+            status_ticker = "Docking";
+            break;
+        case LED_blink_slow << 3 | LED_blink_fast:
+            status_ticker = "Undocking";
+            break;
+        // S1 = Recording mode
+        case LED_blink_fast << 3 | LED_blink_slow:
+            status_ticker = "Record area outline";
+            break;
+        case LED_blink_fast << 3 | LED_blink_fast:
+            status_ticker = "Record obstacle";
+            break;
+        default:
+            break;
+        }
+
+        // Most important text-status, last!
+
+        // Lifted LED = Emergencies
+        switch (::leds.get(LED_NUM_LIFTED))
+        {
+        case LED_on: // No heart beat for more than 0.5s
+            v_led_heartbeat->set(LED_blink_fast);
+            break;
+        case LED_blink_fast: // Stop Button pressed
+            v_led_emergency_stop->set(LED_blink_fast);
+            v_led_emergency->set(LED_blink_fast);
+            v_led_heartbeat->set(LED_off);
+            status_ticker = EMERGENCY_CLEAR_TEXT;
+            break;
+        case LED_blink_slow: // Lifted or tilted
+            v_led_emergency_wheel->set(LED_blink_fast);
+            v_led_emergency->set(LED_blink_fast);
+            v_led_heartbeat->set(LED_off);
+            status_ticker = EMERGENCY_CLEAR_TEXT;
+            break;
+        default: // Off = No emergency
+            v_led_heartbeat->set(LED_off);
+            v_led_emergency->set(LED_off);
+            v_led_emergency_stop->set(LED_off);
+            v_led_emergency_wheel->set(LED_off);
+            break;
+        }
+
+        text_ticker_status->set_text(status_ticker);
     }
 } // namespace display
 #endif // __WYM240128K1_HPP
