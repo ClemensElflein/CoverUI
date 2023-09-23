@@ -273,8 +273,10 @@ uint8_t get_sim_button(uint32_t press_timeout, bool &still_pressed)
         sim_btn.press_timeout = 0;
     }
 
-    if (!sim_btn.press_timeout)
-        sim_button_queue.pop_front();
+    // This doesn't look efficient
+    sim_button_queue.pop_front();
+    if (sim_btn.press_timeout)
+        sim_button_queue.push_front(sim_btn);
 
     return sim_btn.button_id;
 }

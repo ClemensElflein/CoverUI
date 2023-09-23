@@ -406,7 +406,7 @@ namespace display
         if (leds.get(LED_NUM_LIFTED) != LED_off)
         {
             uint32_t now = millis();
-            if (buttons.is_pressed(BTN_OK_NUM))
+            if (buttons.is_pressed(BTN_OK_NUM) && !emergency_clear_runout_ms)
             {
                 emergency_clear_runout_ms = now + 5000;
             }
@@ -418,7 +418,7 @@ namespace display
                 }
                 else
                 {
-                    add_sim_button(BTN_LOCK_NUM, 2200);
+                    add_sim_button(BTN_LOCK_NUM, 2010);
                     emergency_clear_runout_ms = 0;
                 }
             }
