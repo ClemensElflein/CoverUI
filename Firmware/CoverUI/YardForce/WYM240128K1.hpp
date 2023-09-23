@@ -356,6 +356,8 @@ namespace display
         }
 
         // Most important text-status, last!
+        static bool last_stop_button = false;
+        bool stop_button = false;
 
         // Lifted LED = Emergencies
         switch (::leds.get(LED_NUM_LIFTED))
@@ -364,6 +366,7 @@ namespace display
             v_led_heartbeat->set(LED_blink_fast);
             break;
         case LED_blink_fast: // Stop Button pressed
+            stop_button = true;
             v_led_emergency_stop->set(LED_blink_fast);
             v_led_emergency->set(LED_blink_fast);
             v_led_heartbeat->set(LED_off);
@@ -382,6 +385,8 @@ namespace display
             v_led_emergency_wheel->set(LED_off);
             break;
         }
+        if(!last_stop_button && stop_button) // Backlight on cover- open
+            set_backlight();
 
         // Button handling
 
