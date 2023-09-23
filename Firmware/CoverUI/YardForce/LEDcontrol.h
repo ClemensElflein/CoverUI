@@ -51,8 +51,6 @@
 #define NUM_LEDS 19
 
 #define LED_NUM_BACKLIGHT 18
-#define BACKLIGHT_TIMEOUT_STEP_RATE_MS 100
-#define BACKLIGHT_TIMEOUT_MS 30000 // Should be int dividable by BACKLIGHT_TIMEOUT_STEP_RATE_MS
 
 #else
 #define NUM_LEDS 0
@@ -187,8 +185,6 @@ public:
 #ifdef MDL_C500                      // Classic 500 FIXME: Should go either into a superclass or need a more generic parent class, on next model
     void sequence_animate_handler(); // A short LED Animation handler
     void show_num(uint16_t);         // Display a number via Mon-Sun + Lifted LED
-#elif defined(MDL_SAXPRO)            // Model SAxPRO
-    void sequence_backlight_timeout_handler();
 #endif                               // MDL_
 };
 

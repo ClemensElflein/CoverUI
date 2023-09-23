@@ -328,31 +328,4 @@ void LEDcontrol::seq_num_handler_()
     }
 }
 
-#elif defined(MDL_SAXPRO) // Model SAxPRO
-
-/**
- * @brief Animate sequence handler. Has to be started by sequence_start()
- */
-void LEDcontrol::sequence_backlight_timeout_handler()
-{
-    uint16_t step = seq_get_next_step_(BACKLIGHT_TIMEOUT_STEP_RATE_MS); // Animation sequence runs in 100ms steps, which is also the max. trigger rate
-
-    switch (step)
-    {
-    case 0: // Next sequence step not reached now
-        return;
-    case 1: // LED Backlight on
-        set(LED_NUM_BACKLIGHT, LED_state::LED_on, false);
-        return;
-    case 2 ...(BACKLIGHT_TIMEOUT_MS / BACKLIGHT_TIMEOUT_STEP_RATE_MS):
-        return;
-    case (BACKLIGHT_TIMEOUT_MS / BACKLIGHT_TIMEOUT_STEP_RATE_MS) + 1: // LED off
-        set(LED_NUM_BACKLIGHT, LED_state::LED_off, false);
-        return;
-    default:
-        seq_start_tick_ = 0; // Sequence end
-        return;
-    }
-}
-
 #endif // MDL_...

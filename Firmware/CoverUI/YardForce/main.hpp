@@ -13,6 +13,7 @@
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
 #include "hwtimer.hpp"
+#include <list>
 
 #include "LEDcontrol.h"
 LEDcontrol leds; // Main LED controller object
@@ -21,6 +22,7 @@ LEDcontrol leds; // Main LED controller object
 Buttons buttons; // Main Buttons object
 
 #ifdef MDL_SAXPRO // Model SAxPRO
+void add_sim_button(uint8_t button_id, uint32_t press_timeout);
 #include "WYM240128K1.hpp"
 #endif
 #ifdef MOD_RAIN
@@ -85,17 +87,23 @@ HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 P
 HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
+struct SimButton // Simulate button
+{
+    uint8_t button_id;
+    uint32_t press_timeout;
+};
+
+std::list<SimButton> sim_button_queue;
+
 void setup()
 {
     leds.setup();
     buttons.setup();
 #ifdef MDL_SAXPRO // Model SAxPRO
     if (!display::init())
-    {
-        leds.set(LED_NUM_BACKLIGHT, LED_state::LED_blink_fast); // Quick backlight blink on init error
-        // FIXME: Failure/Assert handling
-    }
-    leds.sequence_start(&LEDcontrol::sequence_backlight_timeout_handler);
+        display::set_backlight(LED_blink_fast, 60000); // TODO: Make some better assert handling than 60 sec. fast blink
+    else
+        display::set_backlight();
 #endif
 #ifdef MOD_HALL
     emergency.setup();
@@ -233,8 +241,51 @@ void buzzer_program_put_words(PIO pio, uint sm, uint32_t repeat, uint32_t durati
     // YFC500 doesn't has (not yet?) a buzzer on CoverUI
 }
 
+void add_sim_button(uint8_t button_id, uint32_t press_timeout)
+{
+    sim_button_queue.push_back({button_id, press_timeout});
+}
+
+/**
+ * @brief Get a simulated button. This function is only required for intelligent CoverUI's which act different than the simple Button/LED-Board,
+ * as well as long we don't have a higher level abstraction in LL code. TODO
+ *
+ * @param press_timeout timeout to watch if a button is (long) pressed. We do not need to timeout this value in real, only honor it's value.
+ * @param still_pressed pointer to boolean if it's still pressed after the timeout happen.
+ * @return uint8_t button id of a simulated button, or 0 in the case when there's no button to simulate
+ */
+uint8_t get_sim_button(uint32_t press_timeout, bool &still_pressed)
+{
+    if (!sim_button_queue.size())
+        return 0;
+
+    still_pressed = false;
+
+    SimButton sim_btn = sim_button_queue.front();
+    if (press_timeout <= sim_btn.press_timeout)
+    {
+        still_pressed = true;
+        sim_btn.press_timeout -= press_timeout;
+    }
+    else
+    {
+        still_pressed = false;
+        sim_btn.press_timeout = 0;
+    }
+
+    if (!sim_btn.press_timeout)
+        sim_button_queue.pop_front();
+
+    return sim_btn.button_id;
+}
+
 uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
 {
+    // Check if we've a button to simulate in queue
+    uint8_t sim_button = get_sim_button(press_timeout, still_pressed);
+    if (sim_button)
+        return sim_button;
+
     still_pressed = false;
 
     // Scan the buttons in the same order as original OM FW does
