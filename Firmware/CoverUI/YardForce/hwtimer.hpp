@@ -44,11 +44,11 @@ HardwareTimer *hwtimer(TIM_TypeDef *instance, uint32_t freq, callback_function_t
 
 #else // ---------- GD32 ----------
 
-HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callback)
+HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callback, uint32_t preemptPriority = 0, uint32_t subPriority = 0)
 {
     HardwareTimer *Timer = new HardwareTimer(instance);
     Timer->setPeriodTime(freq, FORMAT_HZ);
-    // TODO: Add INT preemption- and sub- priorities
+    // FIXME: GD's HW timer class doesn't has INT preemption- and sub- priorities implemented yet. Will become an issue latest with GD32 & LVGL!
     Timer->attachInterrupt(callback);
     Timer->start();
     return Timer;
