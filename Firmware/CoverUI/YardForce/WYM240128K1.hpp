@@ -292,25 +292,25 @@ namespace display
         bool docked;
         switch (::leds.get(LED_NUM_CHARGE))
         {
-        case LED_on: // Fully charged
+        case LED_on: // <0.15A = Fully charged
             v_led_charge->set(LED_off);
             v_led_power->set(LED_on);
             docked = true;
             bar_bat->bar_label = FA_SYMBOL_CHARGE " %d %%";
             val = 100;
             break;
-        case LED_blink_fast: // Empty
+        case LED_blink_fast: // > 0.8A = Empty
             v_led_charge->set(LED_blink_fast);
             v_led_power->set(LED_on);
             docked = true;
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " %d %%";
-            val = 10;
+            bar_bat->bar_label = FA_SYMBOL_CHARGE " < %d %%";
+            val = 25;
             break;
-        case LED_blink_slow: // 1/2 charged
+        case LED_blink_slow: // 0.15-0.8A = 1/2 charged
             v_led_charge->set(LED_blink_slow);
             v_led_power->set(LED_on);
             docked = true;
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " %d %%";
+            bar_bat->bar_label = FA_SYMBOL_CHARGE " > %d %%";
             val = 50;
             break;
         default:
