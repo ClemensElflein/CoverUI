@@ -22,7 +22,7 @@ LEDcontrol leds; // Main LED controller object
 Buttons buttons; // Main Buttons object
 
 #ifdef MDL_SAXPRO // Model SAxPRO
-void add_sim_button(uint8_t button_id, uint32_t press_timeout);
+void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
 #include "WYM240128K1.hpp"
 #endif
 #ifdef MOD_RAIN

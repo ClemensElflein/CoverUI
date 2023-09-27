@@ -105,7 +105,8 @@ namespace display
         // In the middle, we do have emergencies
         v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
         v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
-        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
+        // TODO: if next level LL proto
+        //v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
         v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
@@ -369,15 +370,19 @@ namespace display
             stop_button = true;
             v_led_emergency_stop->set(LED_blink_fast);
             v_led_emergency->set(LED_blink_fast);
+            v_led_emergency_wheel->set(LED_off);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
             break;
         case LED_blink_slow: // Lifted or tilted
             v_led_emergency_wheel->set(LED_blink_fast);
             v_led_emergency->set(LED_blink_fast);
+            v_led_emergency_stop->set(LED_off);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
             break;
         case LED_on: // Emergency latch (no LL heartbeat or emergency by ROS)
             v_led_emergency->set(LED_blink_fast);
+            v_led_emergency_stop->set(LED_off);
+            v_led_emergency_wheel->set(LED_off);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
             break;
         default: // Off = No emergency
@@ -400,6 +405,22 @@ namespace display
                 return; // Skip handling of first button-press if backlight was off
             }
             set_backlight();
+        }
+
+        // Handle volume (up/down) buttons
+        if (buttons.is_pressed(BTN_UP_NUM))
+        {
+            add_sim_button(BTN_MON_NUM);
+        }
+        if (buttons.is_pressed(BTN_DOWN_NUM))
+        {
+            add_sim_button(BTN_TUE_NUM);
+        }
+
+        // Switch language button
+        if (buttons.is_pressed(BTN_BACK_NUM))
+        {
+            add_sim_button(BTN_WED_NUM);
         }
 
         // Handle emergency clear (Enter) button
