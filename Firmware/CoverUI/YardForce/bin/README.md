@@ -1,6 +1,6 @@
 ## Firmware for stock YardForce CoverUI @ [OpenMower](https://github.com/ClemensElflein/OpenMower)
 
-File syntax = `firmware_<MDL>_<VER>_<MCU>_[<opt MOD>, ...].bin`
+File syntax = `firmware_<MDL>_<VER>_<MCU>[_<opt MOD>, ...].bin`
 
 > **Warning**
 > Only install the \<MOD> version, for which you also made the required hardware modifications!
