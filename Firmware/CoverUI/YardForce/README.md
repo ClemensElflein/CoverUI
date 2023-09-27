@@ -12,16 +12,21 @@
   <a href="https://github.com/ClemensElflein/CoverUI">
     <img src="images/IMG_Overview.jpg" alt="Logo" width="400">
   </a>
+  <a href="https://github.com/ClemensElflein/CoverUI">
+    <img src="images/IMG_Overview_SAxPRO.jpg" alt="Logo" width="400">
+  </a>
 
-  <h3 align="center">OM CoverUI Firmware for Stock 'YardForce Classic 500(A/B)' PCB</h3>
+  <h3 align="center">OM CoverUI Firmware for Stock YardForce PCBs</h3>
 
   <p align="center">
-    <b>Tested/working with</b>
+
+#### Tested/working with
 
 | YardForce Model | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
 | --------------- | :------------------------: | :---: |
 | Classic 500     | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B    | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
+| SA800PRO<br>(and other SAxPRO Rev6)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless
 
@@ -59,7 +64,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-For those, who still have their stock *YardForce Classic 500 (A/B)* Cover-UI/Botton-Board available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to it.
+For those, who still have their stock *YardForce Classic 500 (A/B) or SAxPRO (Rev6)* Cover-UI/Botton-Board available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to it.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -76,31 +81,22 @@ For those, who still have their stock *YardForce Classic 500 (A/B)* Cover-UI/Bot
 
 ### Prerequisites
 
-* Stock *YardForce Classic 500 (A/B)* Cover-UI/Button-Board
+* Compatible stock *YardForce* Cover-UI/Button-Board or Display (see [Tested/working with](#testedworking-with))
 * Soldering Iron
 * ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
 
-### Hardware Modifications: Buttons & LEDs ($\textcolor{red}{\textsf{mandatory}}$)
+### Hardware Modifications: Buttons & LEDs (**mandatory**)
 
 With the stock component placement, Button-Home and Buttom-Play get routed to the main (black) 16 pin connector (JP2/J6).
 But we need them routed to the MCU.
 Luckily the PCB is already prepared for this.
 
-We only need to move the 0 Ohm (bridge) resistors
-1. R33 to the NonPlaced R34 position (Button-Home)
-2. R37 to (NP) R42 (Button-Play)
+| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> | <div style="width:400px">SAxPRO (Rev6)</div> |
+| ----------- | ------------ | ------------ |
+| [![Mandatory Hardware Modification](images/IMG_PCB_Changes.jpg "Open in browser")](images/IMG_PCB_Changes.jpg) | [![Mandatory Hardware Modification](images/IMG_PCB_Changes_500B.jpg "Open in browser")](images/IMG_PCB_Changes_500B.jpg) |  [![Mandatory Hardware Modification](images/IMG_PCB_Changes_SAxPRO.jpg "Open in browser")](images/IMG_PCB_Changes_SAxPRO.jpg) |
+| Move the 0 Ohm (bridge) resistors:<br>1. R33 to the NonPlaced R34 position (Button-Home)<br>2. R37 to (NP) R42 (Button-Play)<br><br>(You might also simply bridge R34 and R42, but for me it was simpler to move them)<br><br><sup>(The yellow cable (to R5/C2) should not harm you. This is the NRST signal which is only required if you bug the code (like me) during development)</sup> | Move the 0 Ohm (bridge) resistors:<br>1. R33 to the NonPlaced R34 position (Button-Home)<br>2. R37 to (NP) R42 (Button-Play)<br><br>(You might also simply bridge R34 and R42, but for me it was simpler to move them) | 1. Bridge R14 (Button-Start/Play)<br>2. Bridge R15 (Button-Home)
 
-You might also simply bridge R34 and R42, but I felt it's simpler to move them.
-
-| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
-| ----------- | ------------ |
-| [![Mandatory Hardware Modification](images/IMG_PCB_Changes.jpg "Open in browser")](images/IMG_PCB_Changes.jpg) | [![Mandatory Hardware Modification](images/IMG_PCB_Changes_500B.jpg "Open in browser")](images/IMG_PCB_Changes_500B.jpg) |
-
-<sup>(The yellow cable on the left picture (to R5/C2) should not harm you. This is the NRST signal which is only required if you bug the code (like me) during development)</sup>
-
-Lastly, you need to solder some kind of connector (pin header or cables) to GND, CLK, DIO and 3V3 (directly beside the main 16 pin connector) for your ST-Link or Picoprobe programmer/debugger (if not already exist).
-
-### Hardware Modification: Rain Sensor ($\textcolor{blue}{\textsf{optional}}$)
+### Hardware Modification: Rain Sensor (*optional*)
 
 If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
 See the yellow cable on the following images:
@@ -113,7 +109,7 @@ See the yellow cable on the following images:
 | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1.jpg "Open in browser")](images/IMG_Stock-Cables-rain1.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg) |
 
 
-### Hardware Modification: Emergency Hall Sensors ($\textcolor{blue}{\textsf{optional}}$)
+### Hardware Modification: Emergency Hall Sensors (*optional*)
 
 If you also like to use your Stock-Hall-Sensor cabling (2 * stop-button and 2 * wheel-lift):
 ![Optional Rain Hardware Modification](images/IMG_Stock-Cables_500B.jpg)
@@ -176,11 +172,12 @@ It turns out that ST-Link GUI tool is some how flawy, why I recommend to use the
 Open a terminal/console, then:
 
 * `st-info --descr` should return either:
-  * `F0xx`, which mean that your PCB has a 'STM32F030R8' MCU
-  * `F1xx Medium-density` which identify a 'GD32F330R8' MCU
+  * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
+  * `F1xx Medium-density` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
+  * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
 * Dependent on what kind of MCU you identified, download your matching [firmware binary](./bin)
 * Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
- `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
+ `st-flash write firmware_<mdl>_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
