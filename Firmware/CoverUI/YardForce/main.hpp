@@ -256,7 +256,7 @@ void add_sim_button(uint8_t button_id, uint32_t press_timeout)
  */
 uint8_t get_sim_button(uint32_t press_timeout, bool &still_pressed)
 {
-    if (!sim_button_queue.size())
+    if (sim_button_queue.empty())
         return 0;
 
     still_pressed = false;

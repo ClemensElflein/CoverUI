@@ -27,8 +27,8 @@
 #include "WidgetBar.hpp"
 #include "WidgetTextTicker.hpp"
 
-#define BACKLIGHT_TIMEOUT_MS 30000
-#define STATUS_TICKER_LENGTH 40
+#define BACKLIGHT_TIMEOUT_MS 120000 // 2 minutes
+#define STATUS_TICKER_LENGTH 100
 
 // C images
 LV_IMG_DECLARE(OM_Logo_120x54x1);
@@ -103,10 +103,10 @@ namespace display
         v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
 
         // In the middle, we do have emergencies
-        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                            // Centered
-        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0);  // Left of centered
-        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_LEFT, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
-        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);         // Right of centered
+        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
+        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
+        v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
+        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
         v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
@@ -146,7 +146,7 @@ namespace display
         lv_anim_init(&al);
         lv_anim_set_var(&al, img_logo);
         lv_anim_set_values(&al, 0, -((UC1698_DISPLAY_WIDTH / 2) + (OM_Logo_120x54x1.header.w / 2)));
-        lv_anim_set_time(&al, 2000);
+        lv_anim_set_time(&al, 1500);
         lv_anim_set_delay(&al, 1000);
         lv_anim_set_exec_cb(&al, (lv_anim_exec_xcb_t)anim_x_cb);
         lv_anim_set_path_cb(&al, lv_anim_path_ease_in);
@@ -157,8 +157,8 @@ namespace display
         lv_anim_init(&aw);
         lv_anim_set_var(&aw, img_wordmark);
         lv_anim_set_values(&aw, 0, (UC1698_DISPLAY_WIDTH / 2) + (OM_Wordmark_240x35x1.header.w / 2) + 20);
-        lv_anim_set_time(&aw, 2500);
-        lv_anim_set_delay(&aw, 1700);
+        lv_anim_set_time(&aw, 1400);
+        lv_anim_set_delay(&aw, 1500);
         lv_anim_set_exec_cb(&aw, (lv_anim_exec_xcb_t)anim_x_cb);
         lv_anim_set_path_cb(&aw, lv_anim_path_ease_in);
         lv_anim_set_deleted_cb(&aw, (lv_anim_ready_cb_t)mainScreen); // Set a callback to indicate when the animation is deleted (idle)
@@ -186,8 +186,8 @@ namespace display
         disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        // openmower_anim();
-        mainScreen();
+        openmower_anim();
+        // mainScreen();
 
         return true;
     }
@@ -198,7 +198,7 @@ namespace display
      * @param state LED_state, default LED_on
      * @param timeout in ms when to switch off
      */
-    void set_backlight(LED_state state = LED_on, uint16_t timeout = BACKLIGHT_TIMEOUT_MS)
+    void set_backlight(LED_state state = LED_on, uint32_t timeout = BACKLIGHT_TIMEOUT_MS)
     {
         ::leds.set(LED_NUM_BACKLIGHT, state);
         backlight_runout_ms_ = millis() + timeout;
@@ -234,8 +234,6 @@ namespace display
      */
     void loop_low_prio()
     {
-        char status_ticker[STATUS_TICKER_LENGTH] = "";
-
         lv_timer_handler();
 
         // LEDs & Buttons to main status screen conversion
@@ -243,6 +241,7 @@ namespace display
             return; // Still in OM anim
 
         // Handle GPS, Battery, ...
+        char status_ticker[STATUS_TICKER_LENGTH] = "";
         int val = 0;
         static uint8_t last_gps_val = 0;
 
@@ -251,7 +250,6 @@ namespace display
         {
             if (::leds.get(i) == LED_state::LED_blink_fast)
             {
-                v_led_gps->set(LED_blink_fast);
                 val = 0;
                 break; // Do not process the other LEDs, if one blink_fast, all should do
             }
@@ -261,6 +259,8 @@ namespace display
                 val += 25; // 1 (of 4) LEDs represents 25%
             }
         }
+        if (!val)
+            v_led_gps->set(LED_blink_fast);
         bar_gps->set_value(val);
         if (val != last_gps_val)
             set_backlight();
@@ -331,6 +331,9 @@ namespace display
         // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
         switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
         {
+        case LED_off << 3 | LED_off:
+            strncpy(status_ticker, "Waiting for ROS...", STATUS_TICKER_LENGTH);
+            break;
         case LED_on << 3 | LED_off:
             strncpy(status_ticker, "Idle", STATUS_TICKER_LENGTH);
             break;
@@ -362,30 +365,28 @@ namespace display
         // Lifted LED = Emergencies
         switch (::leds.get(LED_NUM_LIFTED))
         {
-        case LED_on: // No heart beat for more than 0.5s
-            v_led_heartbeat->set(LED_blink_fast);
-            break;
         case LED_blink_fast: // Stop Button pressed
             stop_button = true;
             v_led_emergency_stop->set(LED_blink_fast);
             v_led_emergency->set(LED_blink_fast);
-            v_led_heartbeat->set(LED_off);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
             break;
         case LED_blink_slow: // Lifted or tilted
             v_led_emergency_wheel->set(LED_blink_fast);
             v_led_emergency->set(LED_blink_fast);
-            v_led_heartbeat->set(LED_off);
+            strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
+            break;
+        case LED_on: // Emergency latch (no LL heartbeat or emergency by ROS)
+            v_led_emergency->set(LED_blink_fast);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
             break;
         default: // Off = No emergency
-            v_led_heartbeat->set(LED_off);
             v_led_emergency->set(LED_off);
             v_led_emergency_stop->set(LED_off);
             v_led_emergency_wheel->set(LED_off);
             break;
         }
-        if(!last_stop_button && stop_button) // Backlight on cover- open
+        if (!last_stop_button && stop_button) // Backlight on cover- open
             set_backlight();
 
         // Button handling
@@ -418,7 +419,7 @@ namespace display
                 }
                 else
                 {
-                    add_sim_button(BTN_LOCK_NUM, 2010);
+                    add_sim_button(BTN_LOCK_NUM, 2001);
                     emergency_clear_runout_ms = 0;
                 }
             }
