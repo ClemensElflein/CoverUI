@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-#ifdef HW_YFC500 // Stock "YardForce Classic 500" HardWare
-#include "yfc500/main.hpp"
+#ifdef HW_YF // Stock YardForce HardWare
+#include "YardForce/main.hpp"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
@@ -22,7 +22,8 @@
 
 #include <cstring>
 
-#ifndef HW_YFC500 // HW Pico
+#ifndef HW_YF // HW Pico
+
 #include "LEDcontrol.h"
 #include "statemachine.h"
 #include "buttonscan.h"
@@ -178,7 +179,7 @@ void PacketReceived()
     {
       // valid set_leds request
       printf("Got valid setled call\n");
-#ifdef HW_YFC500
+#ifdef HW_YF
       leds.set(message->leds);
 #else // HW Pico
       mutex_enter_blocking(&mx1);
@@ -219,7 +220,7 @@ void getDataFromBuffer()
 {
   while (uart_is_readable(UART_1))
   {
-#ifdef HW_YFC500
+#ifdef HW_YF
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
     // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
     u_int8_t readbyte = serial_ll.read();
@@ -285,7 +286,7 @@ void core1()
         {
           // user indeed held the button
           pressed_count++;
-          // if button is still held, we flash and rety
+          // if button is still held, we flash and retry
           for (int i = 0; i < pressed_count; i++)
           {
             mutex_enter_blocking(&mx1);
@@ -338,7 +339,7 @@ void core1()
   }
 }
 
-#ifndef HW_YFC500 // HW_Pico (HW_YFC500 is arduino based. See setup() & loop() in yfc500/main.hpp)
+#ifndef HW_YF // HW_Pico (HW_YF is arduino based. See setup() & loop() in YardForce/main.hpp)
 int main(void)
 {
   uint32_t last_led_update = 0;
