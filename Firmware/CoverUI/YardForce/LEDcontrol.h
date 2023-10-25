@@ -14,7 +14,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "../../BttnCtl.h"
+#include "../BttnCtl.h"
 
 #define LED_PIN_NC 0xffffffff // Not Connected (virtual LED)
 

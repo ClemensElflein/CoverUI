@@ -13,7 +13,7 @@
 
 
 #define MDL_RMECOWV100
-#define LEDCNTRL_HDR "YardForce/include/LEDcontrol_RM-ECOW-V100.hpp"
+#define LEDCNTRL_HDR "YardForce/LEDcontrol_RM-ECOW-V100.hpp"
 
 // LowLevel Serial
 #define UART_LL_RX PA3

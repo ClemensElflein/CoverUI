@@ -14,7 +14,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "../../BttnCtl.h"
+#include "../BttnCtl.h"
 #include "LEDcontrol.h"
 
 // 1st row: Lifted, Wire (WLAN), Battery empty, Charge
@@ -40,7 +40,7 @@
 // Backside
 #define LED_PIN_REAR PB13
 
-#define LED_ANIMATE_DELAY 30 // Delay (ms) between LEDs of animate sequence (boot/power-on anim)
+#define LED_ANIMATE_DELAY 20 // Delay (ms) between LEDs of animate sequence (boot/power-on anim)
 
 const uint32_t led_pins_by_num[] = {
     // Order derived from LowLevel "enum LED_id"
