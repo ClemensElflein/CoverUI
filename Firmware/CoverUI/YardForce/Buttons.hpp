@@ -13,6 +13,7 @@
 
 #include <Arduino.h>
 #include <stdint.h>
+#include <stdexcept>
 #include <map>
 #include "ButtonDebouncer.hpp"
 
@@ -96,6 +97,8 @@ public:
 #elif defined(MDL_SAXPRO) // Model SAxPRO
     const uint8_t kOMButtonNrs[3] = { // Logic button numbers supported by OM. Use same order as in OM FW so that they get scanned in the same order!
         BTN_HOME_NUM, BTN_PLAY_NUM, BTN_OK_NUM};
+#else
+    const uint8_t kOMButtonNrs[0] = {};
 #endif
 
     /**
@@ -116,7 +119,7 @@ public:
      */
     void process_states()
     {
-        for (uint i = 0; i < NUM_GPIO_PORTS; i++)
+        for (unsigned int i = 0; i < NUM_GPIO_PORTS; i++)
             debouncers_[i]->process_state(kGpioPorts[i]);
     };
 
@@ -191,6 +194,10 @@ private:
         {BTN_UP_NUM, {0, BTN_UP_PIN}},
         {BTN_DOWN_NUM, {0, BTN_DOWN_PIN}},
         {BTN_BACK_NUM, {0, BTN_BACK_PIN}}};
+#else
+    const uint32_t kGpioPorts[NUM_GPIO_PORTS] = {};
+    ButtonDebouncer *debouncers_[NUM_GPIO_PORTS] = {};
+    const std::map<ButtonNum, ButtonDef> kButtonNum2DefMap = {};
 #endif
 
     /**

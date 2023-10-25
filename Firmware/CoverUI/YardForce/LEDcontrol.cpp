@@ -2,16 +2,18 @@
  * @file LEDcontrol.cpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI LED driver for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.2
- * @date 2023-04-30
+ * @version 0.3
+ * @date 2023-10-25
  *
  * @copyright Copyright (c) 2023
  *
  */
 #include <map>
 #include <cstring>
-#include "LEDcontrol.h"
+#include "include/LEDcontrol.h"
 #include "../BttnCtl.h" // LED_state is defined in BttnCtl.h
+
+LEDcontrol::LEDcontrol(const uint32_t *t_led_pins_by_num_ptr, const size_t t_size) : led_pins_by_num_ptr(t_led_pins_by_num_ptr), num_leds(t_size){};
 
 /**
  * @brief Setup LED GPIOs
@@ -19,9 +21,12 @@
  */
 void LEDcontrol::setup()
 {
-    for (uint32_t led_pin : kLeds)
-        if (led_pin != LED_PIN_NC)
-            pinMode(led_pin, OUTPUT);
+    for (size_t p = 0; p < num_leds; p++)
+    {
+        auto pin = *(led_pins_by_num_ptr + p);
+        if (pin != LED_PIN_NC)
+            pinMode(pin, OUTPUT);
+    }
 }
 
 /**
@@ -33,16 +38,16 @@ void LEDcontrol::setup()
  */
 void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 {
-    uint32_t led_pin = kLeds[led_num];
-    if (led_pin != LED_PIN_NC)
+    auto pin = *(led_pins_by_num_ptr + led_num);
+    if (pin != LED_PIN_NC)
     {
         switch (state)
         {
         case LED_state::LED_on:
-            digitalWrite(led_pin, HIGH);
+            digitalWrite(pin, HIGH);
             break;
         case LED_state::LED_off:
-            digitalWrite(led_pin, LOW);
+            digitalWrite(pin, LOW);
             break;
         case LED_state::LED_blink_slow:
         case LED_state::LED_blink_fast:
@@ -57,12 +62,12 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 /**
  * @brief Set LED based on binary state representation.
  * This method set only the OM controlled LEDs
- * 
- * @param all_state 
+ *
+ * @param all_state
  */
 void LEDcontrol::set(uint64_t all_state)
 {
-    for (uint led = 0; led <= LED_NUM_OM_MAX; led++)
+    for (unsigned int led = 0; led <= LED_NUM_OM_MAX; led++)
     {
         uint8_t led_state = (all_state >> (3 * led)) & 0b111;
         set(led, static_cast<LED_state>(led_state));
@@ -131,7 +136,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
     if (blink_state != LED_state::LED_blink_fast && blink_state != LED_state::LED_blink_slow) // Ensure that this method only get called for blinking LED states
         return;
 
-    for (uint led_num = 0; led_num < NUM_LEDS; led_num++)
+    for (size_t led_num = 0; led_num < num_leds; led_num++)
     {
         if (has(led_num, blink_state) && !(force_led_off_ & (1 << led_num)))
         {
@@ -165,6 +170,7 @@ void LEDcontrol::identify(uint8_t led_num)
     force_on(led_num, false);
 }
 
+
 /*******************************************************************************************
  *                           LED "Sequence" stuff                                          *
  *******************************************************************************************
@@ -172,7 +178,7 @@ void LEDcontrol::identify(uint8_t led_num)
  * to overcome the tricky use of HAL_Delay() which is heavily ISR fragile.                 *
  * Looks a little bit over-complicated, but ...                                            *
  * AH20230511: Not required anymore because arduino framework doesn't has this delay()/ISR *
- *   issue anymore. But as it's already written and works, ...                             *
+ *   issue anymore. But because it's already written and works, ...                        *
  *******************************************************************************************/
 
 /**
@@ -226,10 +232,12 @@ uint16_t LEDcontrol::seq_get_next_step_(uint16_t step_rate)
     return ++seq_step_;
 }
 
-#ifdef MDL_C500 // Classic 500 FIXME: Should go either into a superclass or need a more generic parent class, on next mower model
 /**
  * @brief Animate sequence handler. Has to be started by sequence_start()
  */
+// FIXME: This is the default handler for C500 and should go to the relevant LEDcontrol_C500.hpp file
+//virtual void LEDcontrol::sequence_animate_handler() = 0;
+/*
 void LEDcontrol::sequence_animate_handler()
 {
     uint16_t step = seq_get_next_step_(15); // Animation sequence runs in 15ms steps
@@ -250,6 +258,7 @@ void LEDcontrol::sequence_animate_handler()
         return;
     }
 }
+*/
 
 void LEDcontrol::show_num(uint16_t num)
 {
@@ -327,5 +336,3 @@ void LEDcontrol::seq_num_handler_()
         return;
     }
 }
-
-#endif // MDL_...

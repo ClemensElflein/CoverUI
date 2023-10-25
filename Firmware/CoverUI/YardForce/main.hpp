@@ -15,8 +15,7 @@
 #include "hwtimer.hpp"
 #include <list>
 
-#include "LEDcontrol.h"
-LEDcontrol leds; // Main LED controller object
+#include LEDCNTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable
 
 #include "Buttons.hpp"
 Buttons buttons; // Main Buttons object
@@ -77,8 +76,10 @@ HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display log
 #endif
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
+HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+// FIXME: ...
 #ifdef MCU_STM32
-#ifdef MDL_C500
+#if defined(MDL_C500)
 HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #elif defined(MDL_SAXPRO)
 HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
@@ -122,21 +123,22 @@ void setup()
 
     serial_ll.begin(115200);
 
-#ifdef MDL_C500
+#if defined(MDL_C500) || defined(MDL_RMECOWV100)
     leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
 
     delay(100); // Some required stupid delay, dunno why :-/
 
     // "Hi there" and jammed button mounting detection
     bool tmp;
+    unsigned int anim_delay;
     do
     {
         // LED blink to say it's alive
         // (this processing delay is also required to get the debouncer filled with a consistent state (NUM_BUTTON_STATES * 5ms)
-        leds.sequence_start(&LEDcontrol::sequence_animate_handler);
+        anim_delay = leds.boot_animation();
 
     } while (bit_getbutton(500, tmp));
-    delay((NUM_LEDS * 15 * 2) + 500); // Anim get played async + 1/2 sec. extra delay
+    delay(anim_delay); // Anim get played async, let's wait for it
 #endif
 }
 
@@ -146,7 +148,7 @@ void loop() // This loop() doesn't loop!
     core1();
 }
 
-#ifdef MDL_C500 // Model Classic 500
+#if defined(MDL_C500) || defined(MDL_RMECOWV100)
 /**
  * @brief Check if one of the "magic buttons" got pressed and do his function.
  * At the moment the following magic buttons exists:
@@ -156,7 +158,7 @@ void loop() // This loop() doesn't loop!
  */
 void magic_buttons()
 {
-    if (!buttons.is_pressed(BTN_OK_NUM))
+    /*if (!buttons.is_pressed(BTN_OK_NUM))
         return;
 
     if (buttons.is_pressed(BTN_SUN_NUM))
@@ -165,7 +167,7 @@ void magic_buttons()
         leds.show_num(FIRMWARE_VERSION);
     else if (buttons.is_pressed(BTN_HOME_NUM))
         leds.show_num(FIRMWARE_VERSION_THIS);
-    return;
+    return;*/
 }
 #endif // MDL_C500
 
@@ -176,7 +178,7 @@ void magic_buttons()
 void timer_slow_callback_wrapper()
 {
     leds.blink_timer_elapsed(LED_state::LED_blink_slow);
-#ifdef MDL_C500 // Model Classic 500
+#if defined(MDL_C500) || defined(MDL_RMECOWV100)
     magic_buttons();
 #endif
 #ifdef MOD_RAIN
@@ -236,7 +238,7 @@ void Blink_LED(PIO dummy, int dummy2, int led_num)
     leds.identify(led_num);
 }
 
-void buzzer_program_put_words(PIO pio, uint sm, uint32_t repeat, uint32_t duration, uint32_t gap)
+void buzzer_program_put_words(PIO pio, unsigned int sm, uint32_t repeat, uint32_t duration, uint32_t gap)
 {
     // YFC500 doesn't has (not yet?) a buzzer on CoverUI
 }
@@ -291,7 +293,7 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     still_pressed = false;
 
     // Scan the buttons in the same order as original OM FW does
-    for (uint i : buttons.kOMButtonNrs)
+    for (unsigned int i : buttons.kOMButtonNrs)
     {
         uint32_t start = millis(); // start press_timeout measurement
         if (buttons.is_pressed(i))

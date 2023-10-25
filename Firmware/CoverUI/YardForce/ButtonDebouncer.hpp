@@ -38,7 +38,7 @@ public:
 
         // Debounce
         uint16_t laststate_debounced_ = state_debounced_;
-        uint i;
+        unsigned int i;
         for (i = 0, state_debounced_ = 0xFFFF; i < NUM_BUTTON_STATES; i++)
             state_debounced_ &= states_[i];
 

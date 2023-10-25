@@ -45,7 +45,7 @@
 #define UART_RX_PIN 5
 
 // write & read pointer serial interrupt buffer
-static uint write = 0;
+static unsigned int write = 0;
 
 // serial buffer
 static uint8_t buffer_serial[bufflen];
@@ -120,13 +120,13 @@ void sendMessage(void *message, size_t size)
 
 #ifdef _serial_debug_
   printf("\nencoded message              %d byte : ", (int)encoded_size);
-  for (uint i = 0; i < encoded_size; i++)
+  for (unsigned int i = 0; i < encoded_size; i++)
   {
     printf("0x%02x , ", out_buf[i]);
   }
 #endif
 
-  for (uint i = 0; i < encoded_size; i++)
+  for (unsigned int i = 0; i < encoded_size; i++)
   {
     uart_putc(UART_1, out_buf[i]);
   }
@@ -223,7 +223,7 @@ void getDataFromBuffer()
 #ifdef HW_YF
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
     // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
-    u_int8_t readbyte = serial_ll.read();
+    int readbyte = serial_ll.read();
 #else
     u_int8_t readbyte = uart_getc(UART_1);
 #endif
