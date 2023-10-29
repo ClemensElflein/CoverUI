@@ -11,14 +11,12 @@
 #ifndef YARDFORCE_MDL_RMECOWV100_H
 #define YARDFORCE_MDL_RMECOWV100_H
 
-
 #define MDL_RMECOWV100
-#define LEDCNTRL_HDR "YardForce/LEDcontrol_RM-ECOW-V100.hpp"
+#define LEDCTRL_HDR "YardForce/LEDcontrol_RM-ECOW-V100.hpp"
+#define BUTTONS_HDR "YardForce/Buttons_RM-ECOW-V100.hpp"
 
-// LowLevel Serial
+// LowLevel Serial Pins
 #define UART_LL_RX PA3
 #define UART_LL_TX PA2
-
-//HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 
 #endif /* YARDFORCE_MDL_RMECOWV100_H */

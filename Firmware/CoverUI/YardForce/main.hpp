@@ -15,10 +15,11 @@
 #include "hwtimer.hpp"
 #include <list>
 
-#include LEDCNTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable
+#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
+#define FIRMWARE_VERSION_THIS 102
 
-#include "Buttons.hpp"
-Buttons buttons; // Main Buttons object
+#include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable (or subclass of it)
+#include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" variable (or subclass of it)
 
 #ifdef MDL_SAXPRO // Model SAxPRO
 void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
@@ -30,9 +31,6 @@ void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
 #ifdef MOD_HALL
 #include "Emergency.hpp"
 #endif
-
-#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header, probably preferable as PROTOCOL_VERSION
-#define FIRMWARE_VERSION_THIS 100
 
 // STM32/GD32 are single cores, also without threads.
 // Send mutex calls of main.cpp to nirvana. Dangerous?
@@ -47,7 +45,7 @@ void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
 extern void core1();
 extern void getDataFromBuffer();
 
-uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed);
+unsigned int bit_getbutton(uint32_t press_timeout, bool &still_pressed);
 void timer_slow_callback_wrapper();
 void timer_fast_callback_wrapper();
 void timer_event_callback_wrapper();
@@ -77,6 +75,7 @@ HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display log
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
 HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+
 // FIXME: ...
 #ifdef MCU_STM32
 #if defined(MDL_C500)
@@ -119,7 +118,7 @@ void setup()
     // Don't increase value of this timers preemptPriority parameter higher than the default,
     // as this timer callback also handles HardwareSerial as well as button-debouncer,
     // which would mess expected processing of those.
-    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper); // 200Hz   (5ms) timer, used for Buttons debouncer and LED- sequences
+    timer_quick = hwtimer(TIM_QUICK, TIM_QUICK_FREQUENCY, timer_quick_callback_wrapper); // 200Hz (5ms) timer, used for Buttons debouncer and LED- sequences
 
     serial_ll.begin(115200);
 
@@ -148,29 +147,6 @@ void loop() // This loop() doesn't loop!
     core1();
 }
 
-#if defined(MDL_C500) || defined(MDL_RMECOWV100)
-/**
- * @brief Check if one of the "magic buttons" got pressed and do his function.
- * At the moment the following magic buttons exists:
- * OK + Clock = Display base FW version
- * OK + Home  = Display this FW version
- * OK + Sun   = LED animation
- */
-void magic_buttons()
-{
-    /*if (!buttons.is_pressed(BTN_OK_NUM))
-        return;
-
-    if (buttons.is_pressed(BTN_SUN_NUM))
-        leds.sequence_start(&LEDcontrol::sequence_animate_handler);
-    else if (buttons.is_pressed(BTN_CLK_NUM))
-        leds.show_num(FIRMWARE_VERSION);
-    else if (buttons.is_pressed(BTN_HOME_NUM))
-        leds.show_num(FIRMWARE_VERSION_THIS);
-    return;*/
-}
-#endif // MDL_C500
-
 /**
  * @brief Stupid timer callback wrapper to work-around callback_function_t and timerCallback_t framework-arduino differences.
  *   Also, framework-arduinogd32 implementation doesn't support callback arguments nor std::bind and thus no ptr to member functionality!
@@ -178,7 +154,7 @@ void magic_buttons()
 void timer_slow_callback_wrapper()
 {
     leds.blink_timer_elapsed(LED_state::LED_blink_slow);
-#if defined(MDL_C500) || defined(MDL_RMECOWV100)
+#ifdef HAS_MAGIC_BUTTONS
     magic_buttons();
 #endif
 #ifdef MOD_RAIN
@@ -283,7 +259,7 @@ uint8_t get_sim_button(uint32_t press_timeout, bool &still_pressed)
     return sim_btn.button_id;
 }
 
-uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
+unsigned int bit_getbutton(uint32_t press_timeout, bool &still_pressed)
 {
     // Check if we've a button to simulate in queue
     uint8_t sim_button = get_sim_button(press_timeout, still_pressed);
@@ -293,19 +269,19 @@ uint8_t bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     still_pressed = false;
 
     // Scan the buttons in the same order as original OM FW does
-    for (unsigned int i : buttons.kOMButtonNrs)
+    for (auto const &it : buttons.kPpinByNumMap) // Loop over Button-Num -> button pin map
     {
         uint32_t start = millis(); // start press_timeout measurement
-        if (buttons.is_pressed(i))
+        if (buttons.is_pressed(it.first))
         {
             // wait for button released
-            while (buttons.is_pressed(i) && (press_timeout == 0 || (millis() - start) < press_timeout))
+            while (buttons.is_pressed(it.first) && (press_timeout == 0 || (millis() - start) < press_timeout))
                 ;
-            if (buttons.is_pressed(i))
+            if (buttons.is_pressed(it.first))
                 still_pressed = true;
             else
                 still_pressed = false;
-            return (i);
+            return (it.first);
         }
     }
     return 0;
