@@ -15,8 +15,13 @@
 #include "hwtimer.hpp"
 #include <list>
 
-#define FIRMWARE_VERSION 200 // FIXME: Should go into a common header
-#define FIRMWARE_VERSION_THIS 102
+#if !(FIRMWARE_VERSION == 200)
+#pragma GCC error "YardForce CoverUI port is based on OM- FIRMWARE_VERSION 200. Port code changes before compiling..."
+#include <AbortCompile>
+#else
+#undef FIRMWARE_VERSION
+#endif
+#define FIRMWARE_VERSION 201 // FIXME: Should go into a common header
 
 #include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable (or subclass of it)
 #include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" variable (or subclass of it)

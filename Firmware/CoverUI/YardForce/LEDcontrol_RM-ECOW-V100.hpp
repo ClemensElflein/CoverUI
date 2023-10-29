@@ -42,7 +42,7 @@
 
 #define LED_ANIMATE_DELAY 20 // Delay (ms) between LEDs of animate sequence (boot/power-on anim)
 
-const uint32_t led_pins_by_num[] = {
+const uint32_t kPinByLedNum[] = {
     // Order derived from LowLevel "enum LED_id"
     //                       C500
     // Use LED         num  Original  Alternative
@@ -68,30 +68,35 @@ const uint32_t led_pins_by_num[] = {
     LED_PIN_SETUP   // 19
 };
 
-const unsigned int led_anim_order[] = {3, 2, 1, 0, 17, 16, 15, 14, 13, 19, 12, 11};
-const unsigned int num_front_leds = sizeof(led_anim_order) / sizeof(unsigned int);
+const unsigned int kLedAnimOrder[] = {3, 2, 1, 0, 17, 16, 15, 14, 13, 19, 12, 11};
+const unsigned int kNumFrontLeds = sizeof(kLedAnimOrder) / sizeof(unsigned int);
+
+// Numeric (base10) representation of LEDs.
+// I.e. Digit 0 = 4H(0), ... Then S2(5) + S1(4) = 9.
+//
+//    |------ Bit 5 =  4H(0)
+//    ||----- Bit 4 =  6H(1)
+//    |||---- Bit 3 =  8H(2)
+//    ||||--- Bit 2 = 10H(3)
+//    |||||-- Bit 1 =  S1(4)
+//    ||||||- Bit 0 =  S2(5)
+const uint8_t kBase10Leds[] = {
+    0b100000, // = 0
+    0b010000,
+    0b001000,
+    0b000100,
+    0b000010,
+    0b000001,
+    0b010001,
+    0b001001,
+    0b000101,
+    0b000011}; // = 9
 
 class LEDcontrolRMECOWV100 : public LEDcontrol
 {
-protected:
-    const uint8_t kBase10Leds[10] = {
-        // Numeric (base10) representation of LEDs.
-        // I.e. Digit 0 = 4H(0), then S2(5) + S1(4) = 9
-        //|- Bit 5 = 4H(0)
-        //|    |- Bit 0 = S2(5)
-        0b100000, // = 0
-        0b010000,
-        0b001000,
-        0b000100,
-        0b000010,
-        0b000001,
-        0b010001,
-        0b001001,
-        0b000101,
-        0b000011}; // = 9
-
 public:
-    LEDcontrolRMECOWV100(const uint32_t *led_pins_by_num_ptr, const size_t size) : LEDcontrol(led_pins_by_num_ptr, size) {}
+    LEDcontrolRMECOWV100(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds) {}
+    LEDcontrolRMECOWV100(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds, void (LEDcontrol::*t_set_base10_leds_callback)(char digit)) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds, t_set_base10_leds_callback) {}
 
     void sequence_animate_handler()
     {
@@ -99,14 +104,14 @@ public:
 
         if (step == 0) // Next sequence step not reached now
             return;
-        else if (step >= 1 && step <= num_front_leds) // LED on
+        else if (step >= 1 && step <= kNumFrontLeds) // LED on
         {
-            set(led_anim_order[step - 1], LED_state::LED_on, false);
+            set(kLedAnimOrder[step - 1], LED_state::LED_on, false);
             return;
         }
-        else if (step >= (num_front_leds + 1) && step <= (2 * num_front_leds)) // LED off
+        else if (step >= (kNumFrontLeds + 1) && step <= (2 * kNumFrontLeds)) // LED off
         {
-            set(led_anim_order[step - num_front_leds - 1], LED_state::LED_off, false);
+            set(kLedAnimOrder[step - kNumFrontLeds - 1], LED_state::LED_off, false);
             return;
         }
         else
@@ -125,10 +130,32 @@ public:
     unsigned int boot_animation() // A short boot animation which return the amount of ms it will take
     {
         sequence_start(&LEDcontrol::sequence_animate_handler);
-        return ((num_front_leds+1)*LED_ANIMATE_DELAY);
+        return ((kNumFrontLeds + 1) * LED_ANIMATE_DELAY);
+    }
+
+    /**
+     * @brief Set base10 related LEDs for the given (numeric) character
+     *
+     * @param digit numeric character
+     */
+    void set_base10_leds(char digit) override
+    {
+        for (uint8_t bit = 0; bit <= 5; bit++) // We've 5 LEDs for base10 number representation
+        {
+            bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
+            unsigned int led = bit + 12;
+            set(led, on ? LED_state::LED_on : LED_state::LED_off, false);
+        }
+    }
+
+    void force_off_num_seq_leds(bool force) override
+    {
+        force_off(LED_NUM_LIFTED, force);       // Num change signalling LED
+        for (unsigned int i = 12; i <= 17; i++) // Base10 related LEDs
+            force_off(i, force);
     }
 };
 
-LEDcontrolRMECOWV100 leds(led_pins_by_num, sizeof(led_pins_by_num) / sizeof(uint32_t)); // Main LED controller object
+LEDcontrolRMECOWV100 leds(kPinByLedNum, sizeof(kPinByLedNum) / sizeof(uint32_t), &LEDcontrol::set_base10_leds); // Main LED controller object
 
 #endif /* YARDFORCE_LEDCONTROL_RMECOWV100_H */

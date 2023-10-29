@@ -13,7 +13,8 @@
 #include "LEDcontrol.h"
 #include "../BttnCtl.h" // LED_state is defined in BttnCtl.h
 
-LEDcontrol::LEDcontrol(const uint32_t *t_led_pins_by_num_ptr, const size_t t_size) : led_pins_by_num_ptr(t_led_pins_by_num_ptr), num_leds(t_size){};
+LEDcontrol::LEDcontrol(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds) : kPinByLedNumPtr(t_kPinByLedNumPtr), kNumLeds(t_kNumLeds){};
+LEDcontrol::LEDcontrol(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds, void (LEDcontrol::*t_set_base10_leds_cb)(char digit)) : kPinByLedNumPtr(t_kPinByLedNumPtr), kNumLeds(t_kNumLeds), set_base10_leds_cb(t_set_base10_leds_cb){};
 
 /**
  * @brief Setup LED GPIOs
@@ -21,9 +22,9 @@ LEDcontrol::LEDcontrol(const uint32_t *t_led_pins_by_num_ptr, const size_t t_siz
  */
 void LEDcontrol::setup()
 {
-    for (size_t p = 0; p < num_leds; p++)
+    for (size_t p = 0; p < kNumLeds; p++)
     {
-        auto pin = *(led_pins_by_num_ptr + p);
+        auto pin = *(kPinByLedNumPtr + p);
         if (pin != LED_PIN_NC)
             pinMode(pin, OUTPUT);
     }
@@ -38,7 +39,7 @@ void LEDcontrol::setup()
  */
 void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 {
-    auto pin = *(led_pins_by_num_ptr + led_num);
+    auto pin = *(kPinByLedNumPtr + led_num);
     if (pin != LED_PIN_NC)
     {
         switch (state)
@@ -136,7 +137,7 @@ void LEDcontrol::blink_timer_elapsed(LED_state blink_state)
     if (blink_state != LED_state::LED_blink_fast && blink_state != LED_state::LED_blink_slow) // Ensure that this method only get called for blinking LED states
         return;
 
-    for (size_t led_num = 0; led_num < num_leds; led_num++)
+    for (size_t led_num = 0; led_num < kNumLeds; led_num++)
     {
         if (has(led_num, blink_state) && !(force_led_off_ & (1 << led_num)))
         {
@@ -169,7 +170,6 @@ void LEDcontrol::identify(uint8_t led_num)
     force_off(led_num, true);
     force_on(led_num, false);
 }
-
 
 /*******************************************************************************************
  *                           LED "Sequence" stuff                                          *
@@ -236,7 +236,7 @@ uint16_t LEDcontrol::seq_get_next_step_(uint16_t step_rate)
  * @brief Animate sequence handler. Has to be started by sequence_start()
  */
 // FIXME: This is the default handler for C500 and should go to the relevant LEDcontrol_C500.hpp file
-//virtual void LEDcontrol::sequence_animate_handler() = 0;
+// virtual void LEDcontrol::sequence_animate_handler() = 0;
 /*
 void LEDcontrol::sequence_animate_handler()
 {
@@ -246,11 +246,11 @@ void LEDcontrol::sequence_animate_handler()
     {
     case 0: // Next sequence step not reached now
         return;
-    case 1 ... NUM_LEDS: // LED on
-        set(NUM_LEDS - step, LED_state::LED_on, false);
+    case 1 ... kNumLeds: // LED on
+        set(kNumLeds - step, LED_state::LED_on, false);
         return;
-    case NUM_LEDS + 1 ... 2 * NUM_LEDS: // LED off
-        set((2 * NUM_LEDS) - step, LED_state::LED_off, false);
+    case kNumLeds + 1 ... 2 * kNumLeds: // LED off
+        set((2 * kNumLeds) - step, LED_state::LED_off, false);
         return;
     default:
         seq_start_tick_ = 0;  // Sequence end
@@ -266,26 +266,26 @@ void LEDcontrol::show_num(uint16_t num)
     sequence_start(&LEDcontrol::seq_num_handler_);
 }
 
-void LEDcontrol::force_off_num_seq_leds_(bool force)
+/*void LEDcontrol::force_off_num_seq_leds(bool force)
 {
     force_off(LED_NUM_LIFTED, force);                    // Num change signalling LED
     for (uint8_t i = LED_NUM_MON; i >= LED_NUM_SUN; i--) // Base10 related LEDs
         force_off(i, force);
-}
+}*/
 
 /**
  * @brief Set base10 related LEDs for the given (numeric) character
  *
  * @param digit numeric character
  */
-void LEDcontrol::set_base10_leds_(char digit)
+/*void LEDcontrol::set_base10_leds_(char digit)
 {
     for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
     {
         bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
         set(bit + 4, on ? LED_state::LED_on : LED_state::LED_off, false);
     }
-}
+}*/
 
 /**
  * @brief Sequence handler for displaying an uint16_t <seq_num_value_> as base10 values
@@ -309,14 +309,14 @@ void LEDcontrol::seq_num_handler_()
         s_cur_idx = 0;
         itoa(seq_num_value_, s_buf, 10);
         s_num_chars = std::strlen(s_buf);
-        force_off_num_seq_leds_(true); // Force related signalling LEDs off
+        force_off_num_seq_leds(true); // Force related signalling LEDs off
         return;
     }
 
     if (step >= (s_num_chars + 1) * steps_per_char) // End (last char sent)
     {
-        force_off_num_seq_leds_(false); // Un-Force related signalling LEDs
-        seq_start_tick_ = 0;            // Sequence end
+        force_off_num_seq_leds(false); // Un-Force related signalling LEDs
+        seq_start_tick_ = 0;           // Sequence end
         return;
     }
 
@@ -325,7 +325,7 @@ void LEDcontrol::seq_num_handler_()
     if (step == sub_step) // Num Display start
     {
         set(LED_NUM_LIFTED, LED_state::LED_on, false); // New number indicator on
-        set_base10_leds_(s_buf[s_cur_idx]);
+        (this->*set_base10_leds_cb)(s_buf[s_cur_idx]); // Set base10 LEDs callback
         return;
     }
 

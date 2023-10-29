@@ -45,22 +45,18 @@ Buttons buttons(kPinByButtonNumMap);
 #define HAS_MAGIC_BUTTONS
 /**
  * @brief Check if one of the "magic buttons" got pressed and do his function.
- * At the moment the following magic buttons exists:
- * OK + Clock = Display base FW version
- * OK + Home  = Display this FW version
- * OK + Sun   = LED animation
+ * SETUP + 4H = Display FW version
+ * SETUP + 10H = LED animation
  */
 void magic_buttons()
 {
-    if (!buttons.is_pressed(BTN_OK_NUM))
+    if (!buttons.is_pressed(BTN_SETUP_NUM))
         return;
 
-    if (buttons.is_pressed(BTN_SUN_NUM))
+    if (buttons.is_pressed(BTN_10H_NUM))
         leds.sequence_start(&LEDcontrol::sequence_animate_handler);
-    else if (buttons.is_pressed(BTN_CLK_NUM))
+    else if (buttons.is_pressed(BTN_4H_NUM))
         leds.show_num(FIRMWARE_VERSION);
-    else if (buttons.is_pressed(BTN_HOME_NUM))
-        leds.show_num(FIRMWARE_VERSION_THIS);
     return;
 }
 

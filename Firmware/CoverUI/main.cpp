@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 
+#define FIRMWARE_VERSION 200
+// V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
+
 #ifdef HW_YF // Stock YardForce HardWare
 #include "YardForce/main.hpp"
 #else // OM's Pico based HardWare
@@ -31,9 +34,6 @@
 #include "BttnCtl.h"
 
 #define bufflen 1000
-
-#define FIRMWARE_VERSION 200
-// V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
 
 // buzzer ontime in ms
 #define shortbeep 50
