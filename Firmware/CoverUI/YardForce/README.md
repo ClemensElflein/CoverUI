@@ -50,7 +50,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary><h2>Table of Contents</h2></summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -59,9 +59,14 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#hardware-modifications-buttons--leds-mandatory">Mandatory Hardware Modifications</a></li>
-        <li><a href="#hardware-modification-rain-sensor-optional">Optional Rain-Sensor Hardware Modifications</a></li>
-        <li><a href="#hardware-modification-emergency-hall-sensors-optional">Optional Hall-Sensor Hardware Modifications</a></li>
+        <li><a href="#hardware-modifications-by-model">Hardware Modifications by Model</a>
+              <ul>
+        <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
+        <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
+        <li><a href="#yardforce-sascx-type-10-buttons-12-leds-rm-ecow-v100">YardForce SA/SC/X-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
+      </ul>
+        </li>
         <li><a href="#flash-firmware">Flash Firmware</a></li>
       </ul>
     </li>
@@ -379,7 +384,8 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 
 Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
-Meaning of the LEDs:
+### Meaning of the LEDs:
+
 | LED | C500(B) | SA/SC/X-Type<br>(10 Buttons, 12 LEDs) | SA/SC/X-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
 | ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
 | 2hr - 8hr<br>4H - 10H | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | 4 digi GPS quality progressbar. Blink = No GPS-Fix
@@ -392,7 +398,8 @@ Meaning of the LEDs:
 | Mon-Sun | :heavy_check_mark: | :x: | :pager: | :pager: | 7 digit battery-charge-state progress bar |
 
 
-Button usage:
+### Button usage:
+
 | Button | C500(B) | SA/SC/X-Type<br>(10 Buttons, 12 LEDs) | SA/SC/X-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
 | ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
 | Home | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
