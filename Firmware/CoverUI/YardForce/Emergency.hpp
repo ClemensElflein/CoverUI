@@ -9,17 +9,6 @@
  *
  */
 
-/*
- * Cabling:
- *
- * Plug              | Color  |NMOS| Modification
- * ------------------|--------|----|-------------------------------------------------------------------------
- * Stop (Hall)       | White  | Q2 | Bridge R75 (or move R52) to get signal to PC5 (Pin 25)
- * Wheel list (Hall) | Red    | Q4 | Bridge-Cable from Q4/R61 to U5-Pin3 to get signal to PB7 (Pin 59)
- * Stop (Hall)       | Yellow | Q5 | Bridge-Cable from R76/J6-Pin14 to U5-Pin2 to get signal to PB6 (Pin 58)
- * Wheel list (Hall) | Blue   | Q6 | Bridge-Cable from Q6/R83 to U5-Pin10 to get signal to PB8 (Pin 61)
- */
-
 #ifndef YFC500_EMERGENCY_H
 #define YFC500_EMERGENCY_H
 

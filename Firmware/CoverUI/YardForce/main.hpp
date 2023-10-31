@@ -85,7 +85,6 @@ HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLev
 HardwareSerial serial_ll((uint8_t)UART_LL_RX, (uint8_t)UART_LL_TX, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
-// FIXME: ...
 #ifdef MCU_STM32
 #if defined(MDL_C500)
 //HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3

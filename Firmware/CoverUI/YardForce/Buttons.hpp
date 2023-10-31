@@ -60,10 +60,10 @@
 class Buttons
 {
 public:
-    const std::map<uint8_t, uint8_t> kPpinByNumMap;                    // Map of Button-Num -> button pin
+    const std::map<uint8_t, uint8_t> &kPpinByNumMap;                   // Map of Button-Num -> button pin
     std::map<uint32_t, ButtonDebouncer> debouncer_by_gpio_port_nr_map; // Map of GPIO Port Nr -> debouncer object
 
-    Buttons(std::map<uint8_t, uint8_t> t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
+    Buttons(const std::map<uint8_t, uint8_t> &t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
 
     /*#elif defined(MDL_SAXPRO) // Model SAxPRO
         const uint8_t kOMButtonNrs[3] = { // Logic button numbers supported by OM. Use same order as in OM FW so that they get scanned in the same order!
