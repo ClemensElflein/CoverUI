@@ -1,7 +1,7 @@
 /**
- * @file MDL_RM-ECOW-V100.h
+ * @file model_RM-ECOW-V100.h
  * @author Apehaenger (joerg@ebeling.ws)
- * @brief YardForce LED driver for OpenMower https://github.com/ClemensElflein/OpenMower
+ * @brief YardForce RM-ECOW-V1.0.0 model header for OpenMower https://github.com/ClemensElflein/OpenMower
  * @version 0.1
  * @date 2023-10-23
  *
@@ -13,10 +13,10 @@
 
 #define MDL_RMECOWV100
 #define LEDCTRL_HDR "YardForce/LEDcontrol_RM-ECOW-V100.hpp"
-#define BUTTONS_HDR "YardForce/Buttons_RM-ECOW-V100.hpp"
+#define BUTTONS_HDR "YardForce/buttons_RM-ECOW-V100.hpp"
 
 // LowLevel Serial Pins
 #define UART_LL_RX PA3
 #define UART_LL_TX PA2
 
-#endif /* YARDFORCE_MDL_RMECOWV100_H */
+#endif // YARDFORCE_MDL_RMECOWV100_H

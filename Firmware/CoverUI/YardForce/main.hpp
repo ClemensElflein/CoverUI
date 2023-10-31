@@ -21,7 +21,7 @@
 #else
 #undef FIRMWARE_VERSION
 #endif
-#define FIRMWARE_VERSION 201 // FIXME: Should go into a common header
+#define FIRMWARE_VERSION 203 // FIXME: Should go into a common header
 
 #include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable (or subclass of it)
 #include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" variable (or subclass of it)
@@ -84,7 +84,7 @@ HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLev
 // FIXME: ...
 #ifdef MCU_STM32
 #if defined(MDL_C500)
-HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+//HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #elif defined(MDL_SAXPRO)
 HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #endif

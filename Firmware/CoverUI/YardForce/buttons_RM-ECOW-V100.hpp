@@ -1,7 +1,7 @@
 /**
- * @file Buttons.hpp
+ * @file buttons_RM-ECOW-V100.hpp
  * @author Apehaenger (joerg@ebeling.ws)
- * @brief YardForce CoverUI Buttons class for OpenMower https://github.com/ClemensElflein/OpenMower
+ * @brief YardForce RM-ECOW-V1.0.0 CoverUI Buttons for OpenMower https://github.com/ClemensElflein/OpenMower
  * @version 0.4
  * @date 2023-09-03
  *

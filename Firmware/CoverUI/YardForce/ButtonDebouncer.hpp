@@ -21,12 +21,6 @@
 
 class ButtonDebouncer
 {
-private:
-    uint16_t states_[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 5ms)
-    uint8_t state_index_ = 0;            // Index for next states_ store positions
-    volatile uint16_t state_debounced_;  // Debounced buttons state
-    uint16_t state_changed_;             // Just changed buttons
-
 public:
     // void process_state(const uint32_t gpio_port)     // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
     void process_state(const GPIO_TypeDef *gpio_port) // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
@@ -63,5 +57,11 @@ public:
     {
         return state_debounced_ & digitalPinToBitMask(pin);
     };
+
+private:
+    uint16_t states_[NUM_BUTTON_STATES]; // GPIO port state recorder (every time interval = 5ms)
+    uint8_t state_index_ = 0;            // Index for next states_ store positions
+    volatile uint16_t state_debounced_;  // Debounced buttons state
+    uint16_t state_changed_;             // Just changed buttons
 };
 #endif // YARDFORCE_BUTTONDEBOUNCER_HPP

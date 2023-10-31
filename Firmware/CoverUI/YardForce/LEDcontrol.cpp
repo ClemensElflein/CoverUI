@@ -232,60 +232,11 @@ uint16_t LEDcontrol::seq_get_next_step_(uint16_t step_rate)
     return ++seq_step_;
 }
 
-/**
- * @brief Animate sequence handler. Has to be started by sequence_start()
- */
-// FIXME: This is the default handler for C500 and should go to the relevant LEDcontrol_C500.hpp file
-// virtual void LEDcontrol::sequence_animate_handler() = 0;
-/*
-void LEDcontrol::sequence_animate_handler()
-{
-    uint16_t step = seq_get_next_step_(15); // Animation sequence runs in 15ms steps
-
-    switch (step)
-    {
-    case 0: // Next sequence step not reached now
-        return;
-    case 1 ... kNumLeds: // LED on
-        set(kNumLeds - step, LED_state::LED_on, false);
-        return;
-    case kNumLeds + 1 ... 2 * kNumLeds: // LED off
-        set((2 * kNumLeds) - step, LED_state::LED_off, false);
-        return;
-    default:
-        seq_start_tick_ = 0;  // Sequence end
-        set(led_states_bin_); // Restore states
-        return;
-    }
-}
-*/
-
 void LEDcontrol::show_num(uint16_t num)
 {
     seq_num_value_ = num;
     sequence_start(&LEDcontrol::seq_num_handler_);
 }
-
-/*void LEDcontrol::force_off_num_seq_leds(bool force)
-{
-    force_off(LED_NUM_LIFTED, force);                    // Num change signalling LED
-    for (uint8_t i = LED_NUM_MON; i >= LED_NUM_SUN; i--) // Base10 related LEDs
-        force_off(i, force);
-}*/
-
-/**
- * @brief Set base10 related LEDs for the given (numeric) character
- *
- * @param digit numeric character
- */
-/*void LEDcontrol::set_base10_leds_(char digit)
-{
-    for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
-    {
-        bool on = (kBase10Leds[digit - '0'] >> bit) & 0b1;
-        set(bit + 4, on ? LED_state::LED_on : LED_state::LED_off, false);
-    }
-}*/
 
 /**
  * @brief Sequence handler for displaying an uint16_t <seq_num_value_> as base10 values

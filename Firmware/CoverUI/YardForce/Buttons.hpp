@@ -23,23 +23,7 @@
 #define GPIOF_BASE GPIOF
 #endif
 
-/*#ifdef MDL_C500 // Model Classic 500
-#define BTN_CLK_PIN PF4
-#define BTN_OK_PIN PF5
-#define BTN_S1_PIN PB2
-#define BTN_S2_PIN PB10
-#define BTN_LOCK_PIN PB11
-#define BTN_MON_PIN PB12
-#define BTN_TUE_PIN PB13
-#define BTN_WED_PIN PB14
-#define BTN_THU_PIN PB15
-#define BTN_FRI_PIN PC6
-#define BTN_SAT_PIN PC7
-#define BTN_SUN_PIN PC8
-#define BTN_PLAY_PIN PA11
-#define BTN_HOME_PIN PA12
-
-#elif defined(MDL_SAXPRO) // Model SAxPRO
+/*#elif defined(MDL_SAXPRO) // Model SAxPRO
 #define BTN_PLAY_PIN PC0  // or Start
 #define BTN_HOME_PIN PC1
 #define BTN_UP_PIN PB14
@@ -83,11 +67,7 @@ public:
 
     Buttons(std::map<uint8_t, uint8_t> t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
 
-    /*#ifdef MDL_C500                        // Model Classic 500
-        const uint8_t kOMButtonNrs[14] = { // Logic button numbers supported by OM. Use same order as in OM FW so that they get scanned in the same order!
-            BTN_CLK_NUM, BTN_HOME_NUM, BTN_PLAY_NUM, BTN_S1_NUM, BTN_S2_NUM, BTN_LOCK_NUM, BTN_OK_NUM,
-            BTN_SUN_NUM, BTN_MON_NUM, BTN_TUE_NUM, BTN_WED_NUM, BTN_THU_NUM, BTN_FRI_NUM, BTN_SAT_NUM};
-    #elif defined(MDL_SAXPRO) // Model SAxPRO
+    /*#elif defined(MDL_SAXPRO) // Model SAxPRO
         const uint8_t kOMButtonNrs[3] = { // Logic button numbers supported by OM. Use same order as in OM FW so that they get scanned in the same order!
             BTN_HOME_NUM, BTN_PLAY_NUM, BTN_OK_NUM};
     #endif*/
