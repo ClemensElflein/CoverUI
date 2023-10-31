@@ -22,13 +22,13 @@
 class ButtonDebouncer
 {
 public:
-    // void process_state(const uint32_t gpio_port)     // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
-    void process_state(const GPIO_TypeDef *gpio_port) // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
+    void process_state(const uint32_t gpio_port_nr) // Has to get called regulary i.e. by timer (5ms) and store the (buttons) port state within states_ array
     {
 #ifdef MCU_STM32
+        auto gpio_port = get_GPIO_Port(gpio_port_nr);
         states_[state_index_] = gpio_port->IDR ^ 0xFFFF; // XOR changes for pull-up states_
 #else
-        states_[state_index_] = GPIO_ISTAT(gpio_port) ^ 0xFFFF; // XOR changes for pull-up states_
+        states_[state_index_] = GPIO_ISTAT(gpio_port[gpio_port_nr]) ^ 0xFFFF; // XOR changes for pull-up states_
 #endif
 
         // Debounce

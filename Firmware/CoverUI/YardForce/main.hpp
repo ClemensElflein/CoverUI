@@ -79,7 +79,11 @@ HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display log
 #endif
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
+#ifdef MCU_STM32
 HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+#else                                             // MCU_GD32
+HardwareSerial serial_ll((uint8_t)UART_LL_RX, (uint8_t)UART_LL_TX, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
+#endif
 
 // FIXME: ...
 #ifdef MCU_STM32
@@ -89,7 +93,7 @@ HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLev
 HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #endif
 #else // MCU_GD32
-HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
+//HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
 struct SimButton // Simulate button

@@ -16,13 +16,6 @@
 #include <map>
 #include "ButtonDebouncer.hpp"
 
-#ifdef MCU_GD32
-#define GPIOA_BASE GPIOA
-#define GPIOB_BASE GPIOB
-#define GPIOC_BASE GPIOC
-#define GPIOF_BASE GPIOF
-#endif
-
 /*#elif defined(MDL_SAXPRO) // Model SAxPRO
 #define BTN_PLAY_PIN PC0  // or Start
 #define BTN_HOME_PIN PC1
@@ -30,7 +23,6 @@
 #define BTN_DOWN_PIN PB13
 #define BTN_OK_PIN PB12 // or Enter
 #define BTN_BACK_PIN PB15
-
 #endif*/
 
 // Logic button numbers. Take attention that OM known buttons need to have the same logic number!
@@ -59,11 +51,17 @@
 #define BTN_10H_NUM 38   // i.e. RM-ECOW-V100
 #define BTN_SETUP_NUM 39 // i.e. RM-ECOW-V100 (WLAN-Setup button)
 
+#ifdef MCU_STM32
+#define DIGITAL_PIN_TO_PORT_NR(p) (STM_PORT(digitalPinToPinName(p)))
+#else // MCU_GD32
+#define DIGITAL_PIN_TO_PORT_NR(p) (GD_PORT_GET(DIGITAL_TO_PINNAME(p)))
+#endif
+
 class Buttons
 {
 public:
-    const std::map<uint8_t, uint8_t> kPpinByNumMap;                  // Map of Button-Num -> button pin
-    std::map<GPIO_TypeDef *, ButtonDebouncer> debouncer_by_gpio_map; // Map of *GPIOx_BASE -> debouncer object
+    const std::map<uint8_t, uint8_t> kPpinByNumMap;                    // Map of Button-Num -> button pin
+    std::map<uint32_t, ButtonDebouncer> debouncer_by_gpio_port_nr_map; // Map of GPIO Port Nr -> debouncer object
 
     Buttons(std::map<uint8_t, uint8_t> t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
 
@@ -80,10 +78,11 @@ public:
     {
         for (auto const &it : kPpinByNumMap) // Loop over Button-Num -> button pin map
         {
-            // Create debouncer if not already exists for this GPIOx_BASE
-            auto gpio = digitalPinToPort(it.second);
-            if (auto debouncer = debouncer_by_gpio_map.find(gpio); debouncer == debouncer_by_gpio_map.end())
-                debouncer_by_gpio_map.insert(std::pair<GPIO_TypeDef *, ButtonDebouncer>(gpio, ButtonDebouncer()));
+            // Create debouncer if not already exists for this Pin's GPIO_Port_Nr
+            uint32_t gpio_port_nr = DIGITAL_PIN_TO_PORT_NR(it.second);
+            auto debouncer = debouncer_by_gpio_port_nr_map.find(gpio_port_nr);
+            if (debouncer == debouncer_by_gpio_port_nr_map.end())
+                debouncer_by_gpio_port_nr_map.insert(std::pair<uint32_t, ButtonDebouncer>(gpio_port_nr, ButtonDebouncer()));
 
             pinMode(it.second, INPUT_PULLUP);
         }
@@ -95,7 +94,7 @@ public:
      */
     void process_states()
     {
-        for (std::map<GPIO_TypeDef *, ButtonDebouncer>::iterator it = debouncer_by_gpio_map.begin(); it != debouncer_by_gpio_map.end(); ++it)
+        for (std::map<uint32_t, ButtonDebouncer>::iterator it = debouncer_by_gpio_port_nr_map.begin(); it != debouncer_by_gpio_port_nr_map.end(); ++it)
             it->second.process_state(it->first);
     };
 
@@ -108,11 +107,12 @@ public:
      */
     bool is_pressed(uint8_t button_nr)
     {
-        if (auto pin_it = kPpinByNumMap.find(button_nr); pin_it != kPpinByNumMap.end()) // Find button_nr and get iterator pair
+        auto pin_it = kPpinByNumMap.find(button_nr); // Find button_nr and get iterator pair
+        if (pin_it != kPpinByNumMap.end())
         {
-            // Get debouncer
-            auto gpio = digitalPinToPort(pin_it->second);
-            if (auto debouncer_it = debouncer_by_gpio_map.find(gpio); debouncer_it != debouncer_by_gpio_map.end()) // Get debouncer iterator for pin
+            uint32_t gpio_port_nr = DIGITAL_PIN_TO_PORT_NR(pin_it->second);
+            auto debouncer_it = debouncer_by_gpio_port_nr_map.find(gpio_port_nr); // Find debouncer and get iterator pair
+            if (debouncer_it != debouncer_by_gpio_port_nr_map.end())
             {
                 return debouncer_it->second.is_pressed(pin_it->second);
             }
@@ -136,28 +136,7 @@ public:
 private:
     // Somehow static initialization...
     // All ports with a button get debounced per port, via timer callback
-    /*#ifdef MDL_C500 // Model Classic 500
-        const uint32_t kGpioPorts[NUM_GPIO_PORTS] = {GPIOA_BASE, GPIOB_BASE, GPIOC_BASE, GPIOF_BASE};
-        ButtonDebouncer *debouncers_[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as kGpioPorts
-            new ButtonDebouncer(), new ButtonDebouncer(),
-            new ButtonDebouncer(), new ButtonDebouncer()};
-        // Map logic button number to Button-definiton (Again: Some-how static with debouncer_index)
-        const std::map<uint8_t, ButtonDef> kButtonNum2DefMap = {
-            {BTN_CLK_NUM, {3, BTN_CLK_PIN}},
-            {BTN_HOME_NUM, {0, BTN_HOME_PIN}},
-            {BTN_PLAY_NUM, {0, BTN_PLAY_PIN}},
-            {BTN_S1_NUM, {1, BTN_S1_PIN}},
-            {BTN_S2_NUM, {1, BTN_S2_PIN}},
-            {BTN_LOCK_NUM, {1, BTN_LOCK_PIN}},
-            {BTN_OK_NUM, {3, BTN_OK_PIN}},
-            {BTN_MON_NUM, {1, BTN_MON_PIN}},
-            {BTN_TUE_NUM, {1, BTN_TUE_PIN}},
-            {BTN_WED_NUM, {1, BTN_WED_PIN}},
-            {BTN_THU_NUM, {1, BTN_THU_PIN}},
-            {BTN_FRI_NUM, {2, BTN_FRI_PIN}},
-            {BTN_SAT_NUM, {2, BTN_SAT_PIN}},
-            {BTN_SUN_NUM, {2, BTN_SUN_PIN}}};
-    #elif defined(MDL_SAXPRO) // Model SAxPRO
+    /*#elif defined(MDL_SAXPRO) // Model SAxPRO
         const uint32_t kGpioPorts[NUM_GPIO_PORTS] = {GPIOB_BASE, GPIOC_BASE};
         ButtonDebouncer *debouncers_[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as kGpioPorts
             new ButtonDebouncer(), new ButtonDebouncer()};
