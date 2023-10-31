@@ -2,51 +2,44 @@
  * @file Emergency.hpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce Classic 500 CoverUI Emergency class for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-05-10
+ * @version 0.2
+ * @date 2023-10-31
  *
  * @copyright Copyright (c) 2023
  *
  */
 
-#ifndef YFC500_EMERGENCY_H
-#define YFC500_EMERGENCY_H
+#ifndef YARDFORCE_EMERGENCY_H
+#define YARDFORCE_EMERGENCY_H
 
 #include <Arduino.h>
-#include <map>
 #include "../BttnCtl.h"
 
-#define PIN_HALL_STOP_WHITE PC5
-#define PIN_HALL_STOP_YELLOW PB6
-#define PIN_HALL_WHEEL_RED PB7
-#define PIN_HALL_WHEEL_BLUE PB8
+#define PERIODIC_SEND_CYCLE 1000 // Periodic cycle (ms) how often to send emergency state (if there's no active emergency)
+
+struct EmergencyPinStateDef
+{
+    uint8_t pin;
+    uint8_t pin_mode;
+    Emergency_state state;
+};
 
 extern void sendMessage(void *message, size_t size);
 
 class Emergency
 {
-private:
-    struct PinDef
-    {
-        uint8_t pin;
-        Emergency_state state;
-    };
-
-    const PinDef kPinDefs[4] = {
-        {PIN_HALL_STOP_WHITE, Emergency_state::Emergency_stop1},
-        {PIN_HALL_STOP_YELLOW, Emergency_state::Emergency_stop2},
-        {PIN_HALL_WHEEL_RED, Emergency_state::Emergency_lift1},
-        {PIN_HALL_WHEEL_BLUE, Emergency_state::Emergency_lift2}};
-
-    uint8_t state_ = 0;           // Current emergency state, set by read()
-    uint8_t state_last_sent_ = 0; // Copy of last sent state_
-
 public:
+    const EmergencyPinStateDef *kEmergencyPinStatesPtr; // Pointer to an array of EmergencyPinStateDef's (order doesn't matter)
+    const size_t kNumEmergencies;
+
+    Emergency(const EmergencyPinStateDef *t_kEmergencyPinStatesPtr, const size_t t_kNumEmergencies) : kEmergencyPinStatesPtr(t_kEmergencyPinStatesPtr), kNumEmergencies(t_kNumEmergencies){};
+
     void setup()
     {
-        for (auto i : kPinDefs)
+        for (size_t i = 0; i < kNumEmergencies; i++)
         {
-            pinMode(i.pin, INPUT);
+            auto pin_state = *(kEmergencyPinStatesPtr + i);
+            pinMode(pin_state.pin, pin_state.pin_mode);
         }
     }
 
@@ -56,12 +49,13 @@ public:
      */
     void read()
     {
-        for (auto i : kPinDefs)
+        for (size_t i = 0; i < kNumEmergencies; i++)
         {
-            if (digitalRead(i.pin) == HIGH)
-                state_ |= i.state;
+            auto pin_state = *(kEmergencyPinStatesPtr + i);
+            if (digitalRead(pin_state.pin) == HIGH)
+                state_ |= pin_state.state;
             else
-                state_ &= ~i.state;
+                state_ &= ~pin_state.state;
         }
         if (state_ & ~Emergency_state::Emergency_latch)
             state_ |= Emergency_state::Emergency_latch;
@@ -92,35 +86,40 @@ public:
         read();
 
         if (state_ & Emergency_state::Emergency_latch && !(state_last_sent_ & Emergency_state::Emergency_latch))
+        {
             send();
+            next_periodic_cycle = millis() + PERIODIC_SEND_CYCLE;
+        }
     }
 
     /**
      * @brief Periodically send emergency state.
      *   Get called by fast (100ms) timer.
      *   An active emergency state get send on each call.
-     *   An inactive emergency state get only send once a second
+     *   An inactive emergency state get only every PERIODIC_SEND_CYCLE
      */
     void periodic_send()
     {
-        static uint call_cnt_ = 0;
-
-        call_cnt_++;
-
         // Active emergency
         if (state_ & Emergency_state::Emergency_latch)
         {
             send();
+            next_periodic_cycle = millis() + PERIODIC_SEND_CYCLE;
             return;
         }
 
         // Inactive emergency
-        if (call_cnt_ > 10)
-        {
-            send();
-            call_cnt_ = 0;
-        }
+        if (millis() < next_periodic_cycle)
+            return;
+
+        send();
+        next_periodic_cycle = millis() + PERIODIC_SEND_CYCLE;
     }
+
+private:
+    volatile uint32_t next_periodic_cycle = PERIODIC_SEND_CYCLE;
+    volatile uint8_t state_ = 0;  // Current emergency state, set by read()
+    uint8_t state_last_sent_ = 0; // Copy of last sent state_
 };
 
-#endif /* YFC500_EMERGENCY_H */
+#endif // YARDFORCE_EMERGENCY_H

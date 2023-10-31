@@ -23,8 +23,11 @@
 #endif
 #define FIRMWARE_VERSION 203 // FIXME: Should go into a common header
 
-#include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" variable (or subclass of it)
-#include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" variable (or subclass of it)
+#include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" object (or subclass of it)
+#include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" object (or subclass of it)
+#ifdef MOD_EMERGENCY
+#include EMERGENCY_HDR // Preprocessor computed include. Has to initialize "Emergency emergency" object (or subclass of it)
+#endif
 
 #ifdef MDL_SAXPRO // Model SAxPRO
 void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
@@ -32,9 +35,6 @@ void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
 #endif
 #ifdef MOD_RAIN
 #include "Rain.hpp"
-#endif
-#ifdef MOD_HALL
-#include "Emergency.hpp"
 #endif
 
 // STM32/GD32 are single cores, also without threads.
@@ -69,9 +69,6 @@ typedef bool *PIO;
 #ifdef MOD_RAIN
 Rain rain;
 #endif
-#ifdef MOD_HALL
-Emergency emergency;
-#endif
 HardwareTimer *timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *timer_fast;  // Used for blink-fast LEDs
 #ifdef MDL_SAXPRO           // Model SAxPRO
@@ -87,12 +84,12 @@ HardwareSerial serial_ll((uint8_t)UART_LL_RX, (uint8_t)UART_LL_TX, 1); // Serial
 
 #ifdef MCU_STM32
 #if defined(MDL_C500)
-//HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
+// HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #elif defined(MDL_SAXPRO)
 HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
 #endif
 #else // MCU_GD32
-//HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
+// HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
 struct SimButton // Simulate button
@@ -113,7 +110,7 @@ void setup()
     else
         display::set_backlight();
 #endif
-#ifdef MOD_HALL
+#ifdef MOD_EMERGENCY
     emergency.setup();
 #endif
 
@@ -179,7 +176,7 @@ void timer_event_callback_wrapper()
 
 void timer_fast_callback_wrapper()
 {
-#ifdef MOD_HALL
+#ifdef MOD_EMERGENCY
     emergency.periodic_send();
 #endif
     leds.blink_timer_elapsed(LED_state::LED_blink_fast);
@@ -191,7 +188,7 @@ void timer_quick_callback_wrapper()
 #ifdef MDL_SAXPRO // Model SAxPRO
     display::tick_inc(TIM_QUICK_PERIOD_MS);
 #endif
-#ifdef MOD_HALL
+#ifdef MOD_EMERGENCY
     emergency.read_and_send_if_emergency();
 #endif
     buttons.process_states();
