@@ -83,7 +83,8 @@ jobs:
   tagged-release:
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
-    needs: firmware
+    needs: [firmware, firmware-stock]
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -103,6 +104,14 @@ jobs:
 
       - name: Create firmware zip
         run: zip -r release/firmware.zip firmware
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: open-mower-stock-firmware
+          path: firmware-stock
+
+      - name: Create firmware-stock zip
+        run: zip -r firmware-stock.zip firmware-stock
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
