@@ -16,15 +16,6 @@
 #include <map>
 #include "ButtonDebouncer.hpp"
 
-/*#elif defined(MDL_SAXPRO) // Model SAxPRO
-#define BTN_PLAY_PIN PC0  // or Start
-#define BTN_HOME_PIN PC1
-#define BTN_UP_PIN PB14
-#define BTN_DOWN_PIN PB13
-#define BTN_OK_PIN PB12 // or Enter
-#define BTN_BACK_PIN PB15
-#endif*/
-
 // Logic button numbers. Take attention that OM known buttons need to have the same logic number!
 // 0 is reserved for no-button return
 #define BTN_CLK_NUM 1
@@ -64,11 +55,6 @@ public:
     std::map<uint32_t, ButtonDebouncer> debouncer_by_gpio_port_nr_map; // Map of GPIO Port Nr -> debouncer object
 
     Buttons(const std::map<uint8_t, uint8_t> &t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
-
-    /*#elif defined(MDL_SAXPRO) // Model SAxPRO
-        const uint8_t kOMButtonNrs[3] = { // Logic button numbers supported by OM. Use same order as in OM FW so that they get scanned in the same order!
-            BTN_HOME_NUM, BTN_PLAY_NUM, BTN_OK_NUM};
-    #endif*/
 
     /**
      * @brief Setup GPIOs
@@ -131,24 +117,9 @@ public:
         for (auto const &it : kPpinByNumMap) // Loop over Button-Num -> button pin map
             if (is_pressed(it.first))
                 return it.first;
-    };
 
-private:
-    // Somehow static initialization...
-    // All ports with a button get debounced per port, via timer callback
-    /*#elif defined(MDL_SAXPRO) // Model SAxPRO
-        const uint32_t kGpioPorts[NUM_GPIO_PORTS] = {GPIOB_BASE, GPIOC_BASE};
-        ButtonDebouncer *debouncers_[NUM_GPIO_PORTS] = { // Debouncer obj for each port in the same order as kGpioPorts
-            new ButtonDebouncer(), new ButtonDebouncer()};
-        // Map logic button number to Button-definiton (Again: Some-how static with debouncer_index)
-        const std::map<uint8_t, ButtonDef> kButtonNum2DefMap = {
-            {BTN_HOME_NUM, {1, BTN_HOME_PIN}},
-            {BTN_PLAY_NUM, {1, BTN_PLAY_PIN}},
-            {BTN_OK_NUM, {0, BTN_OK_PIN}},
-            {BTN_UP_NUM, {0, BTN_UP_PIN}},
-            {BTN_DOWN_NUM, {0, BTN_DOWN_PIN}},
-            {BTN_BACK_NUM, {0, BTN_BACK_PIN}}};
-    #endif*/
+        return 0;
+    };
 };
 
 #endif // YARDFORCE_BUTTONS_HPP

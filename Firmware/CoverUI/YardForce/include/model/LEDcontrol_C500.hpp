@@ -14,8 +14,8 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "../BttnCtl.h"
-#include "LEDcontrol.h"
+#include "../../../BttnCtl.h"
+#include "../LEDcontrol.h"
 
 // 1st row: 2,4,6,8HR
 #define LED_PIN_2HR PA4
@@ -94,7 +94,6 @@ const uint8_t kBase10Leds[] = {
 class LEDcontrolC500 : public LEDcontrol
 {
 public:
-    LEDcontrolC500(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds) {}
     LEDcontrolC500(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds, void (LEDcontrol::*t_set_base10_leds_callback)(char digit)) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds, t_set_base10_leds_callback) {}
 
     /**
@@ -140,7 +139,7 @@ public:
      *
      * @param digit numeric character
      */
-    void set_base10_leds(char digit) override
+    void set_base10_leds(char digit)
     {
         for (uint8_t bit = 0; bit <= 6; bit++) // We've 6 LEDs for base10 number representation
         {
@@ -150,7 +149,7 @@ public:
         }
     }
 
-    void force_off_num_seq_leds(bool force) override
+    void force_off_num_seq_leds(bool force)
     {
         force_off(LED_NUM_LIFTED, force);      // Num change signalling LED
         for (unsigned int i = 4; i <= 10; i++) // Base10 related LEDs

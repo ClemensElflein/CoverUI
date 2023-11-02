@@ -13,8 +13,8 @@
 #define YARDFORCE_EMERGENCY_C500_H
 
 #include <Arduino.h>
-#include "../BttnCtl.h"
-#include "Emergency.hpp"
+#include "../../../BttnCtl.h"
+#include "../Emergency.hpp"
 
 #define PIN_STOP_JP5 PC10
 #define PIN_STOP_JP6 PA15

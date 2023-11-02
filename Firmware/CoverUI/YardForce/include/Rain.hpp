@@ -22,7 +22,7 @@
 #define YFC500_RAIN_H
 
 #include <Arduino.h>
-#include "../BttnCtl.h"
+#include "../../BttnCtl.h"
 
 #define PIN_RAIN PB1             // Need to be soldered with a cable bridge from FB2/JP2 to R79/PB1
 #define RAIN_ADC_THRESHOLD 700   // Why a threshold? Cause it could be made configurable on (Stock-)CoverUI (if i.e. required due to inaccuracy)

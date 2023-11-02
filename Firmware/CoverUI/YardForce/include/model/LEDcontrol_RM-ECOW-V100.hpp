@@ -14,8 +14,8 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <map>
-#include "../BttnCtl.h"
-#include "LEDcontrol.h"
+#include "../../../BttnCtl.h"
+#include "../LEDcontrol.h"
 
 // 1st row: Lifted, Wire (WLAN), Battery empty, Charge
 #define LED_PIN_LIFTED PB11
@@ -95,7 +95,6 @@ const uint8_t kBase10Leds[] = {
 class LEDcontrolRMECOWV100 : public LEDcontrol
 {
 public:
-    LEDcontrolRMECOWV100(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds) {}
     LEDcontrolRMECOWV100(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds, void (LEDcontrol::*t_set_base10_leds_callback)(char digit)) : LEDcontrol(t_kPinByLedNumPtr, t_kNumLeds, t_set_base10_leds_callback) {}
 
     void sequence_animate_handler()

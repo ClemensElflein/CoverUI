@@ -47,7 +47,7 @@ namespace display
             lv_obj_align(bar, align, x_ofs, y_ofs);
         }
 
-        void set_value(uint value)
+        void set_value(unsigned int value)
         {
             lv_bar_set_value(bar, value, LV_ANIM_OFF);
         }

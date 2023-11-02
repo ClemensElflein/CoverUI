@@ -8,11 +8,11 @@
  * @copyright Copyright (c) 2023
  *
  */
-#ifndef __YARDFORCE_MAIN_H
-#define __YARDFORCE_MAIN_H
+#ifndef __YARDFORCE_MAIN_HPP
+#define __YARDFORCE_MAIN_HPP
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
-#include "hwtimer.hpp"
+#include "include/hwtimer.hpp"
 #include <list>
 
 #if !(FIRMWARE_VERSION == 200)
@@ -23,18 +23,20 @@
 #endif
 #define FIRMWARE_VERSION 203 // FIXME: Should go into a common header
 
+#ifdef HAS_LEDS
 #include LEDCTRL_HDR // Preprocessor computed include. Has to initialize "LEDcontrol leds" object (or subclass of it)
+#endif
 #include BUTTONS_HDR // Preprocessor computed include. Has to initialize "Buttons buttons" object (or subclass of it)
 #ifdef MOD_EMERGENCY
 #include EMERGENCY_HDR // Preprocessor computed include. Has to initialize "Emergency emergency" object (or subclass of it)
 #endif
 
-#ifdef MDL_SAXPRO // Model SAxPRO
-void add_sim_button(uint8_t button_id, uint32_t press_timeout = 1);
-#include "WYM240128K1.hpp"
+#ifdef HAS_DISPLAY
+#include DISPLAY_HDR
 #endif
+
 #ifdef MOD_RAIN
-#include "Rain.hpp"
+#include "include/Rain.hpp"
 #endif
 
 // STM32/GD32 are single cores, also without threads.
@@ -82,27 +84,17 @@ HardwareSerial serial_ll(UART_LL_RX, UART_LL_TX); // Serial connection to LowLev
 HardwareSerial serial_ll((uint8_t)UART_LL_RX, (uint8_t)UART_LL_TX, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
 #endif
 
-#ifdef MCU_STM32
-#if defined(MDL_C500)
-// HardwareSerial serial_ll(PA3, PA2); // Serial connection to LowLevel MCU, JP2 Pin 1+3
-#elif defined(MDL_SAXPRO)
-HardwareSerial serial_ll(PA10, PA9); // Serial connection to LowLevel MCU, JP2 Pin 1+3
-#endif
-#else // MCU_GD32
-// HardwareSerial serial_ll((uint8_t)PA3, (uint8_t)PA2, 1); // Serial connection to LowLevel MCU, J6/JP2 Pin 1+3
-#endif
-
 struct SimButton // Simulate button
 {
     uint8_t button_id;
     uint32_t press_timeout;
 };
 
-std::list<SimButton> sim_button_queue;
-
 void setup()
 {
+#ifdef HAS_LEDS
     leds.setup();
+#endif
     buttons.setup();
 #ifdef MDL_SAXPRO // Model SAxPRO
     if (!display::init())
@@ -127,10 +119,9 @@ void setup()
 
     serial_ll.begin(115200);
 
-#if defined(MDL_C500) || defined(MDL_RMECOWV100)
+#ifdef HAS_LEDS
     leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
-
-    delay(100); // Some required stupid delay, dunno why :-/
+    delay(100);                                        // Some required stupid delay, dunno why :-/
 
     // "Hi there" and jammed button mounting detection
     bool tmp;
@@ -158,7 +149,9 @@ void loop() // This loop() doesn't loop!
  */
 void timer_slow_callback_wrapper()
 {
+#ifdef HAS_LEDS
     leds.blink_timer_elapsed(LED_state::LED_blink_slow);
+#endif
 #ifdef HAS_MAGIC_BUTTONS
     magic_buttons();
 #endif
@@ -179,7 +172,9 @@ void timer_fast_callback_wrapper()
 #ifdef MOD_EMERGENCY
     emergency.periodic_send();
 #endif
+#ifdef HAS_LEDS
     leds.blink_timer_elapsed(LED_state::LED_blink_fast);
+#endif
 }
 
 void timer_quick_callback_wrapper()
@@ -192,7 +187,9 @@ void timer_quick_callback_wrapper()
     emergency.read_and_send_if_emergency();
 #endif
     buttons.process_states();
+#ifdef HAS_LEDS
     leds.process_sequence();
+#endif
 }
 
 /****************************************************************
@@ -211,12 +208,16 @@ void uart_putc(HardwareSerial *Serial, uint8_t c)
 
 void Force_LED_off(uint8_t led_num, bool force)
 {
+#ifdef HAS_LEDS
     leds.force_off(led_num, force); // This only effect blink states
+#endif
 }
 
 void Blink_LED(PIO dummy, int dummy2, int led_num)
 {
+#ifdef HAS_LEDS
     leds.identify(led_num);
+#endif
 }
 
 void buzzer_program_put_words(PIO pio, unsigned int sm, uint32_t repeat, uint32_t duration, uint32_t gap)
@@ -224,53 +225,8 @@ void buzzer_program_put_words(PIO pio, unsigned int sm, uint32_t repeat, uint32_
     // YFC500 doesn't has (not yet?) a buzzer on CoverUI
 }
 
-void add_sim_button(uint8_t button_id, uint32_t press_timeout)
-{
-    sim_button_queue.push_back({button_id, press_timeout});
-}
-
-/**
- * @brief Get a simulated button. This function is only required for intelligent CoverUI's which act different than the simple Button/LED-Board,
- * as well as long we don't have a higher level abstraction in LL code. TODO
- *
- * @param press_timeout timeout to watch if a button is (long) pressed. We do not need to timeout this value in real, only honor it's value.
- * @param still_pressed pointer to boolean if it's still pressed after the timeout happen.
- * @return uint8_t button id of a simulated button, or 0 in the case when there's no button to simulate
- */
-uint8_t get_sim_button(uint32_t press_timeout, bool &still_pressed)
-{
-    if (sim_button_queue.empty())
-        return 0;
-
-    still_pressed = false;
-
-    SimButton sim_btn = sim_button_queue.front();
-    if (press_timeout <= sim_btn.press_timeout)
-    {
-        still_pressed = true;
-        sim_btn.press_timeout -= press_timeout;
-    }
-    else
-    {
-        still_pressed = false;
-        sim_btn.press_timeout = 0;
-    }
-
-    // This doesn't look efficient
-    sim_button_queue.pop_front();
-    if (sim_btn.press_timeout)
-        sim_button_queue.push_front(sim_btn);
-
-    return sim_btn.button_id;
-}
-
 unsigned int bit_getbutton(uint32_t press_timeout, bool &still_pressed)
 {
-    // Check if we've a button to simulate in queue
-    uint8_t sim_button = get_sim_button(press_timeout, still_pressed);
-    if (sim_button)
-        return sim_button;
-
     still_pressed = false;
 
     // Scan the buttons in the same order as original OM FW does
@@ -292,4 +248,4 @@ unsigned int bit_getbutton(uint32_t press_timeout, bool &still_pressed)
     return 0;
 }
 
-#endif /* __YARDFORCE_MAIN_H */
+#endif // __YARDFORCE_MAIN_HPP

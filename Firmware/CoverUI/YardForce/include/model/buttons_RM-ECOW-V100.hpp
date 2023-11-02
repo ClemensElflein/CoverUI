@@ -13,8 +13,8 @@
 
 #include <Arduino.h>
 #include <map>
-#include "Buttons.hpp"
-#include "ButtonDebouncer.hpp"
+#include "../Buttons.hpp"
+#include "../ButtonDebouncer.hpp"
 
 #define BTN_S1_PIN PA4
 #define BTN_S2_PIN PC6

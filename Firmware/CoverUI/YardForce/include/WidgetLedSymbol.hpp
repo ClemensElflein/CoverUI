@@ -11,6 +11,7 @@
 #define __WIDGETLEDSYMBOL_HPP
 
 #include <Arduino.h>
+#include <string>
 #include <lvgl.h>
 #include "LEDcontrol.h"
 

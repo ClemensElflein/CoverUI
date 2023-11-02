@@ -10,7 +10,7 @@
  */
 #include <map>
 #include <cstring>
-#include "LEDcontrol.h"
+#include "include/LEDcontrol.h"
 #include "../BttnCtl.h" // LED_state is defined in BttnCtl.h
 
 LEDcontrol::LEDcontrol(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds) : kPinByLedNumPtr(t_kPinByLedNumPtr), kNumLeds(t_kNumLeds){};

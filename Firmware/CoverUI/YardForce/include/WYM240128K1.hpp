@@ -18,14 +18,14 @@
 #define TOP_STATUS_BAR_GAP_PX 5 // Amount of (gap) pixels between top status-bar icons/symbols
 #define EMERGENCY_CLEAR_TEXT "Emergency! Press [Enter], close cover and stay back, to clear emergency state."
 
-#include "UC1698.h"
+#include "include/UC1698.hpp"
 
 #include <Arduino.h>
 #include <lvgl.h>
-#include "LEDcontrol.h"
-#include "WidgetLedSymbol.hpp"
-#include "WidgetBar.hpp"
-#include "WidgetTextTicker.hpp"
+#include "include/LEDcontrol.h"
+#include "include/WidgetLedSymbol.hpp"
+#include "include/WidgetBar.hpp"
+#include "include/WidgetTextTicker.hpp"
 
 #define BACKLIGHT_TIMEOUT_MS 120000 // 2 minutes
 #define STATUS_TICKER_LENGTH 100
@@ -81,7 +81,7 @@ namespace display
      */
     static void flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *t_color_p)
     {
-        uint x, y;
+        unsigned int x, y;
         lv_color_t *color_p;
         uc1698.setWindowProgramArea(area->x1, area->x2, area->y1, area->y2);
 
@@ -410,17 +410,17 @@ namespace display
         // Handle volume (up/down) buttons
         if (buttons.is_pressed(BTN_UP_NUM))
         {
-            add_sim_button(BTN_MON_NUM);
+            //add_sim_button(BTN_MON_NUM);
         }
         if (buttons.is_pressed(BTN_DOWN_NUM))
         {
-            add_sim_button(BTN_TUE_NUM);
+            //add_sim_button(BTN_TUE_NUM);
         }
 
         // Switch language button
         if (buttons.is_pressed(BTN_BACK_NUM))
         {
-            add_sim_button(BTN_WED_NUM);
+            //add_sim_button(BTN_WED_NUM);
         }
 
         // Handle emergency clear (Enter) button
@@ -440,7 +440,7 @@ namespace display
                 }
                 else
                 {
-                    add_sim_button(BTN_LOCK_NUM, 2001);
+                    //add_sim_button(BTN_LOCK_NUM, 2001);
                     emergency_clear_runout_ms = 0;
                 }
             }

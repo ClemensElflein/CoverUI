@@ -13,7 +13,7 @@
 #define YARDFORCE_EMERGENCY_H
 
 #include <Arduino.h>
-#include "../BttnCtl.h"
+#include "../../BttnCtl.h"
 
 #define PERIODIC_SEND_CYCLE 1000 // Periodic cycle (ms) how often to send emergency state (if there's no active emergency)
 

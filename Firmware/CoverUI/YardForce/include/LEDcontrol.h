@@ -13,7 +13,7 @@
 
 #include <Arduino.h>
 #include <stdint.h>
-#include "../BttnCtl.h"
+#include "../../BttnCtl.h"
 
 #define LED_PIN_NC 0xffffffff // Not Connected (virtual LED)
 
@@ -64,12 +64,12 @@ public:
     virtual void set_base10_leds(char digit){};                                                // Set LED representation for a single digit (by default empty)
     virtual void force_off_num_seq_leds(bool force){};                                         // Force off all show_num() / sequence-num LEDs
 
-    virtual unsigned int boot_animation() = 0; // A short boot animation which return the amount of ms it will take
+    virtual unsigned int boot_animation() { return 0; } // A short boot animation which return the amount of ms it will take
 
     // ***** Sequence stuff *****
     void process_sequence();                                                        // Called by timer for LED sequences like animation or FW version display
     void sequence_start(void (LEDcontrol::*handler)(), bool abort_running = false); // Start the given sequence method
-    virtual void sequence_animate_handler() = 0;                                    // A short LED Animation handler
+    virtual void sequence_animate_handler(){};                                      // A short LED Animation handler
     void show_num(uint16_t);                                                        // Display a number via Mon-Sun + Lifted LED
 
 protected:
