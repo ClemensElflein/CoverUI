@@ -276,6 +276,8 @@ Luckily the PCB is already prepared for this.
 
 ## Flash Firmware
 
+### Programmer/Debugger
+
 You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
 
 > **Note**
@@ -302,6 +304,18 @@ and you're ready.
 There're two generic ways to get the Firmware into your MCU.<br>
 Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
 
+### Firmware binaries
+
+1. Goto [Releases](https://github.com/Apehaenger/CoverUI/releases)
+2. Download `firmware-stock.zip`
+3. Unpack it somewhere
+
+The file name syntax of the included firmware binaries is:  `firmware_<MDL>_<MCU>[_<opt MOD>, ...].bin`
+
+> **Warning**
+> Only install the \<MOD> version, for which you also made the required hardware modifications!
+> See [Hardware Modifications by Model](#hardware-modifications-by-model)
+
 
 ### ST-Link (flash binary)
 
@@ -316,9 +330,8 @@ Open a terminal/console, then:
   * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
   * `F1xx Medium-density` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
   * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
-* Dependent on what kind of MCU you identified, download your matching [firmware binary](./bin)
 * Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
- `st-flash write firmware_<mdl>_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
+ `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
@@ -329,26 +342,19 @@ Unlock your flash via:
 
 ```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
 
-Now, try again flashing by: `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
+Now, try again flashing by: `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
 
 
 ### Picoprobe (flash binary) STM32 MCU only!
-
-> **Note**
-> Updated 05/08/2023
 
 Do **NOT** try this variant with a GD32 MCU. There's a high risk to brick it!!
 
 You need [OpenOCD][OpenOCD-url] for this. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
 
-Download [STM32 firmware binary](./bin).
-
 Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, CLK, DIO and 3V3.
 
 Open a terminal/console, then:
-
-* `openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<ver>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`<br>
-  Take attention that you replace `<ver>` with your downloaded version!
+`openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<mdl>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
@@ -356,9 +362,6 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 
 
 ### PlatformIO
-
-> **Note**
-> Updated 05/08/2023
 
 [PlatformIO](https://platformio.org/) is a [Visual Studio Code](https://code.visualstudio.com/) extension. Once installed, do:
 
@@ -380,7 +383,7 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 ## Usage
 
 > **Note**
-> Updated 05/07/2023
+> Updated 11/07/2023
 
 Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
@@ -435,12 +438,20 @@ I simply cropped the 16 pin connector from my original cable and crimped OM's pl
 You're done!
 
 Plug it into `UI Board` connector of your OM mainboard and
-check the official [CoverUI documentation](https://openmower.de/docs/cover-ui-assembly/) about the [LED](https://openmower.de/docs/cover-ui-assembly/#meaning-of-the-leds) and [Button](https://openmower.de/docs/cover-ui-assembly/#button-usage) usage
+check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button](#button-usage) usage.
 
 
 ## Version History
 
-See [./bin/README.md](./bin/README.md)
+
+| Version [^4] | Changes | Date |
+| ------- | ------- | ---- |
+| 2.03    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/07/2023
+| 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
+| 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
+|  NA       | First OM's CoverUI port for YardForce Classic 500 | 05/01/2023
+
+[^4]: Dependent on your CoverUI Model, Press <kbd>OK</kbd>+<kbd>Clock</kbd>, or <kbd>Setup(WLAN)</kbd>+<kbd>4H</kbd> to get your installed FW version displayed
 
 <!-- CONTRIBUTING -->
 ## Contributing
