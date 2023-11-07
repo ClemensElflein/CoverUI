@@ -11,15 +11,14 @@
 #ifndef YARDFORCE_MDL_RMECOWV100_H
 #define YARDFORCE_MDL_RMECOWV100_H
 
-#define MDL_RMECOWV100
+#include "model/LEDcontrol_RM-ECOW-V100.hpp"
+#include "model/buttons_RM-ECOW-V100.h"
 
-#define HAS_LEDS
-#define LEDCTRL_HDR "YardForce/include/model/LEDcontrol_RM-ECOW-V100.hpp"
-
-#define BUTTONS_HDR "YardForce/include/model/buttons_RM-ECOW-V100.hpp"
+#define HAS_HATCH
+#include "model/hatch_RM-ECOW-V100.hpp"
 
 #ifdef MOD_EMERGENCY
-#define EMERGENCY_HDR "YardForce/include/model/emergency_RM-ECOW-V100.hpp"
+#include "model/emergency_RM-ECOW-V100.h"
 #endif
 
 // LowLevel Serial Pins

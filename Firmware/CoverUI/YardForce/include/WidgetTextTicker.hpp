@@ -12,7 +12,7 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
-#include "LEDcontrol.h"
+#include "LEDcontrol.hpp"
 
 LV_FONT_DECLARE(PerfectPixel_20);
 

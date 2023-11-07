@@ -1,9 +1,9 @@
 /**
  * @file Buttons.hpp
  * @author Apehaenger (joerg@ebeling.ws)
- * @brief YardForce CoverUI Buttons class for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.5
- * @date 2023-10-27
+ * @brief YardForce CoverUI Buttons header for OpenMower https://github.com/ClemensElflein/OpenMower
+ * @version 0.6
+ * @date 2023-11-05
  *
  * @copyright Copyright (c) 2023
  *
@@ -42,84 +42,30 @@
 #define BTN_10H_NUM 38   // i.e. RM-ECOW-V100
 #define BTN_SETUP_NUM 39 // i.e. RM-ECOW-V100 (WLAN-Setup button)
 
-#ifdef MCU_STM32
-#define DIGITAL_PIN_TO_PORT_NR(p) (STM_PORT(digitalPinToPinName(p)))
-#else // MCU_GD32
-#define DIGITAL_PIN_TO_PORT_NR(p) (GD_PORT_GET(DIGITAL_TO_PINNAME(p)))
-#endif
-
 class Buttons
 {
 public:
-    const std::map<uint8_t, uint8_t> &kPpinByNumMap;                   // Map of Button-Num -> button pin
+    struct ButtonDef
+    {
+        uint8_t pin;
+        int8_t led_num; // Corresponding LED num. -1 is none.
+    };
+
+    const std::map<uint8_t, ButtonDef> &kBtnDefByNumMap;                 // Map of Button-Num -> ButtonDef (pin & corresponding LED num)
     std::map<uint32_t, ButtonDebouncer> debouncer_by_gpio_port_nr_map; // Map of GPIO Port Nr -> debouncer object
 
-    Buttons(const std::map<uint8_t, uint8_t> &t_kPpinByNumMap) : kPpinByNumMap(t_kPpinByNumMap){};
+    Buttons(const std::map<uint8_t, ButtonDef> &t_kBtnDefByNumMap) : kBtnDefByNumMap(t_kBtnDefByNumMap){};
 
-    /**
-     * @brief Setup GPIOs
-     *
-     */
-    void setup()
-    {
-        for (auto const &it : kPpinByNumMap) // Loop over Button-Num -> button pin map
-        {
-            // Create debouncer if not already exists for this Pin's GPIO_Port_Nr
-            uint32_t gpio_port_nr = DIGITAL_PIN_TO_PORT_NR(it.second);
-            auto debouncer = debouncer_by_gpio_port_nr_map.find(gpio_port_nr);
-            if (debouncer == debouncer_by_gpio_port_nr_map.end())
-                debouncer_by_gpio_port_nr_map.insert(std::pair<uint32_t, ButtonDebouncer>(gpio_port_nr, ButtonDebouncer()));
+    virtual ~Buttons() = default;
 
-            pinMode(it.second, INPUT_PULLUP);
-        }
-    };
+    uint8_t get_led(uint8_t button_nr);
+    bool is_pressed(uint8_t button_nr);
+    uint8_t is_pressed();
 
-    /**
-     * @brief Process GPIO states by debouncer. Has to get called regulary i.e. by timer (5ms)
-     *
-     */
-    void process_states()
-    {
-        for (std::map<uint32_t, ButtonDebouncer>::iterator it = debouncer_by_gpio_port_nr_map.begin(); it != debouncer_by_gpio_port_nr_map.end(); ++it)
-            it->second.process_state(it->first);
-    };
+    void process_states();
 
-    /**
-     * @brief Return boolean true if the given button number is pressed.
-     *        Take into notice that the returned state is already debounced.
-     *
-     * @param uint8_t button_nr
-     * @return true if pressed, false if not pressed
-     */
-    bool is_pressed(uint8_t button_nr)
-    {
-        auto pin_it = kPpinByNumMap.find(button_nr); // Find button_nr and get iterator pair
-        if (pin_it != kPpinByNumMap.end())
-        {
-            uint32_t gpio_port_nr = DIGITAL_PIN_TO_PORT_NR(pin_it->second);
-            auto debouncer_it = debouncer_by_gpio_port_nr_map.find(gpio_port_nr); // Find debouncer and get iterator pair
-            if (debouncer_it != debouncer_by_gpio_port_nr_map.end())
-            {
-                return debouncer_it->second.is_pressed(pin_it->second);
-            }
-        }
-        return false;
-    };
-
-    /**
-     * @brief Return ButtonNum of the first detected pressed button.
-     *        Take into notice that the returned state is already debounced.
-     *
-     * @return uint8_t 0 = none pressed, >0 = ButtonNum
-     */
-    uint8_t is_pressed()
-    {
-        for (auto const &it : kPpinByNumMap) // Loop over Button-Num -> button pin map
-            if (is_pressed(it.first))
-                return it.first;
-
-        return 0;
-    };
+    void setup();
+    void send(uint16_t button_id, uint8_t press_duration);
 };
 
 #endif // YARDFORCE_BUTTONS_HPP

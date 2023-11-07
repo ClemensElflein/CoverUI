@@ -7,7 +7,7 @@
 // V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
 
 #ifdef HW_YF // Stock YardForce HardWare
-#include "YardForce/main.hpp"
+#include "YardForce/include/main.h"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
@@ -246,6 +246,7 @@ void getDataFromBuffer()
   }
 }
 
+#ifndef HW_YF // HW_Pico (HW_YF is arduino based. See setup() & loop() in YardForce/main.h)
 int getLedForButton(int button)
 {
   if (button >= 4 && button <= 6)
@@ -300,7 +301,7 @@ void core1()
       if (button && pressed)
       {
         // we're still holding, wait for the button to release. We don't care about the result here.
-        bool tmp;
+        bool tmp = pressed; // "... = pressed" assignment is only required for YardForce ports
         bit_getbutton(0, tmp);
       }
 
@@ -339,7 +340,6 @@ void core1()
   }
 }
 
-#ifndef HW_YF // HW_Pico (HW_YF is arduino based. See setup() & loop() in YardForce/main.hpp)
 int main(void)
 {
   uint32_t last_led_update = 0;

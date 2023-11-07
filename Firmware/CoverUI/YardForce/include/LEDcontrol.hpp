@@ -42,10 +42,7 @@ public:
     LEDcontrol(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds);
     LEDcontrol(const uint32_t *t_kPinByLedNumPtr, const size_t t_kNumLeds, void (LEDcontrol::*t_set_base10_leds_cb)(char digit));
 
-    ~LEDcontrol()
-    {
-        delete[] kPinByLedNumPtr;
-    }
+    virtual ~LEDcontrol() = default;
 
     void setup();
 
@@ -64,12 +61,13 @@ public:
     virtual void set_base10_leds(char digit){};                                                // Set LED representation for a single digit (by default empty)
     virtual void force_off_num_seq_leds(bool force){};                                         // Force off all show_num() / sequence-num LEDs
 
-    virtual unsigned int boot_animation() { return 0; } // A short boot animation which return the amount of ms it will take
+    virtual unsigned int boot_animation() { return 0; }; // A short boot animation which return the amount of ms it will take
 
     // ***** Sequence stuff *****
     void process_sequence();                                                        // Called by timer for LED sequences like animation or FW version display
     void sequence_start(void (LEDcontrol::*handler)(), bool abort_running = false); // Start the given sequence method
     virtual void sequence_animate_handler(){};                                      // A short LED Animation handler
+    virtual void sequence_countdown_handler(){};                                    // A short LED Countdown handler
     void show_num(uint16_t);                                                        // Display a number via Mon-Sun + Lifted LED
 
 protected:

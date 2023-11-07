@@ -13,7 +13,7 @@
 #include <Arduino.h>
 #include <string>
 #include <lvgl.h>
-#include "LEDcontrol.h"
+#include "LEDcontrol.hpp"
 
 namespace display
 {

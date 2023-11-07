@@ -33,7 +33,7 @@
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
 | SA/SC/X-Type (10 Buttons, 12 LEDs) | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
-| SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display)    | HS49067, WYPCB319B | STM32F030RC |
+| SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Dot-Matrix-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless
 
@@ -408,13 +408,17 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 | S2 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
 | Lock | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Long press (2-3s) reset emergency |
 | OK+Sun<br>Setup+10H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| OK+Sun<br>Setup+10H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| OK+Clock<br>Setup+2H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Display CoverUI- firmware version. It get display as a number sequence[^2], which should show (as of writing) 203 |
+| OK+Clock<br>Setup+4H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Display CoverUI- firmware version. It get display as a number sequence[^2], which should show (as of writing) 203 |
+| Mon<br>4H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Volume up[^3] |
+| Tue<br>6H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Volume down[^3] |
+| Wed<br>8H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Next language[^3] |
 
 
 [^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
 Larger digits, get displayed with multiple digit LEDs.
 I.e. 9 = 'Sun(6)' together with 'Thu(3)'
+
+[^3]: 'Imrpove-Sound' branch  of 'OpenMower' Pico Firmware presupposed
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -1,34 +1,13 @@
 /**
- * @file WYM240128K1.hpp
+ * @file display_SAxPRO.cpp
  * @author Apehaenger (joerg@ebeling.ws)
- * @brief YardForce CoverUI WYM240128K1 display driver class for OpenMower https://github.com/ClemensElflein/OpenMower
- * @version 0.1
- * @date 2023-09-03
+ * @brief YardForce CoverUI WYM240128K1 display driver class for SAxPRO OpenMower https://github.com/ClemensElflein/OpenMower
+ * @version 0.2
+ * @date 2023-11-07
  *
  * @copyright Copyright (c) 2023
  */
-#ifndef __WYM240128K1_HPP
-#define __WYM240128K1_HPP
-
-#define UC1698_DISPLAY_WIDTH 240
-#define UC1698_DISPLAY_HEIGHT 128
-#define LVGL_BUFFER_MULTIPLIER 10
-#define LVGL_TIMER_HANDLER_PERIOD_MS 10 // 10ms lv_timer_handler() soft period
-
-#define TOP_STATUS_BAR_GAP_PX 5 // Amount of (gap) pixels between top status-bar icons/symbols
-#define EMERGENCY_CLEAR_TEXT "Emergency! Press [Enter], close cover and stay back, to clear emergency state."
-
-#include "include/UC1698.hpp"
-
-#include <Arduino.h>
-#include <lvgl.h>
-#include "include/LEDcontrol.h"
-#include "include/WidgetLedSymbol.hpp"
-#include "include/WidgetBar.hpp"
-#include "include/WidgetTextTicker.hpp"
-
-#define BACKLIGHT_TIMEOUT_MS 120000 // 2 minutes
-#define STATUS_TICKER_LENGTH 100
+#include "../model_SAxPRO.h"
 
 // C images
 LV_IMG_DECLARE(OM_Logo_120x54x1);
@@ -199,7 +178,7 @@ namespace display
      * @param state LED_state, default LED_on
      * @param timeout in ms when to switch off
      */
-    void set_backlight(LED_state state = LED_on, uint32_t timeout = BACKLIGHT_TIMEOUT_MS)
+    void set_backlight(LED_state state, uint32_t timeout)
     {
         ::leds.set(LED_NUM_BACKLIGHT, state);
         backlight_runout_ms_ = millis() + timeout;
@@ -450,4 +429,3 @@ namespace display
         check_backlight();
     }
 } // namespace display
-#endif // __WYM240128K1_HPP

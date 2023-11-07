@@ -11,15 +11,11 @@
 #ifndef YARDFORCE_MDL_C500_H
 #define YARDFORCE_MDL_C500_H
 
-#define MDL_C500
-
-#define HAS_LEDS
-#define LEDCTRL_HDR "YardForce/include/model/LEDcontrol_C500.hpp"
-
-#define BUTTONS_HDR "YardForce/include/model/buttons_C500.hpp"
+#include "model/LEDcontrol_C500.hpp"
+#include "model/buttons_C500.h"
 
 #ifdef MOD_EMERGENCY
-#define EMERGENCY_HDR "YardForce/include/model/emergency_C500.hpp"
+#include "model/emergency_C500.h"
 #endif
 
 // LowLevel Serial Pins
