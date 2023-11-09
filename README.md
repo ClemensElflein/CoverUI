@@ -14,7 +14,7 @@ This repository contains the firmware files required to use the mowers CoverUI (
 1. Stock YardForce CoverUI for the following models:
    1. Classic 500 (STM32 & GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a>)
    2. Classic 500B (STM32 & GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a>)
-   3. SA/SC/X-Type 10 Buttons 12 LEDs, PCB labeled with RM-ECOW-V1.0.0 (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested, GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> not seen yet)
+   3. SA/SC/NX-Type 10 Buttons 12 LEDs, PCB labeled with RM-ECOW-V1.0.0 (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested, GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> not seen yet)
    4. SAxPro (Rev6) 6 Buttons 240*128 Dot- Matrix- Display (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested, GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> not seen yet)
    
     For this, you need to solder some cables and flash a modified firmware to it.<br>

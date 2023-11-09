@@ -2,7 +2,7 @@
  * @file Hatch.hpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce CoverUI Hatch header for OpenMower https://github.com/ClemensElflein/OpenMower
- * This is for YardForce models (like SA, SC or X), whose CoverUI is behind a hatch.
+ * This is for YardForce models (like SA, SC or NX), whose CoverUI is behind a hatch.
  * Those need some special (button) handling because opening the hatch (to reach the buttons), triggers stop-emergency.
  * @version 0.2
  * @date 2023-11-05

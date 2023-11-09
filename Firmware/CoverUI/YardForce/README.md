@@ -13,10 +13,10 @@
     <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="SA/SC/X-Type (10 Buttons 12 LEDs)" title="SA/SC/X-Type (10 Buttons 12 LEDs)" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="SA/SC/NX-Type (10 Buttons 12 LEDs)" title="SA/SC/NX-Type (10 Buttons 12 LEDs)" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="SA/SC/X-Type (18 Buttons, 3 LEDs, LC-Display)" title="SA/SC/X-Type (18 Buttons, 3 LEDs, LC-Display)" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display)" title="SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display)" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
     <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Dot-Matrix-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Dot-Matrix-Display)" width="24%">
@@ -32,7 +32,7 @@
 | -------------------------------- | :------------------------: | :---: |
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
-| SA/SC/X-Type (10 Buttons, 12 LEDs) | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
+| SA/SC/NX-Type (10 Buttons, 12 LEDs) | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
 | SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Dot-Matrix-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless
@@ -41,7 +41,7 @@
 
 | YardForce Model                  | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
 | -------------------------------- | :------------------------: | :---: |
-| SA/SC/X-Type (18 Buttons, 3 LEDs, LC-Display) | RM-ECOW-V1.1, 20210619 | STM32F401RC |
+| SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display) | RM-ECOW-V1.1, 20210619 | STM32F401RC |
 
 
   </p>
@@ -63,7 +63,7 @@
               <ul>
         <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
         <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
-        <li><a href="#yardforce-sascx-type-10-buttons-12-leds-rm-ecow-v100">YardForce SA/SC/X-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-sascx-type-10-buttons-12-leds-rm-ecow-v100">YardForce SA/SC/NX-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</a></li>
         <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
       </ul>
         </li>
@@ -217,9 +217,9 @@ If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/dr
 </details>
 
 
-<!-- Hardware Modifications by Model: SA/SC/X-Type (10 Buttons, 12 LEDs) RM-ECOW-V1.0.0, 2018.06.05 -->
+<!-- Hardware Modifications by Model: SA/SC/NX-Type (10 Buttons, 12 LEDs) RM-ECOW-V1.0.0, 2018.06.05 -->
 <details>
-  <summary><h3>YardForce SA/SC/X-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</h3></summary>
+  <summary><h3>YardForce SA/SC/NX-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</h3></summary>
 
   ![Classic 500](images/IMG_Overview_RM-ECOW-V100.jpg)
 
@@ -389,7 +389,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| LED | C500(B) | SA/SC/X-Type<br>(10 Buttons, 12 LEDs) | SA/SC/X-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| LED | C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
 | ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
 | 2hr - 8hr<br>4H - 10H | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | 4 digi GPS quality progressbar. Blink = No GPS-Fix
 | S1 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :pager: | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
@@ -403,7 +403,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Button usage:
 
-| Button | C500(B) | SA/SC/X-Type<br>(10 Buttons, 12 LEDs) | SA/SC/X-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| Button | C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
 | ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
 | Home | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
 | :arrow_forward:<br>Start | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Start mowing or continue |
