@@ -12,6 +12,7 @@
 #define __YARDFORCE_MAIN_H
 
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+#include "datatypes.h"
 
 #if defined(FIRMWARE_VERSION) && !(FIRMWARE_VERSION == 200)
 #pragma GCC error "YardForce CoverUI port is based on OM- FIRMWARE_VERSION 200. Port code changes before compiling..."
@@ -35,6 +36,12 @@
 #ifdef MOD_RAIN
 #include "Rain.hpp"
 #endif
+
+#define BATT_ABS_MAX 28.7f
+#define BATT_ABS_Min 21.7f
+
+#define BATT_FULL BATT_ABS_MAX - 0.3f
+#define BATT_EMPTY BATT_ABS_Min + 0.3f
 
 // STM32/GD32 are single cores, also without threads.
 // Send mutex calls of main.cpp to nirvana. Dangerous?

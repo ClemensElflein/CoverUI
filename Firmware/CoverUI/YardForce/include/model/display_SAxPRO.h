@@ -25,6 +25,7 @@
 #include "../WidgetLedSymbol.hpp"
 #include "../WidgetBar.hpp"
 #include "../WidgetTextTicker.hpp"
+#include "../subscription.h"
 
 #define BACKLIGHT_TIMEOUT_MS 120000 // 2 minutes
 #define STATUS_TICKER_LENGTH 100
@@ -35,7 +36,7 @@ namespace display
     void set_backlight(LED_state state = LED_on, uint32_t timeout = BACKLIGHT_TIMEOUT_MS);
     void loop_low_prio();
     void tick_inc(uint8_t ms);
-
+    void start_countdown(uint32_t t_countdown_ms);
 } // namespace display
 
 #endif // YARDFORCE_DISPLAY_SAXPRO_H

@@ -13,6 +13,7 @@
 
 #include "model/LEDcontrol_SAxPRO.hpp"
 #include "model/buttons_SAxPRO.h"
+#include "model/hatch_SAxPRO.hpp"
 
 #define HAS_DISPLAY
 #include "model/display_SAxPRO.h"

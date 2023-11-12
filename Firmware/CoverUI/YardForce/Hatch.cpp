@@ -36,9 +36,9 @@ unsigned int Hatch::handle_button(unsigned int button_id, uint32_t press_time)
     return button_id + 0;
 };
 
-void Hatch::queue_button(uint8_t button_id, uint8_t press_duration, uint32_t delay_end)
+void Hatch::queue_button(uint8_t button_id, uint8_t press_duration, uint32_t delay)
 {
-    fake_button_queue.push_front({button_id, press_duration, delay_end});
+    fake_button_queue.push_back({button_id, press_duration, millis() + delay});
 };
 
 /**
@@ -49,14 +49,12 @@ void Hatch::process_queued()
     if (fake_button_queue.empty())
         return;
 
-    auto it = fake_button_queue.begin();
-    while (it != fake_button_queue.end())
+    for (auto it = fake_button_queue.begin(); it != fake_button_queue.end(); ++it)
     {
         if (millis() >= it->delay_end)
         {
             buttons.send(it->button_id, it->press_duration);
-            fake_button_queue.erase(it);
+            it = fake_button_queue.erase(it);
         }
-        ++it;
     }
 };

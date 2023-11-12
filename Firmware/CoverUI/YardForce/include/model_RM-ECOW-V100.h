@@ -13,8 +13,6 @@
 
 #include "model/LEDcontrol_RM-ECOW-V100.hpp"
 #include "model/buttons_RM-ECOW-V100.h"
-
-#define HAS_HATCH
 #include "model/hatch_RM-ECOW-V100.hpp"
 
 #ifdef MOD_EMERGENCY

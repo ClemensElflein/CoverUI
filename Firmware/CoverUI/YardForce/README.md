@@ -70,7 +70,12 @@
         <li><a href="#flash-firmware">Flash Firmware</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#meaning-of-the-leds">Meaning of the LEDs</a></li>
+        <li><a href="#button-usage">Button usage</a></li>
+      </ul>
+    </li>
     <li><a href="#final-work">Final work</a></li>
     <li><a href="#version-history">Version History</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -389,32 +394,32 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| LED | C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
-| ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
-| 2hr - 8hr<br>4H - 10H | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | 4 digi GPS quality progressbar. Blink = No GPS-Fix
-| S1 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :pager: | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
-| S2 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :pager: | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
-| Lifted | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
-| Wire or WLAN | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
-| Battery | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | <b>On</b> = Empty |
-| Charge | :heavy_check_mark: | :heavy_check_mark: | :pager: | :pager: | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
-| Mon-Sun | :heavy_check_mark: | :x: | :pager: | :pager: | 7 digit battery-charge-state progress bar |
+| C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| ------- | --------------------------------- | --------------- | ---- | ----- |
+| 2hr - 8hr | 4H - 10H | :pager: | <img src="images/lcd.svg" width=20% height=20%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
+| S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=20% height=20%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
+| S2 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/lcd.svg" width=20% height=20%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
+| Lifted | :heavy_check_mark: | :pager: | <img src="images/car-burst-solid.svg" width=20% height=20%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
+| Wire | WLAN | :pager: | <img src="images/satellite-dish-solid.svg" width=20% height=20%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
+| Battery | :heavy_check_mark: | :pager: | <img src="images/car-battery-solid.svg" width=20% height=20%> | <b>On</b> = Empty |
+| Charge | :heavy_check_mark: | :pager: | <img src="images/charging-station-solid.svg" width=20% height=20%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
+| Mon-Sun | :x: | :pager: | <img src="images/lcd.svg" width=20% height=20%> | 7 digit battery-charge-state progress bar |
 
 
 ### Button usage:
 
-| Button | C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
-| ------- | ---- | --------------------------------- | --------------- | ---- | ----- |
-| Home | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
-| :arrow_forward:<br>Start | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Start mowing or continue |
-| S1 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
-| S2 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
-| Lock | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Long press (2-3s) reset emergency |
-| OK+Sun<br>Setup+10H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| OK+Clock<br>Setup+4H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Display CoverUI- firmware version. It get display as a number sequence[^2], which should show (as of writing) 203 |
-| Mon<br>4H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Volume up[^3] |
-| Tue<br>6H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Volume down[^3] |
-| Wed<br>8H | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | Next language[^3] |
+| C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| ------- | --------------------------------- | --------------- | ---- | ----- |
+| <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
+| <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
+| <kbd>S1</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
+| <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
+| <kbd>Lock</kbd> | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
+| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | :x: | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
+| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | :x: | :x: | Display CoverUI- firmware version. It get display as a number sequence[^2], which should show (as of writing) 203 |
+| <kbd>Mon</kbd> | <kbd>4H</kbd> | :x: | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
+| <kbd>Tue</kbd> | <kbd>6H</kbd> | :x: | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
+| <kbd>Wed</kbd> | <kbd>8H</kbd> | :x: | <kbd>Back</kbd> | Next language[^3] |
 
 
 [^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.

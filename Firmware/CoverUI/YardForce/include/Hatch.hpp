@@ -29,7 +29,7 @@ public:
     virtual ~Hatch() = default;
 
     unsigned int handle_button(unsigned int button_id, uint32_t press_time);
-    void queue_button(uint8_t button_id, uint8_t press_duration, uint32_t delay_end);
+    void queue_button(uint8_t button_id, uint8_t press_duration, uint32_t delay);
     void process_queued();
 
 protected:

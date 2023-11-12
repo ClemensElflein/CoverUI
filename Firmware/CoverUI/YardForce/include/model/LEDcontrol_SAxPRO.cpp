@@ -12,7 +12,7 @@
 #include "LEDcontrol_SAxPRO.hpp"
 
 const uint32_t kPinByLedNum[] = {
-    // Use LED         num  Original  Alternative
+    // Use LED           num  Original  Alternative
     LED_PIN_BACKLIGHT //  0
 };
 

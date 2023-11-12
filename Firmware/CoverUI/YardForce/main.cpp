@@ -12,14 +12,6 @@
 #include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
 #include <HardwareTimer.h> // Required for framework-arduinogd32
 
-/*#ifdef HAS_DISPLAY
-#include DISPLAY_HDR
-#endif
-
-#ifdef MOD_RAIN
-#include "include/Rain.hpp"
-#endif*/
-
 // ----- Timer -----
 #ifdef MCU_STM32
 #define TIM_SLOW TIM6   // Basic timer
@@ -57,8 +49,8 @@ HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callbac
 
 HardwareTimer *timer_slow;  // Used for blink-slow LEDs and magic buttons
 HardwareTimer *timer_fast;  // Used for blink-fast LEDs
-#ifdef MDL_SAXPRO           // Model SAxPRO
-HardwareTimer *timer_event; // Used for lv_timer_handler() and LED-2-display logic
+#ifdef HAS_DISPLAY
+HardwareTimer *timer_event; // Used for lv_timer_handler() and LED/Value to display logic conversion
 #endif
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
 
@@ -86,20 +78,20 @@ void setup()
 {
     leds.setup();
     buttons.setup();
-#ifdef MDL_SAXPRO // Model SAxPRO
+#ifdef HAS_DISPLAY
     if (!display::init())
         display::set_backlight(LED_blink_fast, 60000); // TODO: Make some better assert handling than 60 sec. fast blink
     else
         display::set_backlight();
 #endif
-#ifdef MOD_EMERGENCY
+#ifdef YARDFORCE_EMERGENCY_HPP
     emergency.setup();
 #endif
 
     // We've hardware timer on mass, let's use them.
     timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper, 30);  //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
     timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper, 20); //  10Hz (100ms) timer, used for LED-blink-fast
-#ifdef MDL_SAXPRO
+#ifdef HAS_DISPLAY
     timer_event = hwtimer(TIM_EVENT, 100, timer_event_callback_wrapper, 10); // 100Hz   (10ms) timer, used for displays lv_timer_handler() and LED-2-Display logic
 #endif
     // Don't increase value of this timers preemptPriority parameter higher than the default,
@@ -139,14 +131,14 @@ void timer_slow_callback_wrapper()
 
 void timer_event_callback_wrapper()
 {
-#ifdef MDL_SAXPRO
+#ifdef HAS_DISPLAY
     display::loop_low_prio();
 #endif
 }
 
 void timer_fast_callback_wrapper()
 {
-#ifdef MOD_EMERGENCY
+#ifdef YARDFORCE_EMERGENCY_HPP
     emergency.periodic_send();
 #endif
     leds.blink_timer_elapsed(LED_state::LED_blink_fast);
@@ -155,10 +147,10 @@ void timer_fast_callback_wrapper()
 void timer_quick_callback_wrapper()
 {
     getDataFromBuffer();
-#ifdef MDL_SAXPRO // Model SAxPRO
+#ifdef HAS_DISPLAY
     display::tick_inc(TIM_QUICK_PERIOD_MS);
 #endif
-#ifdef MOD_EMERGENCY
+#ifdef YARDFORCE_EMERGENCY_HPP
     emergency.read_and_send_if_emergency();
 #endif
     buttons.process_states();
@@ -203,7 +195,7 @@ void loop()
             if (it.first != last_button_id)
                 last_button_cnt = 0;
             last_button_id = it.first;
-            uint8_t led_num = buttons.get_led(last_button_id);
+            int8_t led_num = buttons.get_led(last_button_id);
             if (led_num >= 0)
                 Force_LED_off(led_num, true);
             while (buttons.is_pressed(it.first) && (millis() - start) < 1000) // wait for button released but max. 1000ms
@@ -220,7 +212,7 @@ void loop()
             }
             else // Button released
             {
-#ifdef HAS_HATCH
+#ifdef YARDFORCE_HATCH_HPP
                 last_button_id = hatch.handle_button(last_button_id, last_button_cnt);
 #endif
                 if (last_button_id)
@@ -233,7 +225,7 @@ void loop()
             break;
         }
     }
-#ifdef HAS_HATCH
+#ifdef YARDFORCE_HATCH_HPP
     hatch.process_queued();
 #endif
 }

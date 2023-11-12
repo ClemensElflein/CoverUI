@@ -7,7 +7,7 @@
  *
  * @copyright Copyright (c) 2023
  */
-#include "../model_SAxPRO.h"
+#include "../main.h"
 
 // C images
 LV_IMG_DECLARE(OM_Logo_120x54x1);
@@ -17,7 +17,8 @@ namespace display
 {
     namespace // anonymous (private) namespace
     {
-        uint32_t backlight_runout_ms_ = 0;
+        uint32_t backlight_timeout_ = 0;
+        uint32_t countdown_timeout_ = 0;
     }
 
     UC1698 uc1698;                   // Display controller
@@ -85,8 +86,8 @@ namespace display
         v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
         v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
         // TODO: if next level LL proto
-        //v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
-        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0);        // Right of centered
+        // v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
+        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0); // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
         v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
@@ -166,8 +167,8 @@ namespace display
         disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        openmower_anim();
-        // mainScreen();
+        // openmower_anim();
+        mainScreen();
 
         return true;
     }
@@ -181,7 +182,7 @@ namespace display
     void set_backlight(LED_state state, uint32_t timeout)
     {
         ::leds.set(LED_NUM_BACKLIGHT, state);
-        backlight_runout_ms_ = millis() + timeout;
+        backlight_timeout_ = millis() + timeout;
     }
 
     /**
@@ -190,7 +191,7 @@ namespace display
      */
     void check_backlight()
     {
-        if (millis() < backlight_runout_ms_)
+        if (millis() < backlight_timeout_)
             return;
 
         ::leds.set(LED_NUM_BACKLIGHT, LED_off);
@@ -216,6 +217,8 @@ namespace display
     {
         lv_timer_handler();
 
+        subscription::subscribe((Topic_set_ll_status | Topic_set_hl_state), 500);
+
         // LEDs & Buttons to main status screen conversion
         if (!main_screen_active)
             return; // Still in OM anim
@@ -225,155 +228,122 @@ namespace display
         int val = 0;
         static uint8_t last_gps_val = 0;
 
-        // GPS quality = LED_2HR - LED_8HR
-        for (int i = LED_NUM_2HR; i >= LED_NUM_8HR; i--)
-        {
-            if (::leds.get(i) == LED_state::LED_blink_fast)
-            {
-                val = 0;
-                break; // Do not process the other LEDs, if one blink_fast, all should do
-            }
-            if (::leds.get(i) == LED_state::LED_on)
-            {
-                v_led_gps->set(LED_on);
-                val += 25; // 1 (of 4) LEDs represents 25%
-            }
-        }
-        if (!val)
+        if (subscription::recv_hl_state.gps_quality < 25)
+            v_led_gps->set(LED_on);
+        else if (subscription::recv_hl_state.gps_quality < 50)
             v_led_gps->set(LED_blink_fast);
-        bar_gps->set_value(val);
-        if (val != last_gps_val)
-            set_backlight();
-        last_gps_val = val;
+        else if (subscription::recv_hl_state.gps_quality < 75)
+            v_led_gps->set(LED_blink_slow);
+        else
+            v_led_gps->set(LED_off);
+        bar_gps->set_value(subscription::recv_hl_state.gps_quality);
 
-        // Battery = LED_MON - LED_SUN
-        val = 0;
-        for (int i = LED_NUM_MON; i >= LED_NUM_SUN; i--)
-        {
-            if (::leds.get(i) == LED_state::LED_on)
-            {
-                val += 15; // 1 (of 7) LEDs represents 14.3%
-            }
-        }
-
-        // Battery LED
-        switch (::leds.get(LED_NUM_BAT))
-        {
-        case LED_on:
-            v_led_bat->set(LED_blink_slow);
-            break;
-        default:
+        // V-Battery vLED
+        if (subscription::recv_ll_status.v_battery >= (BATT_EMPTY + 2.0f))
             v_led_bat->set(LED_off);
-            break;
-        }
+        else
+            v_led_bat->set(LED_on);
 
-        // Charging LED = charge-station & Plug
+        // Docked (Plug) & Charging (charge-station)
         static bool last_docked = false;
-        bool docked;
-        switch (::leds.get(LED_NUM_CHARGE))
+        if (subscription::recv_ll_status.v_charge > 20.0f) // Docked
         {
-        case LED_on: // <0.15A = Fully charged
-            v_led_charge->set(LED_off);
-            v_led_power->set(LED_on);
-            docked = true;
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " %d %%";
-            val = 100;
-            break;
-        case LED_blink_fast: // > 0.8A = Empty
-            v_led_charge->set(LED_blink_fast);
-            v_led_power->set(LED_on);
-            docked = true;
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " < %d %%";
-            val = 25;
-            break;
-        case LED_blink_slow: // 0.15-0.8A = 1/2 charged
-            v_led_charge->set(LED_blink_slow);
-            v_led_power->set(LED_on);
-            docked = true;
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " > %d %%";
-            val = 50;
-            break;
-        default:
-            v_led_charge->set(LED_off);
-            v_led_power->set(LED_off);
-            docked = false;
-            bar_bat->bar_label = FA_SYMBOL_BATTERY " %d %%";
-            break;
+            if (!last_docked)
+            {
+                v_led_power->set(LED_on);
+                set_backlight();
+
+                bar_bat->set_range(150, 1100);
+                bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
+            }
+            last_docked = true;
+            bar_bat->set_value(subscription::recv_ll_status.charging_current * 1000);
+
+            if (subscription::recv_ll_status.charging_current < 0.15f)
+                v_led_charge->set(LED_off);
+            else if (subscription::recv_ll_status.charging_current >= 0.15f && subscription::recv_ll_status.charging_current <= 0.8f)
+                v_led_charge->set(LED_blink_slow);
+            else if (subscription::recv_ll_status.charging_current > 0.8f)
+                v_led_charge->set(LED_blink_fast);
+        }
+        else // Undocked
+        {
+            if (last_docked)
+            {
+                v_led_power->set(LED_off);
+                v_led_charge->set(LED_off);
+                bar_bat->set_range(BATT_ABS_Min, BATT_ABS_MAX);
+                bar_bat->bar_label = FA_SYMBOL_BATTERY " %d V";
+            }
+            last_docked = false;
+            bar_bat->set_value(subscription::recv_ll_status.v_battery);
         }
 
-        bar_bat->set_value(val);
-        if (!last_docked && docked)
-            set_backlight();
-        last_docked = docked;
-
-        // ROS Status = S1 => Brain Symbol
-        v_led_ros->set(::leds.get(LED_NUM_S1));
-        // ROS Sub Status = S2 are dependent on general S1 states -> Text ticker
-        switch (::leds.get(LED_NUM_S1) << 3 | ::leds.get(LED_NUM_S2))
+        // HL Mode & SubMode
+        switch (subscription::recv_hl_state.current_mode & 0b111111)
         {
-        case LED_off << 3 | LED_off:
-            strncpy(status_ticker, "Waiting for ROS...", STATUS_TICKER_LENGTH);
-            break;
-        case LED_on << 3 | LED_off:
+        case HighLevelMode::MODE_IDLE:
+            v_led_ros->set(LED_on);
             strncpy(status_ticker, "Idle", STATUS_TICKER_LENGTH);
             break;
-        // S1 = Autonomous mode (mowing, docking, undocking)
-        case LED_blink_slow << 3 | LED_off:
-            strncpy(status_ticker, "Mowing", STATUS_TICKER_LENGTH);
+        case HighLevelMode::MODE_AUTONOMOUS:
+            v_led_ros->set(LED_blink_slow);
+            if ((subscription::recv_hl_state.current_mode >> 6) & 0b01)
+                strncpy(status_ticker, "Docking", STATUS_TICKER_LENGTH);
+            else if ((subscription::recv_hl_state.current_mode >> 6) & 0b10)
+                strncpy(status_ticker, "Undocking", STATUS_TICKER_LENGTH);
+            else
+                strncpy(status_ticker, "Mowing", STATUS_TICKER_LENGTH);
             break;
-        case LED_blink_slow << 3 | LED_blink_slow:
-            strncpy(status_ticker, "Docking", STATUS_TICKER_LENGTH);
+        case HighLevelMode::MODE_RECORDING:
+            v_led_ros->set(LED_blink_fast);
+            if ((subscription::recv_hl_state.current_mode >> 6) & 0b01)
+                strncpy(status_ticker, "Record area outline", STATUS_TICKER_LENGTH);
+            else if ((subscription::recv_hl_state.current_mode >> 6) & 0b10)
+                strncpy(status_ticker, "Record obstacle", STATUS_TICKER_LENGTH);
             break;
-        case LED_blink_slow << 3 | LED_blink_fast:
-            strncpy(status_ticker, "Undocking", STATUS_TICKER_LENGTH);
-            break;
-        // S1 = Recording mode
-        case LED_blink_fast << 3 | LED_blink_slow:
-            strncpy(status_ticker, "Record area outline", STATUS_TICKER_LENGTH);
-            break;
-        case LED_blink_fast << 3 | LED_blink_fast:
-            strncpy(status_ticker, "Record obstacle", STATUS_TICKER_LENGTH);
-            break;
-        default:
+        default: // We currently don't have a real "ROS Running" identifier. Let's use the current mode.
+            v_led_ros->set(LED_off);
+            strncpy(status_ticker, "Waiting for ROS...", STATUS_TICKER_LENGTH);
             break;
         }
 
-        // Most important text-status, last!
+        // ----- Most important text-states, last! -----
+
+        // Emergencies
         static bool last_stop_button = false;
-        bool stop_button = false;
-
-        // Lifted LED = Emergencies
-        switch (::leds.get(LED_NUM_LIFTED))
+        if (subscription::recv_ll_status.emergency_bitmask & LL_EMERGENCY_BITS_STOP) // Stop switch
         {
-        case LED_blink_fast: // Stop Button pressed
-            stop_button = true;
             v_led_emergency_stop->set(LED_blink_fast);
-            v_led_emergency->set(LED_blink_fast);
-            v_led_emergency_wheel->set(LED_off);
             strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
-            break;
-        case LED_blink_slow: // Lifted or tilted
-            v_led_emergency_wheel->set(LED_blink_fast);
-            v_led_emergency->set(LED_blink_fast);
-            v_led_emergency_stop->set(LED_off);
-            strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
-            break;
-        case LED_on: // Emergency latch (no LL heartbeat or emergency by ROS)
-            v_led_emergency->set(LED_blink_fast);
-            v_led_emergency_stop->set(LED_off);
-            v_led_emergency_wheel->set(LED_off);
-            strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
-            break;
-        default: // Off = No emergency
-            v_led_emergency->set(LED_off);
-            v_led_emergency_stop->set(LED_off);
-            v_led_emergency_wheel->set(LED_off);
-            break;
-        }
-        if (!last_stop_button && stop_button) // Backlight on cover- open
-            set_backlight();
 
-        // Button handling
+            if (!last_stop_button) // Backlight on cover- open
+                set_backlight();
+            last_stop_button = true;
+        }
+        else
+        {
+            v_led_emergency_stop->set(LED_off);
+            last_stop_button = false;
+        }
+
+        if (subscription::recv_ll_status.emergency_bitmask & LL_EMERGENCY_BITS_LIFT) // Lifted or tilted
+        {
+            v_led_emergency_wheel->set(LED_blink_fast);
+            strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
+        }
+        else
+            v_led_emergency_wheel->set(LED_off);
+
+        if (subscription::recv_ll_status.emergency_bitmask & LL_EMERGENCY_BIT_LATCH) // Emergency latch (no LL heartbeat or emergency by ROS)
+        {
+            v_led_emergency->set(LED_blink_slow);
+            strncpy(status_ticker, EMERGENCY_CLEAR_TEXT, STATUS_TICKER_LENGTH);
+        }
+        else
+            v_led_emergency->set(LED_off);
+
+        // ----- Button handling -----
 
         // Backlight on, on any button press
         if (buttons.is_pressed())
@@ -386,46 +356,19 @@ namespace display
             set_backlight();
         }
 
-        // Handle volume (up/down) buttons
-        if (buttons.is_pressed(BTN_UP_NUM))
-        {
-            //add_sim_button(BTN_MON_NUM);
-        }
-        if (buttons.is_pressed(BTN_DOWN_NUM))
-        {
-            //add_sim_button(BTN_TUE_NUM);
-        }
-
-        // Switch language button
-        if (buttons.is_pressed(BTN_BACK_NUM))
-        {
-            //add_sim_button(BTN_WED_NUM);
-        }
-
-        // Handle emergency clear (Enter) button
-        static uint32_t emergency_clear_runout_ms = 0;
-        if (leds.get(LED_NUM_LIFTED) != LED_off)
-        {
-            uint32_t now = millis();
-            if (buttons.is_pressed(BTN_OK_NUM) && !emergency_clear_runout_ms)
-            {
-                emergency_clear_runout_ms = now + 5000;
-            }
-            if (emergency_clear_runout_ms)
-            {
-                if (now < emergency_clear_runout_ms)
-                {
-                    sprintf(status_ticker, "Close cover (%i sec.)", (emergency_clear_runout_ms - millis()) / 1000);
-                }
-                else
-                {
-                    //add_sim_button(BTN_LOCK_NUM, 2001);
-                    emergency_clear_runout_ms = 0;
-                }
-            }
-        }
+        // ----- Countdown -----
+        if (countdown_timeout_)
+            if (millis() <= countdown_timeout_)
+                sprintf(status_ticker, "Close cover (%i sec.)", ((countdown_timeout_ - millis()) / 1000) + 1);
+            else
+                countdown_timeout_ = 0;
 
         text_ticker_status->set_text(status_ticker);
         check_backlight();
+    }
+
+    void start_countdown(uint32_t t_countdown_ms)
+    {
+        countdown_timeout_ = millis() + t_countdown_ms;
     }
 } // namespace display

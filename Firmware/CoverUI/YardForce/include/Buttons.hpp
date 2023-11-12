@@ -51,14 +51,14 @@ public:
         int8_t led_num; // Corresponding LED num. -1 is none.
     };
 
-    const std::map<uint8_t, ButtonDef> &kBtnDefByNumMap;                 // Map of Button-Num -> ButtonDef (pin & corresponding LED num)
+    const std::map<uint8_t, ButtonDef> &kBtnDefByNumMap;               // Map of Button-Num -> ButtonDef (pin & corresponding LED num)
     std::map<uint32_t, ButtonDebouncer> debouncer_by_gpio_port_nr_map; // Map of GPIO Port Nr -> debouncer object
 
     Buttons(const std::map<uint8_t, ButtonDef> &t_kBtnDefByNumMap) : kBtnDefByNumMap(t_kBtnDefByNumMap){};
 
     virtual ~Buttons() = default;
 
-    uint8_t get_led(uint8_t button_nr);
+    int8_t get_led(uint8_t button_nr);
     bool is_pressed(uint8_t button_nr);
     uint8_t is_pressed();
 

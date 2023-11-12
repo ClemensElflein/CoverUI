@@ -187,12 +187,36 @@ void PacketReceived()
       LEDs_refresh(pio_Block1, sm_LEDmux);
       mutex_exit(&mx1);
 #endif
-    }
-    else
-    {
+    } else {
       printf("Got setled call with crc error\n");
     }
   }
+#ifdef YARDFORCE_SUBSCRIPTION_H
+  // LowLevel message (if subscribed before)
+  else if (decoded_buffer[0] == PACKET_ID_LL_STATUS && data_size == sizeof(struct ll_status))
+  {
+    struct ll_status *message = (struct ll_status *)decoded_buffer;
+    if (message->crc == calc_crc)
+    {
+      subscription::recv_ll_status = *message; // Valid CRC, deep copy
+      subscription::ack();
+    }
+    else
+      printf("Got ll_status packet with crc error\n");
+  }
+  // HighLevel message (if subscribed before)
+  else if (decoded_buffer[0] == PACKET_ID_LL_HIGH_LEVEL_STATE && data_size == sizeof(struct ll_high_level_state))
+  {
+    struct ll_high_level_state *message = (struct ll_high_level_state *)decoded_buffer;
+    if (message->crc == calc_crc)
+    {
+      subscription::recv_hl_state = *message; // Valid CRC, deep copy
+      subscription::ack();
+    }
+    else
+      printf("Got ll_high_level_state packet with crc error\n");
+  }
+#endif
   else
   {
     printf("some invalid packet\n");

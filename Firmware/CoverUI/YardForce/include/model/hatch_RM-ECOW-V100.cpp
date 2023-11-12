@@ -16,7 +16,7 @@ unsigned int HatchRMECOWV100::handle_button(unsigned int button_id, unsigned int
     if (button_id == BTN_LOCK_NUM && press_cnt >= 2)
     {
         leds.sequence_start(&LEDcontrol::sequence_countdown_handler); // Close hatch countdown
-        queue_button(BTN_LOCK_NUM, 2, (millis() + 4500));             // Send long-press Lock button in 4.5 sec
+        queue_button(BTN_LOCK_NUM, 2, 4500);                          // Send long-press Lock button in 4.5 sec
         return 0;                                                     // Don't return button now (hatch is still open)
     }
 
@@ -25,8 +25,8 @@ unsigned int HatchRMECOWV100::handle_button(unsigned int button_id, unsigned int
         if (press_cnt > 10 || true) // Be sure that the queue isn't filled with "wait for release" loops
         {
             leds.sequence_start(&LEDcontrol::sequence_countdown_handler); // Close hatch countdown
-            queue_button(BTN_LOCK_NUM, 2, (millis() + 4500));             // Send long-press Lock button in 4.5 sec
-            queue_button(button_id, 0, (millis() + 5000));
+            queue_button(BTN_LOCK_NUM, 2, 4500);                          // Send long-press Lock button in 4.5 sec
+            queue_button(button_id, 0, 5000);
             return 0; // Don't return button now (hatch is still open)
         }
     }

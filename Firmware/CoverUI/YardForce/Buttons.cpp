@@ -56,7 +56,7 @@ void Buttons::process_states()
  * @param button_nr
  * @return uint8_t LED num. -1 of not exists.
  */
-uint8_t Buttons::get_led(uint8_t button_nr)
+int8_t Buttons::get_led(uint8_t button_nr)
 {
     auto btn_def_it = kBtnDefByNumMap.find(button_nr); // Find button_nr and get iterator pair
     if (btn_def_it != kBtnDefByNumMap.end())
