@@ -124,7 +124,6 @@ struct msg_event_subscribe
     uint8_t type;          // Command type
     uint8_t topic_bitmask; // Bitmask of data subscription(s), see Topic_state
     uint16_t interval;     // Interval (ms) how often to send topic(s)
-    uint16_t reserved;     // padding
     uint16_t crc;          // CRC 16
 } __attribute__((packed));
 #pragma pack(pop)
