@@ -68,7 +68,7 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
  */
 void LEDcontrol::set(uint64_t all_state)
 {
-    for (unsigned int led = 0; led <= LED_NUM_OM_MAX; led++)
+    for (unsigned int led = 0; led <= LED_NUM_OM_MAX && led < kNumLeds; led++)
     {
         uint8_t led_state = (all_state >> (3 * led)) & 0b111;
         set(led, static_cast<LED_state>(led_state));
