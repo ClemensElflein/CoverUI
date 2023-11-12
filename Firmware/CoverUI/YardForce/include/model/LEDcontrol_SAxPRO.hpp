@@ -15,7 +15,7 @@
 #include "../LEDcontrol.hpp"
 
 #define LED_PIN_BACKLIGHT PA11 // SAxPRO only has one LED, the backlight LED
-#define LED_NUM_BACKLIGHT 0
+#define LED_NUM_BACKLIGHT 19
 
 extern LEDcontrol leds; // Main LED controller object
 
