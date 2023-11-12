@@ -223,11 +223,9 @@ namespace display
         if (!main_screen_active)
             return; // Still in OM anim
 
-        // Handle GPS, Battery, ...
         char status_ticker[STATUS_TICKER_LENGTH] = "";
-        int val = 0;
-        static uint8_t last_gps_val = 0;
 
+        // GPS
         if (subscription::recv_hl_state.gps_quality < 25)
             v_led_gps->set(LED_on);
         else if (subscription::recv_hl_state.gps_quality < 50)
@@ -248,15 +246,9 @@ namespace display
         static bool last_docked = false;
         if (subscription::recv_ll_status.v_charge > 20.0f) // Docked
         {
-            if (!last_docked)
-            {
-                v_led_power->set(LED_on);
-                set_backlight();
-
-                bar_bat->set_range(150, 1100);
-                bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
-            }
-            last_docked = true;
+            v_led_power->set(LED_on);
+            bar_bat->set_range(150, 1100);
+            bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
             bar_bat->set_value(subscription::recv_ll_status.charging_current * 1000);
 
             if (subscription::recv_ll_status.charging_current < 0.15f)
@@ -265,18 +257,19 @@ namespace display
                 v_led_charge->set(LED_blink_slow);
             else if (subscription::recv_ll_status.charging_current > 0.8f)
                 v_led_charge->set(LED_blink_fast);
+
+            if (!last_docked)
+                set_backlight();
+            last_docked = true;
         }
         else // Undocked
         {
-            if (last_docked)
-            {
-                v_led_power->set(LED_off);
-                v_led_charge->set(LED_off);
-                bar_bat->set_range(BATT_ABS_Min, BATT_ABS_MAX);
-                bar_bat->bar_label = FA_SYMBOL_BATTERY " %d V";
-            }
-            last_docked = false;
+            v_led_power->set(LED_off);
+            v_led_charge->set(LED_off);
+            bar_bat->set_range(BATT_ABS_Min, BATT_ABS_MAX);
+            bar_bat->bar_label = FA_SYMBOL_BATTERY " %d V";
             bar_bat->set_value(subscription::recv_ll_status.v_battery);
+            last_docked = false;
         }
 
         // HL Mode & SubMode
@@ -358,10 +351,16 @@ namespace display
 
         // ----- Countdown -----
         if (countdown_timeout_)
+        {
             if (millis() <= countdown_timeout_)
+            {
                 sprintf(status_ticker, "Close cover (%i sec.)", ((countdown_timeout_ - millis()) / 1000) + 1);
+            }
             else
+            {
                 countdown_timeout_ = 0;
+            }
+        }
 
         text_ticker_status->set_text(status_ticker);
         check_backlight();

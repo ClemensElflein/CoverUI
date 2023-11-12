@@ -20,7 +20,7 @@
 #else
 #undef FIRMWARE_VERSION
 #endif
-#define FIRMWARE_VERSION 203
+#define FIRMWARE_VERSION 204
 
 #if defined(MDL_C500)
 #include "model_C500.h"
