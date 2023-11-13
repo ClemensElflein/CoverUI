@@ -37,6 +37,7 @@ namespace display
     void loop_low_prio();
     void tick_inc(uint8_t ms);
     void start_countdown(uint32_t t_countdown_ms);
+    bool check_backlight();
 } // namespace display
 
 #endif // YARDFORCE_DISPLAY_SAXPRO_H

@@ -13,6 +13,14 @@
 
 unsigned int HatchSAXPRO::handle_button(unsigned int button_id, unsigned int press_cnt)
 {
+    // If backlight is off, skip first button press
+    if (!display::check_backlight())
+    {
+        display::set_backlight();
+        return 0; // Skip handling of first button-press if backlight was off
+    }
+    display::set_backlight();
+
     // Clear emergency = Enter (OK) button
     if (button_id == BTN_OK_NUM)
     {

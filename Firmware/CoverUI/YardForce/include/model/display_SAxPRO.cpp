@@ -19,6 +19,8 @@ namespace display
     {
         uint32_t backlight_timeout_ = 0;
         uint32_t countdown_timeout_ = 0;
+        bool last_docked_state_; // true = docked, false = undocked
+        bool backlight_on_;
     }
 
     UC1698 uc1698;                   // Display controller
@@ -77,6 +79,15 @@ namespace display
         lv_disp_flush_ready(disp_drv);
     }
 
+    void set_undocked()
+    {
+        v_led_power->set(LED_off);
+        v_led_charge->set(LED_off);
+        bar_bat->set_range(BATT_ABS_Min, BATT_ABS_MAX);
+        bar_bat->bar_label = FA_SYMBOL_BATTERY " %d V";
+        last_docked_state_ = false;
+    }
+
     static void mainScreen()
     {
         // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
@@ -101,6 +112,10 @@ namespace display
 
         // Mower status text (ticker)
         text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
+
+        // Set defined state
+        set_undocked();
+        bar_bat->set_value(BATT_ABS_Min);
 
         main_screen_active = true;
     }
@@ -182,19 +197,31 @@ namespace display
     void set_backlight(LED_state state, uint32_t timeout)
     {
         ::leds.set(LED_NUM_BACKLIGHT, state);
+        if (state == LED_off)
+        {
+            backlight_on_ = false;
+            return;
+        }
         backlight_timeout_ = millis() + timeout;
+        backlight_on_ = true;
     }
 
     /**
-     * @brief Check backlight like timeout
+     * @brief Check backlight, handle possible timeout and return current backlight state
      *
+     * @return true if backlight is on
+     * @return false if backlight is off
      */
-    void check_backlight()
+    bool check_backlight()
     {
-        if (millis() < backlight_timeout_)
-            return;
+        if (!backlight_on_)
+            return backlight_on_;
 
-        ::leds.set(LED_NUM_BACKLIGHT, LED_off);
+        if (millis() < backlight_timeout_)
+            return backlight_on_;
+
+        set_backlight(LED_off);
+        return backlight_on_;
     }
 
     /**
@@ -243,12 +270,16 @@ namespace display
             v_led_bat->set(LED_on);
 
         // Docked (Plug) & Charging (charge-station)
-        static bool last_docked = false;
         if (subscription::recv_ll_status.v_charge > 20.0f) // Docked
         {
-            v_led_power->set(LED_on);
-            bar_bat->set_range(150, 1100);
-            bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
+            if (!last_docked_state_)
+            {
+                v_led_power->set(LED_on);
+                bar_bat->set_range(50, 1100);
+                bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
+                set_backlight();
+                last_docked_state_ = true;
+            }
             bar_bat->set_value(subscription::recv_ll_status.charging_current * 1000);
 
             if (subscription::recv_ll_status.charging_current < 0.15f)
@@ -257,19 +288,14 @@ namespace display
                 v_led_charge->set(LED_blink_slow);
             else if (subscription::recv_ll_status.charging_current > 0.8f)
                 v_led_charge->set(LED_blink_fast);
-
-            if (!last_docked)
-                set_backlight();
-            last_docked = true;
         }
         else // Undocked
         {
-            v_led_power->set(LED_off);
-            v_led_charge->set(LED_off);
-            bar_bat->set_range(BATT_ABS_Min, BATT_ABS_MAX);
-            bar_bat->bar_label = FA_SYMBOL_BATTERY " %d V";
+            if (last_docked_state_)
+            {
+                set_undocked();
+            }
             bar_bat->set_value(subscription::recv_ll_status.v_battery);
-            last_docked = false;
         }
 
         // HL Mode & SubMode
@@ -335,19 +361,6 @@ namespace display
         }
         else
             v_led_emergency->set(LED_off);
-
-        // ----- Button handling -----
-
-        // Backlight on, on any button press
-        if (buttons.is_pressed())
-        {
-            if (leds.get(LED_NUM_BACKLIGHT) == LED_off)
-            {
-                set_backlight();
-                return; // Skip handling of first button-press if backlight was off
-            }
-            set_backlight();
-        }
 
         // ----- Countdown -----
         if (countdown_timeout_)
