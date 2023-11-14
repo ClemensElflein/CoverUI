@@ -182,8 +182,8 @@ namespace display
         disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        // openmower_anim();
-        mainScreen();
+        openmower_anim();
+        // mainScreen();
 
         return true;
     }
@@ -275,7 +275,7 @@ namespace display
             if (!last_docked_state_)
             {
                 v_led_power->set(LED_on);
-                bar_bat->set_range(50, 1100);
+                bar_bat->set_range(100, 1100);
                 bar_bat->bar_label = FA_SYMBOL_CHARGE " %d mA";
                 set_backlight();
                 last_docked_state_ = true;
