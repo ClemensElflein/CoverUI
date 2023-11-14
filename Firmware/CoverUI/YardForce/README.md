@@ -311,7 +311,7 @@ Either you flash the binary directly, or you compile it by yourself with [Platfo
 
 ### Firmware binaries
 
-1. Goto [Releases](https://github.com/Apehaenger/CoverUI/releases)
+1. Goto [Releases](/releases)
 2. Download `firmware-stock.zip`
 3. Unpack it somewhere
 
@@ -426,7 +426,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 Larger digits, get displayed with multiple digit LEDs.
 I.e. 9 = 'Sun(6)' together with 'Thu(3)'
 
-[^3]: 'Imrpove-Sound' branch  of 'OpenMower' Pico Firmware presupposed
+[^3]: 'Improve-Sound' branch  of 'OpenMower' Pico Firmware presupposed
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -451,7 +451,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 
 | Version [^4] | Changes | Date |
 | ------- | ------- | ---- |
-| 2.03    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/07/2023
+| 2.04    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/14/2023
 | 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
 |  NA       | First OM's CoverUI port for YardForce Classic 500 | 05/01/2023
