@@ -1,0 +1,8 @@
+52,53c52,55
+< #define __SYSTEM_CLOCK_84M_PLL_HXTAL           (uint32_t)(84000000)
+< //#define __SYSTEM_CLOCK_84M_PLL_IRC8M_DIV2    (uint32_t)(84000000)
+---
+> //AH20231113: We don't have an HXTAL on our PCB ...
+> //#define __SYSTEM_CLOCK_84M_PLL_HXTAL (uint32_t)(84000000)
+> //AH20231113: ... so we use the internal R/C
+> #define __SYSTEM_CLOCK_84M_PLL_IRC8M_DIV2    (uint32_t)(84000000)
