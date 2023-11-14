@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 
+#define FIRMWARE_VERSION 200
+// V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
+
 #ifdef HW_YF // Stock YardForce HardWare
-#include "YardForce/main.hpp"
+#include "YardForce/include/main.h"
 #else // OM's Pico based HardWare
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
@@ -32,9 +35,6 @@
 
 #define bufflen 1000
 
-#define FIRMWARE_VERSION 200
-// V 2.00 v. 11.10.2022 new protocol implementation for less messages on the bus
-
 // buzzer ontime in ms
 #define shortbeep 50
 
@@ -45,7 +45,7 @@
 #define UART_RX_PIN 5
 
 // write & read pointer serial interrupt buffer
-static uint write = 0;
+static unsigned int write = 0;
 
 // serial buffer
 static uint8_t buffer_serial[bufflen];
@@ -120,13 +120,13 @@ void sendMessage(void *message, size_t size)
 
 #ifdef _serial_debug_
   printf("\nencoded message              %d byte : ", (int)encoded_size);
-  for (uint i = 0; i < encoded_size; i++)
+  for (unsigned int i = 0; i < encoded_size; i++)
   {
     printf("0x%02x , ", out_buf[i]);
   }
 #endif
 
-  for (uint i = 0; i < encoded_size; i++)
+  for (unsigned int i = 0; i < encoded_size; i++)
   {
     uart_putc(UART_1, out_buf[i]);
   }
@@ -187,12 +187,36 @@ void PacketReceived()
       LEDs_refresh(pio_Block1, sm_LEDmux);
       mutex_exit(&mx1);
 #endif
-    }
-    else
-    {
+    } else {
       printf("Got setled call with crc error\n");
     }
   }
+#ifdef YARDFORCE_SUBSCRIPTION_H
+  // LowLevel message (if subscribed before)
+  else if (decoded_buffer[0] == PACKET_ID_LL_STATUS && data_size == sizeof(struct ll_status))
+  {
+    struct ll_status *message = (struct ll_status *)decoded_buffer;
+    if (message->crc == calc_crc)
+    {
+      subscription::recv_ll_status = *message; // Valid CRC, deep copy
+      subscription::ack();
+    }
+    else
+      printf("Got ll_status packet with crc error\n");
+  }
+  // HighLevel message (if subscribed before)
+  else if (decoded_buffer[0] == PACKET_ID_LL_HIGH_LEVEL_STATE && data_size == sizeof(struct ll_high_level_state))
+  {
+    struct ll_high_level_state *message = (struct ll_high_level_state *)decoded_buffer;
+    if (message->crc == calc_crc)
+    {
+      subscription::recv_hl_state = *message; // Valid CRC, deep copy
+      subscription::ack();
+    }
+    else
+      printf("Got ll_high_level_state packet with crc error\n");
+  }
+#endif
   else
   {
     printf("some invalid packet\n");
@@ -223,7 +247,7 @@ void getDataFromBuffer()
 #ifdef HW_YF
     // In (at least) arduinoststm32 uart_getc() is a member of class 'stream' but with different parameters.
     // Don't wanna derive a new subclass. #ifdef is simpler for now and not very hard to read ;-)
-    u_int8_t readbyte = serial_ll.read();
+    int readbyte = serial_ll.read();
 #else
     u_int8_t readbyte = uart_getc(UART_1);
 #endif
@@ -246,6 +270,7 @@ void getDataFromBuffer()
   }
 }
 
+#ifndef HW_YF // HW_Pico (HW_YF is arduino based. See setup() & loop() in YardForce/main.h)
 int getLedForButton(int button)
 {
   if (button >= 4 && button <= 6)
@@ -300,7 +325,7 @@ void core1()
       if (button && pressed)
       {
         // we're still holding, wait for the button to release. We don't care about the result here.
-        bool tmp;
+        bool tmp = pressed; // "... = pressed" assignment is only required for YardForce ports
         bit_getbutton(0, tmp);
       }
 
@@ -339,7 +364,6 @@ void core1()
   }
 }
 
-#ifndef HW_YF // HW_Pico (HW_YF is arduino based. See setup() & loop() in YardForce/main.hpp)
 int main(void)
 {
   uint32_t last_led_update = 0;
