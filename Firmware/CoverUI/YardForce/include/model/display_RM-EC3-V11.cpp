@@ -24,7 +24,7 @@ namespace display
         bool backlight_on_;
     }
 
-    ST75256 st75256;                 // Display controller/driver
+    controller::ST75256 st75256;     // Display controller/driver
     bool main_screen_active = false; // Initialized and active
 
     // LVGL buffers

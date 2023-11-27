@@ -39,7 +39,7 @@
 #include "include/CortexMCycleCounter.hpp"
 #endif
 
-namespace display
+namespace controller
 {
     class ST75256
     {
@@ -64,6 +64,6 @@ namespace display
         CortexMCycleCounter cycle_cnt_spi_write_;
 #endif
     };
-} // namespace display
+} // namespace controller
 
 #endif // __ST75256_HPP

@@ -13,7 +13,7 @@
 
 #define TX_BUFFERSIZE 200
 
-namespace display
+namespace controller
 {
     SPI_HandleTypeDef hspi2;
 
@@ -209,4 +209,4 @@ namespace display
         send_data(data, sizeof(data) / sizeof(uint8_t));
     }
 
-} // namespace display
+} // namespace controller
