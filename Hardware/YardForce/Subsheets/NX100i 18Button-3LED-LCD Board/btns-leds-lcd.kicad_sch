@@ -1632,7 +1632,7 @@
     (uuid ff6e0da0-bd09-4e7f-9add-32b44155d439)
   )
 
-  (text "WR" (at 96.52 68.58 90)
+  (text "RW(WR)" (at 96.52 68.58 90)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 0487c525-0965-4ba8-afb6-c61a00fdff82)
   )
@@ -1660,8 +1660,8 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 4d4652b6-87ea-4931-8f2b-ab6bd065367f)
   )
-  (text "Model : JLX12832A-3G\nCable : JLX256128G - 256\nMatrix: 128*32 Pixel\nDriver: ST75256"
-    (at 71.12 49.53 0)
+  (text "Model: JLX25664G-251-BN\nMatrix: 256*64 Pixel\nOuter Dim: 67mm * 30mm\nDriver: ST75256"
+    (at 67.31 49.53 0)
     (effects (font (size 2 2)) (justify left bottom))
     (uuid 57d09dbe-5f87-459d-92a1-e108e374c116)
   )
@@ -1705,7 +1705,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 8ef88e51-4717-4823-a340-33ecddb7e2f6)
   )
-  (text "RD" (at 93.98 68.58 90)
+  (text "E(RD)" (at 93.98 68.58 90)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 90af4ab9-9a45-4a06-80f7-871f2dd55b92)
   )
@@ -1757,7 +1757,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ea291187-0bf7-4533-b83c-3c8868be0429)
   )
-  (text "A0/RS, DATA/~{CMD}" (at 91.44 68.58 90)
+  (text "A0(RS), DATA/~{CMD}" (at 91.44 68.58 90)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ed5eb77d-ed8c-41da-af51-36f42d6ef07e)
   )

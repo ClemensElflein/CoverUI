@@ -21,13 +21,13 @@ namespace display
     class WidgetTextTicker
     {
     public:
-        WidgetTextTicker(lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs, lv_coord_t w)
+        WidgetTextTicker(lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs, lv_coord_t w, uint32_t anim_speed = 100)
         {
             label = lv_label_create(lv_scr_act());
             set_text(""); // Don't show "Text" during initialization
             lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_set_style_text_font(label, &PerfectPixel_20, LV_PART_MAIN);
-            lv_obj_set_style_anim_speed(label, 100, LV_PART_MAIN);
+            lv_obj_set_style_anim_speed(label, anim_speed, LV_PART_MAIN);
             lv_obj_align(label, align, x_ofs, y_ofs);
             lv_obj_set_width(label, w);
             lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR);

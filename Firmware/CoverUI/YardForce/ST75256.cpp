@@ -174,7 +174,7 @@ namespace display
         send_data(0X10); // 10=Monochrome Mode,11=4Gray
 
         send_ctrl(0x81); // [21] Set Vop (EV control)
-        send_data(0x01);
+        send_data(0x01); // 0x01 = best, 0x11 only for pixel counting
         send_data(0x02);
 
         send_ctrl(0x20); // Power control

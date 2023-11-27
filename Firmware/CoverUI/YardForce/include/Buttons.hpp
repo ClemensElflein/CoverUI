@@ -41,6 +41,17 @@
 #define BTN_8H_NUM 37    // i.e. RM-ECOW-V100
 #define BTN_10H_NUM 38   // i.e. RM-ECOW-V100
 #define BTN_SETUP_NUM 39 // i.e. RM-ECOW-V100 (WLAN-Setup button)
+#define BTN_MENU_NUM 40  // i.e. RM-EC3-V11
+#define BTN_1_NUM 41     // i.e. RM-EC3-V11
+#define BTN_2_NUM 42     // i.e. RM-EC3-V11
+#define BTN_3_NUM 43     // i.e. RM-EC3-V11
+#define BTN_4_NUM 44     // i.e. RM-EC3-V11
+#define BTN_5_NUM 45     // i.e. RM-EC3-V11
+#define BTN_6_NUM 46     // i.e. RM-EC3-V11
+#define BTN_7_NUM 47     // i.e. RM-EC3-V11
+#define BTN_8_NUM 48     // i.e. RM-EC3-V11
+#define BTN_9_NUM 49     // i.e. RM-EC3-V11
+#define BTN_0_NUM 50     // i.e. RM-EC3-V11
 
 class Buttons
 {

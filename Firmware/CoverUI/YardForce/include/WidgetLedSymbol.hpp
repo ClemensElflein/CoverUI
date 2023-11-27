@@ -21,9 +21,8 @@ namespace display
     {
     public:
         LED_state state = LED_on;
-        std::string symbol_str;
 
-        WidgetLedSymbol(const std::string &t_symbol_str, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs);
+        WidgetLedSymbol(const char *t_symbol_str, lv_align_t align, lv_coord_t x_ofs = 0, lv_coord_t y_ofs = 0);
 
         void set(LED_state t_state);
 

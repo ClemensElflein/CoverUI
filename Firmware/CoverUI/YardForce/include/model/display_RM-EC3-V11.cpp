@@ -2,6 +2,7 @@
  * @file display_SAxPRO.cpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce CoverUI WYM240128K1 display driver class for SAxPRO OpenMower https://github.com/ClemensElflein/OpenMower
+ * This JLX25664 dispay is 4-level (2 Bit) gray scale capable, but for ease of development, it's driven as monochrome display.
  * @version 0.2
  * @date 2023-11-07
  *
@@ -23,13 +24,13 @@ namespace display
         bool backlight_on_;
     }
 
-    UC1698 uc1698;                   // Display controller
+    ST75256 st75256;                 // Display controller/driver
     bool main_screen_active = false; // Initialized and active
 
     // LVGL buffers
     static lv_disp_draw_buf_t lv_disp_buf;
-    static lv_color_t lv_buf_1[UC1698_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER];
-    static lv_color_t lv_buf_2[UC1698_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER];
+    static lv_color_t lv_buf_1[ST75256_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER];
+    static lv_color_t lv_buf_2[ST75256_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER];
 
     lv_disp_drv_t lv_disp_drv; // LVGL driver
 
@@ -41,21 +42,19 @@ namespace display
     WidgetTextTicker *text_ticker_status;
 
     /**
-     * @brief Rounder callback will round the display area to a multiple of 3, on x axis (RGB control lines of a pixel are connected to 3 monochrome pixels)
+     * @brief Rounder callback will round the display area to a multiple of 8, on y axis (because one DDRAM byte are 8 y-pixels (page), per column)
      *
      * @param disp_drv
      * @param area
      */
     static void rounder_cb(lv_disp_drv_t *disp_drv, lv_area_t *area)
     {
-        area->x1 = area->x1 - (area->x1 % 3);           // Round down to neares multiple of 3
-        area->x2 = (area->x2 + 3) - (area->x2 % 3) - 1; // Round up to nearest multiple of 3, minus -1
+        area->y1 = area->y1 - (area->y1 % 8);           // Round down to neares multiple of 8
+        area->y2 = (area->y2 + 8) - (area->y2 % 8) - 1; // Round up to nearest multiple of 8, minus -1
     }
 
     /**
      * @brief Flush display buffer to display controller.
-     * Done via uc1698::drawPixelTriplet() method, which doesn't look as efficient like direct data write,
-     * but save the call to a further pixel-color-callback, as well as another buffer, which sounds more expensive.
      *
      * @param disp_drv
      * @param area
@@ -63,18 +62,29 @@ namespace display
      */
     static void flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *t_color_p)
     {
-        unsigned int x, y;
-        lv_color_t *color_p;
-        uc1698.setWindowProgramArea(area->x1, area->x2, area->y1, area->y2);
+        size_t cols = (area->x2 - area->x1) + 1; // Num of columns for this flush area
+        uint8_t page_pixel_buffer[cols];         // Store 8 y pixel (LSB = top) for area of x
+        uint8_t y_shift = 0;
 
-        for (y = area->y1; y <= area->y2; y++)
+        st75256.send_ctrl(0x30); // EXT1=0, EXT0=0
+        st75256.set_column_address(area->x1, area->x2);
+        st75256.set_page_address(area->y1 / 8, (area->y2 - 7) / 8); // ATTENTION: Will only work with a correct rounder_cb()
+        st75256.send_ctrl(0b01011100);                              // [10] Write Data
+
+        for (size_t y = area->y1; y <= area->y2; y++)
         {
-            for (x = area->x1; x <= area->x2; x += 3) // FIXME: Might overflow buffer if area->x2 is not dividable by 3
+            for (size_t x = 0; x < cols; x++)
             {
-                // Color is inverted (0 = black but pixel off / >0 = white but pixel on) but UC1698 "[16] Set Inverse Display" is set
-                uc1698.drawPixelTriplet(t_color_p->full, (t_color_p + 1)->full, (t_color_p + 2)->full);
-                t_color_p += 3;
+                t_color_p->full ? page_pixel_buffer[x] &= ~(1 << y_shift) : page_pixel_buffer[x] |= (1 << y_shift);
+                t_color_p++;
             }
+            if (y_shift < 7)
+            {
+                y_shift++;
+                continue;
+            }
+            st75256.send_data(page_pixel_buffer, cols);
+            y_shift = 0;
         }
         lv_disp_flush_ready(disp_drv);
     }
@@ -91,27 +101,27 @@ namespace display
     static void mainScreen()
     {
         // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
-        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
+        v_led_ros = new WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 0, -1); // Leftmost
 
         // In the middle, we do have emergencies
-        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, 0);                                           // Centered
-        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, 0); // Left of centered
+        v_led_emergency = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY, LV_ALIGN_TOP_MID, 0, -1);                                           // Centered
+        v_led_emergency_wheel = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_WHEEL, LV_ALIGN_TOP_MID, -14 - TOP_STATUS_BAR_GAP_PX - 2, -1); // Left of centered
         // TODO: if next level LL proto
-        // v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, 0); // 2nd left of centered
-        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, 0); // Right of centered
+        // v_led_heartbeat = new WidgetLedSymbol(FA_SYMBOL_HEARTBEAT, LV_ALIGN_TOP_MID, -(2 * 14) - (2 * TOP_STATUS_BAR_GAP_PX) - 2, -1); // 2nd left of centered
+        v_led_emergency_stop = new WidgetLedSymbol(FA_SYMBOL_EMERGENCY_STOP, LV_ALIGN_TOP_MID, 14 + TOP_STATUS_BAR_GAP_PX, -1); // Right of centered
 
         // On the right side, mowing status like, charging, docking, ...
-        v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (240 - (1 * 14)), 0); // Rightmost
-        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (240 - (2 * 14) - TOP_STATUS_BAR_GAP_PX), 0);
-        v_led_gps = new WidgetLedSymbol(FA_SYMBOL_GPS1, LV_ALIGN_OUT_TOP_RIGHT, (240 - (3 * 14) - (2 * TOP_STATUS_BAR_GAP_PX)), 0);
-        v_led_bat = new WidgetLedSymbol(FA_SYMBOL_BATTERY, LV_ALIGN_OUT_TOP_RIGHT, (240 - (4 * 14) - (3 * TOP_STATUS_BAR_GAP_PX)), 0);
+        v_led_power = new WidgetLedSymbol(FA_SYMBOL_PLUG, LV_ALIGN_OUT_TOP_RIGHT, (ST75256_DISPLAY_WIDTH - (1 * 14)), -1); // Rightmost
+        v_led_charge = new WidgetLedSymbol(FA_SYMBOL_CHARGE, LV_ALIGN_OUT_TOP_RIGHT, (ST75256_DISPLAY_WIDTH - (2 * 14) - TOP_STATUS_BAR_GAP_PX), -1);
+        v_led_gps = new WidgetLedSymbol(FA_SYMBOL_GPS1, LV_ALIGN_OUT_TOP_RIGHT, (ST75256_DISPLAY_WIDTH - (3 * 14) - (2 * TOP_STATUS_BAR_GAP_PX)), -1);
+        v_led_bat = new WidgetLedSymbol(FA_SYMBOL_BATTERY, LV_ALIGN_OUT_TOP_RIGHT, (ST75256_DISPLAY_WIDTH - (4 * 14) - (3 * TOP_STATUS_BAR_GAP_PX)), -1);
 
         // GPS & Battery bars
-        bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 30, UC1698_DISPLAY_WIDTH, 21);
-        bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 60, UC1698_DISPLAY_WIDTH, 21);
+        bar_gps = new WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 19, ST75256_DISPLAY_WIDTH, 21);
+        bar_bat = new WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 43, ST75256_DISPLAY_WIDTH, 21);
 
         // Mower status text (ticker)
-        text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 95, UC1698_DISPLAY_WIDTH);
+        text_ticker_status = new WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 18, ST75256_DISPLAY_WIDTH, 40);
 
         // Set defined state
         set_undocked();
@@ -128,7 +138,7 @@ namespace display
     void openmower_anim()
     {
         // Mower Logo - img_logo
-        lv_obj_t *img_logo = lv_img_create(lv_scr_act());
+        /*lv_obj_t *img_logo = lv_img_create(lv_scr_act());
         lv_img_set_src(img_logo, &OM_Logo_120x54x1);
         lv_obj_align(img_logo, LV_ALIGN_CENTER, 0, -25);
 
@@ -158,32 +168,29 @@ namespace display
         lv_anim_set_exec_cb(&aw, (lv_anim_exec_xcb_t)anim_x_cb);
         lv_anim_set_path_cb(&aw, lv_anim_path_ease_in);
         lv_anim_set_deleted_cb(&aw, (lv_anim_ready_cb_t)mainScreen); // Set a callback to indicate when the animation is deleted (idle)
-        lv_anim_start(&aw);
+        lv_anim_start(&aw);*/
     }
 
     bool init()
     {
-        // Init UC1698 display controller
-        if (!uc1698.init())
-        {
-            return false;
-        }
+        // Init LCD display controller
+        st75256.init();
 
         // Init LVGL
         lv_init();
-        lv_disp_drv_init(&lv_disp_drv);                                                                         // Basic LVGL display driver initialization
-        lv_disp_drv.draw_buf = &lv_disp_buf;                                                                    // Set an initialized buffer
-        lv_disp_drv.rounder_cb = rounder_cb;                                                                    // Round x coordinated so that it fit for our 3 RGB pixel/per dot display
-        lv_disp_drv.flush_cb = flush_cb;                                                                        // Set a flush callback to draw to the display
-        lv_disp_drv.hor_res = UC1698_DISPLAY_WIDTH;                                                             // Set the horizontal resolution in pixels
-        lv_disp_drv.ver_res = UC1698_DISPLAY_HEIGHT;                                                            // Set the vertical resolution in pixels
-        lv_disp_draw_buf_init(&lv_disp_buf, lv_buf_1, lv_buf_2, UC1698_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER); // Initialize `disp_buf` with the buffer(s)
+        lv_disp_drv_init(&lv_disp_drv);                                                                          // Basic LVGL display driver initialization
+        lv_disp_drv.draw_buf = &lv_disp_buf;                                                                     // Set an initialized buffer
+        lv_disp_drv.rounder_cb = rounder_cb;                                                                     // Round x coordinated so that it fit for our 3 RGB pixel/per dot display
+        lv_disp_drv.flush_cb = flush_cb;                                                                         // Set a flush callback to draw to the display
+        lv_disp_drv.hor_res = ST75256_DISPLAY_WIDTH;                                                             // Set the horizontal resolution in pixels
+        lv_disp_drv.ver_res = ST75256_DISPLAY_HEIGHT;                                                            // Set the vertical resolution in pixels
+        lv_disp_draw_buf_init(&lv_disp_buf, lv_buf_1, lv_buf_2, ST75256_DISPLAY_WIDTH * LVGL_BUFFER_MULTIPLIER); // Initialize `disp_buf` with the buffer(s)
         lv_disp_t *disp;
         disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
         lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-        openmower_anim();
-        // mainScreen();
+        // openmower_anim();
+        mainScreen();
 
         return true;
     }
@@ -375,6 +382,20 @@ namespace display
             }
         }
 
+        /*if (show_version_)
+        {
+            sprintf(status_ticker, "Version %.2f", (float)(FIRMWARE_VERSION/100));
+        }*/
+
+        // If status text, display instead of GPS- bar
+        if (strlen(status_ticker))
+        {
+            bar_gps->add_flag(LV_OBJ_FLAG_HIDDEN);
+        }
+        else
+        {
+            bar_gps->clear_flag(LV_OBJ_FLAG_HIDDEN);
+        }
         text_ticker_status->set_text(status_ticker);
         check_backlight();
     }

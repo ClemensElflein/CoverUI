@@ -47,7 +47,7 @@ public:
     void sequence_animate_handler() override;
     void sequence_countdown_handler() override;
 
-    unsigned int boot_animation(); // A short boot animation which return the amount of ms it will take
+    unsigned int boot_animation() override; // A short boot animation which return the amount of ms it will take
     void set_base10_leds(char digit) override;
     void force_off_num_seq_leds(bool force) override;
 

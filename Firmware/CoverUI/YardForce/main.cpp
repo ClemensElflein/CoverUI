@@ -9,15 +9,22 @@
  *
  */
 #include "include/main.h"
-#include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+#include <Arduino.h>       // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
 #include <HardwareTimer.h> // Required for framework-arduinogd32
 
 // ----- Timer -----
 #ifdef MCU_STM32
+#ifdef STM32F030x8
 #define TIM_SLOW TIM6   // Basic timer
 #define TIM_FAST TIM17  // General purpose timer
 #define TIM_EVENT TIM14 // General purpose timer
 #define TIM_QUICK TIM16 // General purpose timer
+#elif defined(STM32F4xx)
+#define TIM_SLOW TIM3   // General purpose timer
+#define TIM_FAST TIM4   // General purpose timer
+#define TIM_EVENT TIM9  // General purpose timer
+#define TIM_QUICK TIM10 // General purpose timer
+#endif
 #define TIM_DEFAULT_PREEMPT_PRIO TIM_IRQ_PRIO
 #define TIM_DEFAULT_SUB_PRIO TIM_IRQ_SUBPRIO
 HardwareTimer *hwtimer(TIM_TypeDef *instance, uint32_t freq, callback_function_t callback, uint32_t preemptPriority = TIM_DEFAULT_PREEMPT_PRIO, uint32_t subPriority = TIM_DEFAULT_SUB_PRIO)
@@ -47,8 +54,8 @@ HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callbac
 #define TIM_QUICK_FREQUENCY 200                                // Hz
 #define TIM_QUICK_PERIOD_MS (1.0 / TIM_QUICK_FREQUENCY * 1000) // Milliseconds
 
-HardwareTimer *timer_slow;  // Used for blink-slow LEDs and magic buttons
-HardwareTimer *timer_fast;  // Used for blink-fast LEDs
+HardwareTimer *timer_slow; // Used for blink-slow LEDs and magic buttons
+HardwareTimer *timer_fast; // Used for blink-fast LEDs
 #ifdef HAS_DISPLAY
 HardwareTimer *timer_event; // Used for lv_timer_handler() and LED/Value to display logic conversion
 #endif
@@ -101,6 +108,7 @@ void setup()
 
     serial_ll.begin(115200);
 
+    // FIXME: Not all CoverUIs do have a PCB-LED
     leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
     delay(100);                                        // Some required stupid delay, dunno why :-/
 

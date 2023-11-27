@@ -29,6 +29,9 @@ namespace display
         void set_value(unsigned int value);
         void set_range(int32_t min, int32_t max);
 
+        void add_flag(lv_obj_flag_t flag);
+        void clear_flag(lv_obj_flag_t flag);
+
     private:
         lv_obj_t *bar_;
         lv_style_t bar_style_bg_, bar_style_indic_;

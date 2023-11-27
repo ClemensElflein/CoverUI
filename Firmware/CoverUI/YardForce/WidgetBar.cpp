@@ -86,4 +86,14 @@ namespace display
         lv_bar_set_range(bar_, min, max);
     }
 
+    void WidgetBar::add_flag(lv_obj_flag_t flag)
+    {
+        lv_obj_add_flag(bar_, flag);
+    }
+
+    void WidgetBar::clear_flag(lv_obj_flag_t flag)
+    {
+        lv_obj_clear_flag(bar_, flag);
+    }
+
 } // namespace display

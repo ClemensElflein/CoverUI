@@ -13,13 +13,13 @@
     <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="SA/SC/NX-Type (10 Buttons 12 LEDs)" title="SA/SC/NX-Type (10 Buttons 12 LEDs)" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="NX80i (10 Buttons 12 LEDs) SA/SC/NX-Type CoverUI" title="NX80i (10 Buttons 12 LEDs) SA/SC/NX-Type CoverUI" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display)" title="SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display)" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" title="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" width="24%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Dot-Matrix-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Dot-Matrix-Display)" width="24%">
+    <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" width="24%">
   </a>
 
   <h3 align="center">OM CoverUI Firmware for Stock YardForce PCBs</h3>
@@ -32,17 +32,11 @@
 | -------------------------------- | :------------------------: | :---: |
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
-| SA/SC/NX-Type (10 Buttons, 12 LEDs) | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
-| SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Dot-Matrix-Display)    | HS49067, WYPCB319B | STM32F030RC |
+| NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
+| NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-ECOW-V1.1, 20210619 | STM32F401RC |
+| SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Pixel LC-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless
-
-#### In Queue
-
-| YardForce Model                  | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
-| -------------------------------- | :------------------------: | :---: |
-| SA/SC/NX-Type (18 Buttons, 3 LEDs, LC-Display) | RM-ECOW-V1.1, 20210619 | STM32F401RC |
-
 
   </p>
 </div>
@@ -394,7 +388,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| C500(B) | NX80i<br>(10 Buttons, 12 LEDs), SA/SC/NX-Type<br> | NX100i<br>(18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | ------- | --------------------------------- | --------------- | ---- | ----- |
 | 2hr - 8hr | 4H - 10H | :pager: | <img src="images/lcd.svg" width=20% height=20%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
 | S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=20% height=20%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
@@ -408,18 +402,18 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Button usage:
 
-| C500(B) | SA/SC/NX-Type<br>(10 Buttons, 12 LEDs) | SA/SC/NX-Type<br>(LCD) | SA/SC-PRO<br>(Dot Matrix) | Remark |
+| C500(B) | NX80i<br>(10 Buttons, 12 LEDs) SA/SC/NX-Type | NX100i<br>(18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | ------- | --------------------------------- | --------------- | ---- | ----- |
 | <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
 | <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
 | <kbd>S1</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
 | <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
 | <kbd>Lock</kbd> | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
-| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | :x: | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | :x: | :x: | Display CoverUI- firmware version. It get display as a number sequence[^2], which should show (as of writing) 203 |
-| <kbd>Mon</kbd> | <kbd>4H</kbd> | :x: | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
-| <kbd>Tue</kbd> | <kbd>6H</kbd> | :x: | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
-| <kbd>Wed</kbd> | <kbd>8H</kbd> | :x: | <kbd>Back</kbd> | Next language[^3] |
+| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | <kbd>MENU</kbd>+<kbd>BACK</kbd> | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
+| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 204 |
+| <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
+| <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
+| <kbd>Wed</kbd> | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | Next language[^3] |
 
 
 [^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.

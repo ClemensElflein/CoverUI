@@ -20,10 +20,10 @@ namespace display
             lv_obj_add_flag((lv_obj_t *)var, LV_OBJ_FLAG_HIDDEN);
     }
 
-    WidgetLedSymbol::WidgetLedSymbol(const std::string &t_symbol_str, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs) : symbol_str(t_symbol_str)
+    WidgetLedSymbol::WidgetLedSymbol(const char *t_symbol_str, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs)
     {
         label_ = lv_label_create(lv_scr_act());
-        lv_label_set_text(label_, symbol_str.c_str());
+        lv_label_set_text_static(label_, t_symbol_str);
         lv_obj_set_style_text_align(label_, LV_TEXT_ALIGN_CENTER, 0);
         lv_obj_set_style_text_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN);
         lv_obj_align(label_, align, x_ofs, y_ofs);
@@ -41,10 +41,10 @@ namespace display
             lv_obj_clear_flag(label_, LV_OBJ_FLAG_HIDDEN);
             break;
         case LED_blink_slow:
-            start_blink_anim_(200);
+            start_blink_anim_(700);
             break;
         case LED_blink_fast:
-            start_blink_anim_(75);
+            start_blink_anim_(400);
             break;
         default: // off
             lv_anim_del(label_, (lv_anim_exec_xcb_t)anim_blink_cb);
