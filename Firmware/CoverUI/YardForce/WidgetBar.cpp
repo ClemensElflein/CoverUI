@@ -9,7 +9,7 @@
  */
 #include "include/WidgetBar.hpp"
 
-namespace display
+namespace lvgl
 {
     static void event_bar_label_cb(lv_event_t *e)
     {
@@ -96,4 +96,4 @@ namespace display
         lv_obj_clear_flag(bar_, flag);
     }
 
-} // namespace display
+} // namespace lvgl

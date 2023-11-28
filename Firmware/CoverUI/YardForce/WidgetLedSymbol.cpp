@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include "include/WidgetLedSymbol.hpp"
 
-namespace display
+namespace lvgl
 {
     static void anim_blink_cb(void *var, int32_t v)
     {
@@ -65,4 +65,4 @@ namespace display
         lv_anim_set_repeat_count(&anim_, LV_ANIM_REPEAT_INFINITE);
         lv_anim_start(&anim_);
     }
-} // namespace display
+} // namespace lvgl
