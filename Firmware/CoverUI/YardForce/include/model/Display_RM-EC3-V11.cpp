@@ -140,11 +140,11 @@ namespace yardforce
             v_led_bat = new lvgl::WidgetLedSymbol(FA_SYMBOL_BATTERY, LV_ALIGN_OUT_TOP_RIGHT, (ST75256_DISPLAY_WIDTH - (4 * 14) - (3 * TOP_STATUS_BAR_GAP_PX)), -1);
 
             // GPS & Battery bars
-            bar_gps = new lvgl::WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_MID, 0, 19, ST75256_DISPLAY_WIDTH, 21);
-            bar_bat = new lvgl::WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_MID, 0, 43, ST75256_DISPLAY_WIDTH, 21);
+            bar_gps = new lvgl::WidgetBar(FA_SYMBOL_GPS2 " %d %%", LV_ALIGN_TOP_LEFT, 0, 19, (ST75256_DISPLAY_WIDTH / 2) - 1, 21);
+            bar_bat = new lvgl::WidgetBar(FA_SYMBOL_BATTERY " %d %%", LV_ALIGN_TOP_RIGHT, 0, 19, (ST75256_DISPLAY_WIDTH / 2) - 1, 21);
 
             // Mower status text (ticker)
-            text_ticker_status = new lvgl::WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 18, ST75256_DISPLAY_WIDTH, 40);
+            text_ticker_status = new lvgl::WidgetTextTicker(LV_ALIGN_TOP_MID, 0, 42, ST75256_DISPLAY_WIDTH, 40);
 
             // Set defined state
             set_undocked();
@@ -342,14 +342,14 @@ namespace yardforce
             }
 
             // If status text, display instead of GPS- bar
-            if (strlen(status_ticker))
+            /*if (strlen(status_ticker))
             {
                 bar_gps->add_flag(LV_OBJ_FLAG_HIDDEN);
             }
             else
             {
                 bar_gps->clear_flag(LV_OBJ_FLAG_HIDDEN);
-            }
+            }*/
             text_ticker_status->set_text(status_ticker);
         }
     } // namespace display

@@ -22,7 +22,7 @@ namespace lvgl
         lv_draw_label_dsc_t label_dsc;
         lv_draw_label_dsc_init(&label_dsc);
 
-        char buf[12];
+        char buf[12]; // FIXME: Static value is risky
         lv_snprintf(buf, sizeof(buf), (const char *)lv_obj_get_user_data(obj), bar_value);
 
         lv_point_t txt_size;
