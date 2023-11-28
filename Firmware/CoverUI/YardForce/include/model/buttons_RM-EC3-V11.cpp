@@ -44,11 +44,10 @@ void magic_buttons()
     if (!buttons.is_pressed(BTN_MENU_NUM))
         return;
 
-    /*if (buttons.is_pressed(BTN_BACK_NUM))
-        //display.anim();
-    else*/
-    /*if (buttons.is_pressed(BTN_0_NUM))
-        display::show_version();*/
+    if (buttons.is_pressed(BTN_BACK_NUM))
+        display.openmower_anim();
+    else if (buttons.is_pressed(BTN_0_NUM))
+        display.start_anncmnt(2000, yardforce::display::Display::AnncmntType::version);
 
     return;
 };

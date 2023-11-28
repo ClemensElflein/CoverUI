@@ -18,8 +18,6 @@
 #define TOP_STATUS_BAR_GAP_PX 5 // Amount of (gap) pixels between top status-bar icons/symbols
 #define EMERGENCY_CLEAR_TEXT "Emergency! Press [Enter], close hatch and stay back, to clear emergency state."
 
-#define HAS_DISPLAY
-
 #include <Arduino.h>
 #include "../UC1698.hpp"
 #include <lvgl.h>

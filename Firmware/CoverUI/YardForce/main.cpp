@@ -56,7 +56,7 @@ HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callbac
 
 HardwareTimer *timer_slow; // Used for blink-slow LEDs and magic buttons
 HardwareTimer *timer_fast; // Used for blink-fast LEDs
-#ifdef HAS_DISPLAY
+#ifdef YARDFORCE_DISPLAY_HPP
 HardwareTimer *timer_event; // Used for lv_timer_handler() and LED/Value to display logic conversion
 #endif
 HardwareTimer *timer_quick; // Button debouncer and LED sequences
@@ -85,11 +85,11 @@ void setup()
 {
     leds.setup();
     buttons.setup();
-#ifdef HAS_DISPLAY
-    if (!display::init())
-        display::set_backlight(LED_blink_fast, 60000); // TODO: Make some better assert handling than 60 sec. fast blink
+#ifdef YARDFORCE_DISPLAY_HPP
+    if (!display.init())
+        display.set_backlight(LED_blink_fast, 60000); // TODO: Make some better assert handling than 60 sec. fast blink
     else
-        display::set_backlight();
+        display.set_backlight();
 #endif
 #ifdef YARDFORCE_EMERGENCY_HPP
     emergency.setup();
@@ -98,7 +98,7 @@ void setup()
     // We've hardware timer on mass, let's use them.
     timer_slow = hwtimer(TIM_SLOW, 2, timer_slow_callback_wrapper, 30);  //   2Hz (500ms) timer, used for LED-blink-slow and magic buttons
     timer_fast = hwtimer(TIM_FAST, 10, timer_fast_callback_wrapper, 20); //  10Hz (100ms) timer, used for LED-blink-fast
-#ifdef HAS_DISPLAY
+#ifdef YARDFORCE_DISPLAY_HPP
     timer_event = hwtimer(TIM_EVENT, 100, timer_event_callback_wrapper, 10); // 100Hz   (10ms) timer, used for displays lv_timer_handler() and LED-2-Display logic
 #endif
     // Don't increase value of this timers preemptPriority parameter higher than the default,
@@ -139,8 +139,8 @@ void timer_slow_callback_wrapper()
 
 void timer_event_callback_wrapper()
 {
-#ifdef HAS_DISPLAY
-    display::loop_low_prio();
+#ifdef YARDFORCE_DISPLAY_HPP
+    display.loop_low_prio();
 #endif
 }
 
@@ -155,8 +155,8 @@ void timer_fast_callback_wrapper()
 void timer_quick_callback_wrapper()
 {
     getDataFromBuffer();
-#ifdef HAS_DISPLAY
-    display::tick_inc(TIM_QUICK_PERIOD_MS);
+#ifdef YARDFORCE_DISPLAY_HPP
+    display.tick_inc(TIM_QUICK_PERIOD_MS);
 #endif
 #ifdef YARDFORCE_EMERGENCY_HPP
     emergency.read_and_send_if_emergency();

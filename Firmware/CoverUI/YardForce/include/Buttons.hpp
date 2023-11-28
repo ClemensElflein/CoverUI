@@ -42,16 +42,16 @@
 #define BTN_10H_NUM 38   // i.e. RM-ECOW-V100
 #define BTN_SETUP_NUM 39 // i.e. RM-ECOW-V100 (WLAN-Setup button)
 #define BTN_MENU_NUM 40  // i.e. RM-EC3-V11
-#define BTN_1_NUM 41     // i.e. RM-EC3-V11
-#define BTN_2_NUM 42     // i.e. RM-EC3-V11
-#define BTN_3_NUM 43     // i.e. RM-EC3-V11
-#define BTN_4_NUM 44     // i.e. RM-EC3-V11
-#define BTN_5_NUM 45     // i.e. RM-EC3-V11
-#define BTN_6_NUM 46     // i.e. RM-EC3-V11
-#define BTN_7_NUM 47     // i.e. RM-EC3-V11
-#define BTN_8_NUM 48     // i.e. RM-EC3-V11
-#define BTN_9_NUM 49     // i.e. RM-EC3-V11
-#define BTN_0_NUM 50     // i.e. RM-EC3-V11
+#define BTN_0_NUM 48     // ASCII 0, i.e. RM-EC3-V11
+#define BTN_1_NUM 49     // ASCII 1, i.e. RM-EC3-V11
+#define BTN_2_NUM 50     // ASCII 2, i.e. RM-EC3-V11
+#define BTN_3_NUM 51     // ASCII 3, i.e. RM-EC3-V11
+#define BTN_4_NUM 52     // ASCII 4, i.e. RM-EC3-V11
+#define BTN_5_NUM 53     // ASCII 5, i.e. RM-EC3-V11
+#define BTN_6_NUM 54     // ASCII 6, i.e. RM-EC3-V11
+#define BTN_7_NUM 55     // ASCII 7, i.e. RM-EC3-V11
+#define BTN_8_NUM 56     // ASCII 8, i.e. RM-EC3-V11
+#define BTN_9_NUM 57     // ASCII 9, i.e. RM-EC3-V11
 
 class Buttons
 {

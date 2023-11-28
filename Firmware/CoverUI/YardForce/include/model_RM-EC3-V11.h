@@ -14,7 +14,7 @@
 #include "model/LEDcontrol_RM-EC3-V11.hpp"
 #include "model/buttons_RM-EC3-V11.h"
 #include "model/hatch_RM-EC3-V11.hpp"
-#include "model/display_RM-EC3-V11.h"
+#include "model/Display_RM-EC3-V11.hpp"
 
 #ifdef MOD_EMERGENCY
 #include "model/emergency_RM-EC3-V11.h"

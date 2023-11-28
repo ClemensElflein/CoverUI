@@ -40,10 +40,10 @@
 #endif
 
 #define BATT_ABS_MAX 28.7f
-#define BATT_ABS_Min 21.7f
+#define BATT_ABS_MIN 21.7f
 
-#define BATT_FULL BATT_ABS_MAX - 0.3f
-#define BATT_EMPTY BATT_ABS_Min + 0.3f
+#define BATT_FULL (BATT_ABS_MAX - 0.3f)
+#define BATT_EMPTY (BATT_ABS_MIN + 0.3f)
 
 // STM32/GD32 are single cores, also without threads.
 // Send mutex calls of main.cpp to nirvana. Dangerous?
