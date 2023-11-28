@@ -39,31 +39,37 @@
 #include "include/CortexMCycleCounter.hpp"
 #endif
 
-namespace controller
+namespace yardforce
 {
-    class ST75256
+    namespace display
     {
-    public:
-        ST75256(){};
+        namespace controller
+        {
+            class ST75256
+            {
+            public:
+                ST75256(){};
 
-        void init(); // Initialize control and data lines, as well as display
+                void init(); // Initialize control and data lines, as well as display
 
-        void send_ctrl(uint8_t ctrl);                    // Send control command
-        void send_data(uint8_t data);                    // Send one data byte
-        void send_data(uint8_t *data, size_t data_size); // Send multiple data bytes
-        void set_column_address(uint8_t xs, uint8_t xe); // Set Column Address Area for next DDRAM writes
-        void set_page_address(uint8_t ys, uint8_t ye);   // Set Page Address Area for next DDRAM writes
+                void send_ctrl(uint8_t ctrl);                    // Send control command
+                void send_data(uint8_t data);                    // Send one data byte
+                void send_data(uint8_t *data, size_t data_size); // Send multiple data bytes
+                void set_column_address(uint8_t xs, uint8_t xe); // Set Column Address Area for next DDRAM writes
+                void set_page_address(uint8_t ys, uint8_t ye);   // Set Page Address Area for next DDRAM writes
 
-    private:
-        void initConnection_();                               // Initialize control and data lines
-        void initDisplay_();                                  // Initialize control and data lines
-        void write_SPI_(uint8_t *data, size_t data_size = 1); // Write data via SPI
+            private:
+                void initConnection_();                               // Initialize control and data lines
+                void initDisplay_();                                  // Initialize control and data lines
+                void write_SPI_(uint8_t *data, size_t data_size = 1); // Write data via SPI
 
 #ifdef BENCHMARK
-        CortexMCycleCounter cycle_cnt_init_;
-        CortexMCycleCounter cycle_cnt_spi_write_;
+                CortexMCycleCounter cycle_cnt_init_;
+                CortexMCycleCounter cycle_cnt_spi_write_;
 #endif
-    };
-} // namespace controller
+            };
+        } // namespace controller
+    }     // namespace display
+} // namespace yardforce
 
 #endif // __ST75256_HPP
