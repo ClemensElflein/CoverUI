@@ -15,7 +15,7 @@
 #include <lvgl.h>
 #include "LEDcontrol.hpp"
 
-namespace display
+namespace lvgl
 {
     static void event_bar_label_cb(lv_event_t *e);
 
@@ -36,6 +36,6 @@ namespace display
         lv_obj_t *bar_;
         lv_style_t bar_style_bg_, bar_style_indic_;
     };
-} // namespace display
+} // namespace lvgl
 
 #endif // __WIDGETBAR_HPP

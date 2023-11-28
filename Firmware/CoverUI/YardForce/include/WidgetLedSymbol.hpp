@@ -15,7 +15,7 @@
 #include <lvgl.h>
 #include "LEDcontrol.hpp"
 
-namespace display
+namespace lvgl
 {
     class WidgetLedSymbol
     {
@@ -32,6 +32,6 @@ namespace display
 
         void start_blink_anim_(uint16_t t_period_ms);
     };
-} // namespace display
+} // namespace lvgl
 
 #endif // __WIDGETLEDSYMBOL_HPP

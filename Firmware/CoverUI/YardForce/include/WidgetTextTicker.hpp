@@ -16,7 +16,7 @@
 
 LV_FONT_DECLARE(PerfectPixel_20);
 
-namespace display
+namespace lvgl
 {
     class WidgetTextTicker
     {
@@ -44,6 +44,6 @@ namespace display
     private:
         lv_obj_t *label;
     };
-} // namespace display
+} // namespace lvgl
 
 #endif // __WIDGETTEXTTICKER_HPP
