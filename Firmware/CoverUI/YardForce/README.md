@@ -57,7 +57,8 @@
               <ul>
         <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
         <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
-        <li><a href="#yardforce-sascx-type-10-buttons-12-leds-rm-ecow-v100">YardForce SA/SC/NX-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-nx100i-18-buttons-3-leds-25664-pixel-lc-display-sascnx-type-rm-ec3-v11">YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</a></li>
         <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
       </ul>
         </li>
@@ -77,7 +78,6 @@
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -216,11 +216,11 @@ If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/dr
 </details>
 
 
-<!-- Hardware Modifications by Model: SA/SC/NX-Type (10 Buttons, 12 LEDs) RM-ECOW-V1.0.0, 2018.06.05 -->
+<!-- Hardware Modifications by Model: NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type -->
 <details>
-  <summary><h3>YardForce SA/SC/NX-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</h3></summary>
+  <summary><h3>YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</h3></summary>
 
-  ![Classic 500](images/IMG_Overview_RM-ECOW-V100.jpg)
+  ![YardForce NX80i](images/IMG_Overview_RM-ECOW-V100.jpg)
 
 ### Hardware Modifications: Buttons (*mandatory*)
 
@@ -249,6 +249,64 @@ Move the 0 Ohm (bridge) resistors:
 2. R43 to (NP) R45 (JP6 Stop)
 
 You might also simply bridge R44 and R45, but for me it was simpler to move them
+
+</details>
+
+
+<!-- Hardware Modifications by Model: NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type -->
+<details>
+  <summary><h3>YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</h3></summary>
+
+  ![YardForce NX100i](images/IMG_Overview_RM-ECOW-V1.1.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP5).
+But we need them routed to the MCU.
+
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory1.jpg)
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory2.jpg)
+
+Solder two cables:
+
+1. S8/D9 front-side, to back-side R35-upper-pin (Play button)
+2. S10/D7 front-side, to back-side R27-upper-pin (Home button)
+
+### Hardware Modification: Emergency Stop Switches (*optional*)
+
+If you also like to use your two Stock-Stop-Switch cables, and you should, because you need the four OM- Hall-Plugs for the remaining hall-sensors:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Stop1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Stop1.jpg)
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Stop2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Stop2.jpg)
+
+Solder another two cables:
+
+1. JP5-Pin14 front-side, to back-side U7-Pin1
+2. JP5-Pin6 front-side, to back-side U7-Pin2
+
+### Hardware Modification: Emergency Hall Switches (*optional*)
+
+If you also like to use your original "4-leg cable for the 4 hall sensors", then you need to solder 4 more cables:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg)
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Hall2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall2.jpg)
+
+Solder four cables:
+
+1. JP5-Pin15 front-side, to back-side R17-lower-pin
+2. JP5-Pin16 front-side, to back-side R18-upper-pin
+3. JP5-Pin12 front-side, to back-side R13-right-pin
+4. JP5-Pin10 front-side, to back-side R21-right-pin
+
+> **Warning**
+> As you might know, the hall sensors are driven by 5V, whereas the MCU is running at 3.3V.
+> All used GPIO ports of this modification, are so called "5V tolerant" ports.
+> But there might happen electrical cases like: VREG delay or short on 3.3V line, which could kill the "5V tolerant" pin of your MCU.
+> To be on the save side for such odd things happen, I highly advice to remove the 5V pull-up resistor on your Hall-PCB, or move it aside like shown on this picture:
+
+[![Optional Remove Hall Pull-Up Resistor](images/IMG_PCB_Change_Hall-PullUp.jpg "Open in browser")](images/IMG_PCB_Change_Hall-PullUp.jpg)
+
 
 </details>
 
