@@ -448,14 +448,14 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 | C500(B) | NX80i<br>(10 Buttons, 12 LEDs), SA/SC/NX-Type<br> | NX100i<br>(18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | ------- | --------------------------------- | --------------- | ---- | ----- |
-| 2hr - 8hr | 4H - 10H | :pager: | <img src="images/lcd.svg" width=20% height=20%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
-| S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=20% height=20%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
-| S2 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/lcd.svg" width=20% height=20%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
-| Lifted | :heavy_check_mark: | :pager: | <img src="images/car-burst-solid.svg" width=20% height=20%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
-| Wire | WLAN | :pager: | <img src="images/satellite-dish-solid.svg" width=20% height=20%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
-| Battery | :heavy_check_mark: | :pager: | <img src="images/car-battery-solid.svg" width=20% height=20%> | <b>On</b> = Empty |
-| Charge | :heavy_check_mark: | :pager: | <img src="images/charging-station-solid.svg" width=20% height=20%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
-| Mon-Sun | :x: | :pager: | <img src="images/lcd.svg" width=20% height=20%> | 7 digit battery-charge-state progress bar |
+| 2hr - 8hr | 4H - 10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
+| S1 | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
+| S2 | :heavy_check_mark: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
+| Lifted | :heavy_check_mark: | <img src="images/car-burst-solid.svg" width=15% height=15%> | <img src="images/car-burst-solid.svg" width=15% height=15%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
+| Wire | WLAN | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
+| Battery | :heavy_check_mark: | <img src="images/car-battery-solid.svg" width=15% height=15%> | <img src="images/car-battery-solid.svg" width=15% height=15%> | <b>On</b> = Empty |
+| Charge | :heavy_check_mark: | <img src="images/charging-station-solid.svg" width=15% height=15%> | <img src="images/charging-station-solid.svg" width=15% height=15%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
+| Mon-Sun | :x: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 7 digit battery-charge-state progress bar |
 
 
 ### Button usage:
