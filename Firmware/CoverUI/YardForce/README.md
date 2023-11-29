@@ -33,7 +33,7 @@
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
 | NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
-| NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-ECOW-V1.1, 20210619 | STM32F401RC |
+| NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-EC3-V1.1, 20210619 | STM32F401RC |
 | SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Pixel LC-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless

@@ -14,11 +14,12 @@ This repository contains the firmware files required to use the mowers CoverUI (
 1. Stock YardForce CoverUI for the following models:
    1. Classic 500 (STM32 & GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a>)
    2. Classic 500B (STM32 & GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a>)
-   3. SA/SC/NX-Type 10 Buttons 12 LEDs, PCB labeled with RM-ECOW-V1.0.0 (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested, GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> not seen yet)
-   4. SAxPro (Rev6) 6 Buttons 240*128 Dot- Matrix- Display (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested, GD32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> not seen yet)
+   3. NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, PCB labeled with RM-ECOW-V1.0.0 (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested)
+   4. NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), PCB labeled with RM-EC3-V1.1 (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested)
+   5. SAxPro (Rev6) 6 Buttons 240*128 Pixel LC-Display (STM32 <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> tested)
    
     For this, you need to solder some cables and flash a modified firmware to it.<br>
-    Please check the detailed [Stock CoverUI Readme](Firmware/CoverUI/YardForce/README.md) (as you've also the option to use your stock hall and rain cables).
+    Please check the detailed [Stock CoverUI Readme](Firmware/CoverUI/YardForce/README.md) (as you've also the option to use your stock hall, Stop and rain cables).
 
 ## License
 
