@@ -14,7 +14,7 @@
 #include "model/LEDcontrol_SAxPRO.hpp"
 #include "model/buttons_SAxPRO.h"
 #include "model/hatch_SAxPRO.hpp"
-#include "model/display_SAxPRO.h"
+#include "model/Display_SAxPRO.hpp"
 
 // LowLevel Serial Pins
 #define UART_LL_RX PA10

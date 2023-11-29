@@ -50,7 +50,7 @@ namespace yardforce
             public:
                 ST75256(){};
 
-                void init(); // Initialize control and data lines, as well as display
+                bool init(); // Initialize control and data lines, as well as display
 
                 void send_ctrl(uint8_t ctrl);                    // Send control command
                 void send_data(uint8_t data);                    // Send one data byte

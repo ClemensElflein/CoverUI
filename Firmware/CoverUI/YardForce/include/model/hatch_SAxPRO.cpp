@@ -1,5 +1,5 @@
 /**
- * @file hatch_SAxPRO.hpp
+ * @file hatch_SAxPRO.cpp
  * @author Apehaenger (joerg@ebeling.ws)
  * @brief YardForce SAxPRO CoverUI Hatch for OpenMower https://github.com/ClemensElflein/OpenMower
  * @version 0.1
@@ -14,17 +14,17 @@
 unsigned int HatchSAXPRO::handle_button(unsigned int button_id, unsigned int press_cnt)
 {
     // If backlight is off, skip first button press
-    if (!display::check_backlight())
+    if (display.check_backlight() == LED_off)
     {
-        display::set_backlight();
+        display.set_backlight();
         return 0; // Skip handling of first button-press if backlight was off
     }
-    display::set_backlight();
+    display.set_backlight();
 
     // Clear emergency = Enter (OK) button
     if (button_id == BTN_OK_NUM)
     {
-        display::start_countdown(4000);
+        display.start_anncmnt(4000, yardforce::display::Display::AnncmntType::close_hatch);
         queue_button(BTN_LOCK_NUM, 2, 4500); // Send long-press Lock button in 4.5 sec
         return 0;                            // Don't return button now (hatch is still open)
     }
@@ -32,7 +32,7 @@ unsigned int HatchSAXPRO::handle_button(unsigned int button_id, unsigned int pre
     // Play & Home button
     if (button_id == BTN_HOME_NUM || button_id == BTN_PLAY_NUM)
     {
-        display::start_countdown(4000);
+        display.start_anncmnt(4000, yardforce::display::Display::AnncmntType::close_hatch);
         queue_button(BTN_LOCK_NUM, 2, 4500); // Send long-press Lock button in 4.5 sec
         queue_button(button_id, 0, 5000);
         return 0; // Don't return button now (hatch is still open)

@@ -22,7 +22,7 @@ namespace yardforce
             SPI_HandleTypeDef hspi2;
 
             // Initialize control and data lines, as well as display
-            void ST75256::init()
+            bool ST75256::init()
             {
                 initConnection_();
 
@@ -39,6 +39,7 @@ namespace yardforce
 #ifdef BENCHMARK
                 cycle_cnt_init_.stop();
 #endif
+                return true;
             }
 
             void ST75256::initConnection_()
