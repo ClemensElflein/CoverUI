@@ -29,18 +29,15 @@ void Emergency::setup()
  */
 void Emergency::read()
 {
+    state_ = 0; // We might have more emergency sensors and switch than OM Emergency_states. So we need to OR them instead of assign them 1:1
     for (size_t i = 0; i < kNumEmergencies; i++)
     {
         auto pin_state = *(kEmergencyPinStatesPtr + i);
         if (digitalRead(pin_state.pin) == HIGH)
             state_ |= pin_state.state;
-        else
-            state_ &= ~pin_state.state;
     }
-    if (state_ & ~Emergency_state::Emergency_latch)
+    if (state_)
         state_ |= Emergency_state::Emergency_latch;
-    else
-        state_ &= ~Emergency_state::Emergency_latch; // Logically same as 0
 };
 
 /**

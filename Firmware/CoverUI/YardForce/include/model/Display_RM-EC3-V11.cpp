@@ -56,8 +56,8 @@ namespace yardforce
             disp = lv_disp_drv_register(&lv_disp_drv);                               // Register the driver and save the created display objects
             lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), LV_PART_MAIN); // No background color
 
-            // openmower_anim();
-            mainScreen();
+            openmower_anim();
+            //mainScreen();
 
             return true;
         }
@@ -341,15 +341,6 @@ namespace yardforce
                 break;
             }
 
-            // If status text, display instead of GPS- bar
-            /*if (strlen(status_ticker))
-            {
-                bar_gps->add_flag(LV_OBJ_FLAG_HIDDEN);
-            }
-            else
-            {
-                bar_gps->clear_flag(LV_OBJ_FLAG_HIDDEN);
-            }*/
             text_ticker_status->set_text(status_ticker);
         }
     } // namespace display
