@@ -31,6 +31,13 @@
 #define BACKLIGHT_TIMEOUT_MS 120000 // 2 minutes
 #define STATUS_TICKER_LENGTH 100
 
+// Enable for benchmarking specific code
+// #define BENCHMARK
+
+#ifdef BENCHMARK
+#include "include/CortexMCycleCounter.hpp"
+#endif
+
 namespace yardforce
 {
     namespace display
@@ -57,6 +64,11 @@ namespace yardforce
 
             static void set_undocked();
         };
+
+#ifdef BENCHMARK
+        static CortexMCycleCounter cycle_cnt_flush_cb_;
+#endif
+
     } // namespace display
 } // namespace yardforce
 

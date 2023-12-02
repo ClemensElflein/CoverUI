@@ -24,13 +24,13 @@ public:
     void stop();  // Stop  measurement
 
 private:
-    unsigned int start_ = 0;
-    unsigned int current_ = 0;
-    unsigned int min_ = 0xffffffff;
-    unsigned int max_ = 0;
-    unsigned int avg_ = 0;
-    unsigned int sum_ = 0;
-    unsigned int cnt_ = 0;
+    unsigned long start_ = 0;
+    unsigned long current_ = 0;
+    unsigned long min_ = 0xffffffff;
+    unsigned long max_ = 0;
+    unsigned long avg_ = 0;
+    unsigned long sum_ = 0;
+    unsigned long cnt_ = 0;
     static bool s_dwt_initialized_;
 }; // CortexMCycleCounter
 

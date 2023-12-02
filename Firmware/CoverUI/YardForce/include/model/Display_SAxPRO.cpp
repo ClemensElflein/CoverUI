@@ -60,20 +60,30 @@ namespace yardforce
          */
         void DisplaySAXPRO::flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *t_color_p)
         {
-            unsigned int x, y;
-            lv_color_t *color_p;
+#ifdef BENCHMARK
+            cycle_cnt_flush_cb_.start();
+#endif
+            size_t cols16b = ((area->x2 - area->x1) + 1) / 3; // Num of 16 bit columns for this flush area
+            size_t cols8b = cols16b * 2;
+            uint8_t row_buffer[cols8b]; // Buffer for one row 2*8-bit (every 16 bit col holds 3 pixel)
+
             uc1698.setWindowProgramArea(area->x1, area->x2, area->y1, area->y2);
 
-            for (y = area->y1; y <= area->y2; y++)
+            for (size_t y = area->y1; y <= area->y2; y++)
             {
-                for (x = area->x1; x <= area->x2; x += 3) // FIXME: Might overflow buffer if area->x2 is not dividable by 3
+                for (size_t x = 0; x < cols8b; x += 2) // ATTENTION: Will only work with a correct rounder_cb()!
                 {
                     // Color is inverted (0 = black but pixel off / >0 = white but pixel on) but UC1698 "[16] Set Inverse Display" is set
-                    uc1698.drawPixelTriplet(t_color_p->full, (t_color_p + 1)->full, (t_color_p + 2)->full);
+                    row_buffer[x] = (0b11111000 * t_color_p->full | (0b00000111 * (t_color_p + 1)->full));
+                    row_buffer[x + 1] = (0b11100000 * (t_color_p + 1)->full) | (0b00011111 * (t_color_p + 2)->full);
                     t_color_p += 3;
                 }
+                uc1698.writeData(row_buffer, cols8b);
             }
             lv_disp_flush_ready(disp_drv);
+#ifdef BENCHMARK
+            cycle_cnt_flush_cb_.stop();
+#endif
         }
 
         void DisplaySAXPRO::set_undocked()
@@ -87,6 +97,9 @@ namespace yardforce
 
         void DisplaySAXPRO::mainScreen()
         {
+#ifdef BENCHMARK
+            volatile auto perf_test = cycle_cnt_flush_cb_;
+#endif
             // On the left side of the status bar we do have functional status symbols like heartbeat and ROS
             v_led_ros = new lvgl::WidgetLedSymbol(FA_SYMBOL_ROS, LV_ALIGN_TOP_LEFT, 0, 0); // Leftmost
 

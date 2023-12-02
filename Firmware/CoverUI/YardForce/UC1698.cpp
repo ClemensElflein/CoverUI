@@ -23,12 +23,11 @@ namespace yardforce
             {
                 initConnection_();
 
-                // Reset via RST control line
-                digitalWrite(PIN_CS, 0); // Chip select
+                CLR_CS; // Chip select
                 digitalWrite(PIN_RST, 0);
                 delay(1);
                 digitalWrite(PIN_RST, 1);
-                digitalWrite(PIN_CS, 1);      // Chip deselect
+                SET_CS;                       // Chip deselect
                 delay(UC1698_RESET_DELAY_MS); // Wait for MTP read ready (after RST)
 
                 // Check if it's an UC1698
@@ -39,7 +38,14 @@ namespace yardforce
                     return false;
                 }
 
+#ifdef BENCHMARK
+                cycle_cnt_init_.start();
+#endif
                 initDisplay_();
+#ifdef BENCHMARK
+                cycle_cnt_init_.stop();
+#endif
+
                 return true;
             }
 
@@ -70,13 +76,13 @@ namespace yardforce
             {
                 static uint8_t status[UC1698_GET_STATUS_SIZE];
 
-                digitalWrite(PIN_CS, 0); // Chip select
-                digitalWrite(PIN_CD, 0); // Command
+                CLR_CS; // Chip select
+                CLR_CD; // Command
                 for (unsigned int i = 0; i < UC1698_GET_STATUS_SIZE; i++)
                 {
                     status[i] = read_();
                 }
-                digitalWrite(PIN_CS, 1); // Chip deselect
+                SET_CS; // Chip deselect
 
                 return status;
             }
@@ -149,47 +155,47 @@ namespace yardforce
             // Write command
             void UC1698::writeCommand(uint8_t data)
             {
-                digitalWrite(PIN_CS, 0); // Chip select
-                digitalWrite(PIN_CD, 0); // Command
+                CLR_CS; // Chip select
+                CLR_CD; // Command
                 writeSeq_(data);
-                digitalWrite(PIN_CS, 1); // Chip deselect
+                SET_CS; // Chip deselect
             }
 
             void UC1698::writeCommand(const uint8_t *data_array, unsigned int length)
             {
-                digitalWrite(PIN_CS, 0); // Chip select
-                digitalWrite(PIN_CD, 0); // Command
-                // while (length > 0)
+                CLR_CS; // Chip select
+                CLR_CD; // Command
                 for (; length > 0; length--, data_array++)
                 {
                     writeSeq_(*data_array);
                 }
-                digitalWrite(PIN_CS, 1); // Chip deselect
+                SET_CS; // Chip deselect
             }
 
             void UC1698::writeData(uint16_t data)
             {
-                digitalWrite(PIN_CS, 0); // Chip select
-                digitalWrite(PIN_CD, 1); // Data
-
+                CLR_CS; // Chip select
+                SET_CD; // Data
                 uint8_t part = (uint8_t)(data >> 8);
                 writeSeq_(part);
 
                 part = (uint8_t)data;
                 writeSeq_(part);
 
-                digitalWrite(PIN_CS, 1); // Chip deselect
+                SET_CS; // Chip deselect
             }
 
             void UC1698::writeData(const uint8_t *data_array, unsigned int length)
             {
-                digitalWrite(PIN_CS, 0); // Chip select
-                digitalWrite(PIN_CD, 1); // Data
+                CLR_CS; // Chip select
+                SET_CD; // Data
                 for (; length > 0; length--, data_array++)
                 {
                     writeSeq_(*data_array);
+                    NOOP;
+                    NOOP; // >=45ns. This NOOPs = 2*21ns + the next cycle. See Thpw80 of UC1698 datasheet page 60
                 }
-                digitalWrite(PIN_CS, 1); // Chip deselect
+                SET_CS; // Chip deselect
             }
 
             // Initialize control and data lines
@@ -205,7 +211,7 @@ namespace yardforce
                 digitalWrite(PIN_WR, 1);
                 pinMode(PIN_CD, OUTPUT);
                 digitalWrite(PIN_CD, 1);
-                GPIO_DATA_MODE_INPUT;
+                GPIO_DATA_MODE_OUTPUT;
             }
 
             // Initialize control and data lines
@@ -219,20 +225,8 @@ namespace yardforce
                 writeCommand(0b11010000 | 1); // [20] Set Color Pattern to R-G-B
                 writeCommand(0b11010110);     // [21] Set Color Mode to RRRRR-GGGGGG-BBBBB, 64k-color
 
-                fillScreen(false); // Clear Screen
+                // fillScreen(true); // Clear Screen
                 setDisplayEnable(true);
-            }
-
-            // NOP delay to fullfil ns timing requirements. Only useful for values > 100ns, otherwise use single NOOP's
-            void UC1698::nopDelay_(unsigned int t_ns)
-            {
-                int16_t i = t_ns / NOP_CYCLE_NS;
-                i -= 6; // Already consumed (or more)
-
-                for (; i >= 0; i--)
-                {
-                    NOOP;
-                }
             }
 
             // [2*] Read data from port
@@ -245,6 +239,7 @@ namespace yardforce
                 NOOP;
                 uint8_t data = ((GPIO_TypeDef *)GPIO_DATA)->IDR & GPIO_DATA_MASK;
                 digitalWrite(PIN_RD, 1); // Read end
+                GPIO_DATA_MODE_OUTPUT;
 
                 return data;
             }
@@ -252,12 +247,17 @@ namespace yardforce
             // Write data sequence
             void UC1698::writeSeq_(uint8_t data)
             {
-                GPIO_DATA_MODE_OUTPUT;
+#ifdef BENCHMARK
+                cycle_cnt_writeSeq_.start();
+#endif
 
-                digitalWrite(PIN_WR, 0); // Trigger write
+                CLR_WR; // Trigger write
                 ((GPIO_TypeDef *)GPIO_DATA)->ODR = (((GPIO_TypeDef *)GPIO_DATA)->ODR & ~GPIO_DATA_MASK) | data;
-                NOOP;                    // >=30ns. This NOOP = 21ns + the next cycle for the rising edge. See Tds80 of UC1698 datasheet page 60
-                digitalWrite(PIN_WR, 1); // Write end
+                NOOP;   // >=30ns. This NOOP = 21ns + the next cycle for the rising edge. See Tds80 of UC1698 datasheet page 60
+                SET_WR; // Write end
+#ifdef BENCHMARK
+                cycle_cnt_writeSeq_.stop();
+#endif
             }
         } // namespace controller
     }     // namespace display

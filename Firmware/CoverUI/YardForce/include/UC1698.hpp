@@ -15,21 +15,29 @@
 
 #include <Arduino.h>
 
-#define PIN_CS PC7   // Chip Select pin
 #define PIN_RST PA12 // ReSTart pin
 #define PIN_RD PC9   // Read control line
-#define PIN_WR PC8   // Write control line
-#define PIN_CD PA8   // Command/Data (A0)
+
+#define PIN_CS PC7                                                          // Chip Select pin
+#define SET_CS GPIOC->ODR = GPIOC->ODR | 0b10000000                         // Set CS (PC7) = high
+#define CLR_CS GPIOC->ODR = GPIOC->ODR & 0b11111111111111111111111101111111 // Clear CS (PC7) = low
+
+#define PIN_CD PA8                                                          // Command/Data (A0)
+#define SET_CD GPIOA->ODR = GPIOA->ODR | 0b100000000                        // Set CD (PA8) = high
+#define CLR_CD GPIOA->ODR = GPIOA->ODR & 0b11111111111111111111111011111111 // Clear CD (PA8) = low
+
+#define PIN_WR PC8                                                          // Write control line. Only for Mode set
+#define SET_WR GPIOC->ODR = GPIOC->ODR | 0b100000000                        // Set WR (PC8) = high
+#define CLR_WR GPIOC->ODR = GPIOC->ODR & 0b11111111111111111111111011111111 // Clear WR (PC8) = low
 
 #define GPIO_DATA GPIOB_BASE  // GPIO port/base of the data lines. Assumed that D0-D7 are wired to ONE port!
 #define GPIO_DATA_MASK 0x00ff // Mask which forms the data. Assumed that D0-D7 are all connected consecutive via LSB 0
 
 // Shorthands to set GPIO Mode data pins to input/output
-#define GPIO_DATA_MODE_INPUT ((GPIO_TypeDef *)GPIO_DATA)->MODER = (((GPIO_TypeDef *)GPIO_DATA)->MODER & 0xffff0000) & 0xffff0000;         // Mode 0 = Input
-#define GPIO_DATA_MODE_OUTPUT ((GPIO_TypeDef *)GPIO_DATA)->MODER = (((GPIO_TypeDef *)GPIO_DATA)->MODER & 0xffff0000) | 0b0101010101010101 // Mode 01 = Output
+#define GPIO_DATA_MODE_INPUT ((GPIO_TypeDef *)GPIO_DATA)->MODER = (((GPIO_TypeDef *)GPIO_DATA)->MODER & 0xffff0000) & 0xffff0000;         // D0-D7 Mode 0 = Input
+#define GPIO_DATA_MODE_OUTPUT ((GPIO_TypeDef *)GPIO_DATA)->MODER = (((GPIO_TypeDef *)GPIO_DATA)->MODER & 0xffff0000) | 0b0101010101010101 // D0-D7 Mode 01 = Output
 
-#define NOP_CYCLE_NS 21 // For STM32F030x it's 1/48MHz which is 20.9ns (but we use int for not wasting time in slow FP calculations)
-#define NOOP asm("nop\n")
+#define NOOP asm("nop\n") // For STM32F030x it's 1/48MHz which is 20.9ns
 
 #define UC1698_RESET_DELAY_MS 150
 #define UC1698_GET_STATUS_SIZE 3
@@ -39,6 +47,13 @@
 #endif
 #ifndef UC1698_DISPLAY_HEIGHT
 #define UC1698_DISPLAY_HEIGHT 128
+#endif
+
+// Enable for benchmarking specific code
+// #define BENCHMARK
+
+#ifdef BENCHMARK
+#include "include/CortexMCycleCounter.hpp"
 #endif
 
 namespace yardforce
@@ -58,6 +73,9 @@ namespace yardforce
                 void drawPixelTriplet(bool pixel1State, bool pixel2State, bool pixel3State);
                 void fillScreen(bool t_color_black); // Fill screen (t_color: false = white, true = black)
 
+                void writeData(uint16_t data);
+                void writeData(const uint8_t *data_array, unsigned int length);
+
             private:
                 void initConnection_(); // Initialize control and data lines
                 void initDisplay_();    // Initialize control and data lines
@@ -72,13 +90,13 @@ namespace yardforce
                 void writeCommand(uint8_t data);
                 void writeCommand(const uint8_t *data_array, unsigned int length);
 
-                void writeData(uint16_t data);
-                void writeData(const uint8_t *data_array, unsigned int length);
-
-                void nopDelay_(unsigned int t_ns); // NOP delay to fullfil ns timing requirements. Only useful for values > 100ns, otherwise use single NOOP's
-
                 uint8_t read_();
                 void writeSeq_(uint8_t data);
+
+#ifdef BENCHMARK
+                CortexMCycleCounter cycle_cnt_init_;
+                CortexMCycleCounter cycle_cnt_writeSeq_;
+#endif
             };
         } // namespace controller
     }     // namespace display

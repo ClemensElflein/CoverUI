@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <stdint.h>
 #include "include/CortexMCycleCounter.hpp"
 
@@ -22,13 +23,21 @@ CortexMCycleCounter::CortexMCycleCounter()
 
 void CortexMCycleCounter::start()
 {
+#ifdef STM32F030x8 // No DWT MCUs like STM32f0x
+    start_ = micros();
+#else // DWT capable MCU
     start_ = ARM_CM_DWT_CYCCNT;
+#endif
 }
 
 void CortexMCycleCounter::stop()
 {
+#ifdef STM32F030x8 // No DWT MCUs like STM32f0x
+    const uint32_t stop = micros();
+#else // DWT capable MCU
     const uint32_t stop = ARM_CM_DWT_CYCCNT;
-    
+#endif
+
     current_ = stop - start_;
 
     // Min/Max
