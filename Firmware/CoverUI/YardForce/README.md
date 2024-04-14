@@ -471,7 +471,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 | <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 204 |
 | <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
 | <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
-| <kbd>Wed</kbd> | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | Next language[^3] |
+| <kbd>Wed</kbd> | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | ~~Next language~~ Language selection has moved to mower_config[^3] |
 
 
 [^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
