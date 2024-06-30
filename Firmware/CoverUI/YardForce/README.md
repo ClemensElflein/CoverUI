@@ -446,32 +446,32 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| C500(B) | NX80i<br>(10 Buttons, 12 LEDs), SA/SC/NX-Type<br> | NX100i<br>(18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
-| ------- | --------------------------------- | --------------- | ---- | ----- |
-| 2hr - 8hr | 4H - 10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
-| S1 | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
-| S2 | :heavy_check_mark: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
-| Lifted | :heavy_check_mark: | <img src="images/car-burst-solid.svg" width=15% height=15%> | <img src="images/car-burst-solid.svg" width=15% height=15%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
-| Wire | WLAN | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
-| Battery | :heavy_check_mark: | <img src="images/car-battery-solid.svg" width=15% height=15%> | <img src="images/car-battery-solid.svg" width=15% height=15%> | <b>On</b> = Empty |
-| Charge | :heavy_check_mark: | <img src="images/charging-station-solid.svg" width=15% height=15%> | <img src="images/charging-station-solid.svg" width=15% height=15%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
-| Mon-Sun | :x: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 7 digit battery-charge-state progress bar |
+| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs), SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| :-------: | :-----: | :-------: | :----: | :----: | ----- |
+| 2hr&nbsp;-&nbsp;8hr | 4H&nbsp;-&nbsp;10H | 4H&nbsp;-&nbsp;10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
+| S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
+| S2 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
+| Lifted | :heavy_check_mark: | :heavy_check_mark: | <img src="images/car-burst-solid.svg" width=15% height=15%> | <img src="images/car-burst-solid.svg" width=15% height=15%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
+| Wire | WLAN | WLAN | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
+| Battery | :heavy_check_mark: | :heavy_check_mark: | <img src="images/car-battery-solid.svg" width=15% height=15%> | <img src="images/car-battery-solid.svg" width=15% height=15%> | <b>On</b> = Empty |
+| Charge | :heavy_check_mark: | :heavy_check_mark: | <img src="images/charging-station-solid.svg" width=15% height=15%> | <img src="images/charging-station-solid.svg" width=15% height=15%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
+| Mon-Sun | :x: | :x: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 7 digit battery-charge-state progress bar |
 
 
 ### Button usage:
 
-| C500(B) | NX80i<br>(10 Buttons, 12 LEDs) SA/SC/NX-Type | NX100i<br>(18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
-| ------- | --------------------------------- | --------------- | ---- | ----- |
-| <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
-| <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
-| <kbd>S1</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
-| <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
-| <kbd>Lock</kbd> | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
-| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | <kbd>MENU</kbd>+<kbd>BACK</kbd> | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 204 |
-| <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
-| <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
-| <kbd>Wed</kbd> | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | ~~Next language~~ Language selection has moved to mower_config[^3] |
+| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs) SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| :-------: | :----: | :---------------------------------: | :-----: | :----: | ----- |
+| <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
+| <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
+| <kbd>S1</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
+| <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
+| <kbd>Lock</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
+| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Lock</kbd>+<kbd>10H</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | <kbd>MENU</kbd>+<kbd>BACK</kbd> | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
+| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Lock</kbd>+<kbd>4H</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 205 |
+| <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
+| <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
+| <kbd>Wed</kbd> | :x: | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | ~~Next language~~ Language selection has moved to mower_config[^3] |
 
 
 [^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
@@ -503,6 +503,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 
 | Version [^4] | Changes | Date |
 | ------- | ------- | ---- |
+| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED now software driven (hwtimer independent)| 06/30/2024
 | 2.04    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/14/2023
 | 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
