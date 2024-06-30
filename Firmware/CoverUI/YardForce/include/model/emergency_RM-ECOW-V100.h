@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef YARDFORCE_EMERGENCY_C500_H
-#define YARDFORCE_EMERGENCY_C500_H
+#ifndef YARDFORCE_EMERGENCY_RMECOWV100_HPP
+#define YARDFORCE_EMERGENCY_RMECOWV100_HPP
 
 #include <Arduino.h>
 #include "../Emergency.hpp"
@@ -20,4 +20,4 @@
 
 extern Emergency emergency;
 
-#endif // YARDFORCE_EMERGENCY_C500_H
+#endif  // YARDFORCE_EMERGENCY_RMECOWV100_HPP
