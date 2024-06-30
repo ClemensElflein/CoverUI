@@ -26,6 +26,8 @@
 #include "model_C500.h"
 #elif defined(MDL_RMECOWV100)
 #include "model_RM-ECOW-V100.h"
+#elif defined(MDL_RMECOWV110)
+#include "model_RM-ECOW-V110.h"
 #elif defined(MDL_RMEC3V11)
 #include "model_RM-EC3-V11.h"
 #elif defined(MDL_SAXPRO)
