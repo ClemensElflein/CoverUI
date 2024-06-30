@@ -1,0 +1,495 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "3931cd65-59db-4650-bde2-1207e270a4d5")
+	(paper "A4")
+	(title_block
+		(title "YardForce SA/SC 10Buttons 12LEDs CoverUI")
+		(date "2023-10-20")
+		(rev "0.1")
+		(comment 1 "(c) Apehaenger")
+		(comment 2 "For https://openmower.de")
+		(comment 3 "RM-ECOW-V1.0.0 2018.06.05 with STM32F030R8T6")
+	)
+	(lib_symbols
+		(symbol "Switch:SW_Push"
+			(pin_numbers hide)
+			(pin_names
+				(offset 1.016) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "SW"
+				(at 1.27 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "SW_Push"
+				(at 0 -1.524 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Push button switch, generic, two pins"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "switch normally-open pushbutton push-button"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "SW_Push_0_1"
+				(circle
+					(center -2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.27) (xy 0 3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 1.27) (xy -2.54 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "power:GND"
+			(power)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0) hide
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 132.08 82.55) (xy 132.08 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e5f6d0d3-e09a-43ae-b1bd-8f03272a9d05")
+	)
+	(wire
+		(pts
+			(xy 142.24 91.44) (xy 142.24 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff3c0ceb-2608-4a6c-a7a9-a4bb27778902")
+	)
+	(hierarchical_label "BTN"
+		(shape output)
+		(at 132.08 82.55 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9923da92-aa70-4ae4-97b9-e3f3c267ba3c")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 142.24 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8c3e7104-aa64-42e5-84e0-e6cc833b580c")
+		(property "Reference" "#PWR?"
+			(at 142.24 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "~"
+			(at 142.24 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 142.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 142.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 142.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8708e839-9775-475c-8341-9205ff1e823c")
+		)
+		(instances
+			(project "SA650 9Button-11LED Board"
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/cb986726-e56a-48e5-aed0-312c759afc67"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/68fc2291-23ce-4042-82ba-d439ac818833"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/67787c73-84f9-4e8b-bd73-6a943a7bd2c3"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/c3563dfd-5e14-451f-b229-43a13a922ebc"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/1f9c8fa6-0e95-4055-8ee5-a384df3a8d30"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/bdf77bd1-b51b-4381-9e62-f13f4ba6b6bc"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/3f18ef67-c6d0-4eae-8fdf-c33cff7c7af1"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/072824f1-6f70-4c5d-8274-fe1d659d368f"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/abef5370-15e4-4795-a952-0798cea794ba"
+					(reference "#PWR?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/16f75c6c-100e-4cca-aa77-4c90b010701d"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 137.16 91.44 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f3b812c2-a0fc-4a10-813c-b7868a9843a7")
+		(property "Reference" "S4"
+			(at 137.16 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "BTN"
+			(at 137.16 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 137.16 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 137.16 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 137.16 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6586567b-a1ea-4e1f-8197-d2f2fcd34f04")
+		)
+		(pin "2"
+			(uuid "e1d0511a-fa0d-40fc-a011-edba2d7338d8")
+		)
+		(instances
+			(project "SA650 9Button-11LED Board"
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/cb986726-e56a-48e5-aed0-312c759afc67"
+					(reference "S4")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/68fc2291-23ce-4042-82ba-d439ac818833"
+					(reference "S?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/67787c73-84f9-4e8b-bd73-6a943a7bd2c3"
+					(reference "S?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/c3563dfd-5e14-451f-b229-43a13a922ebc"
+					(reference "S?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/1f9c8fa6-0e95-4055-8ee5-a384df3a8d30"
+					(reference "S?")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/bdf77bd1-b51b-4381-9e62-f13f4ba6b6bc"
+					(reference "S4")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/3f18ef67-c6d0-4eae-8fdf-c33cff7c7af1"
+					(reference "S4")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/072824f1-6f70-4c5d-8274-fe1d659d368f"
+					(reference "S4")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/abef5370-15e4-4795-a952-0798cea794ba"
+					(reference "S4")
+					(unit 1)
+				)
+				(path "/105ce5f3-0f5d-4501-a42b-81308b09d139/b9b194e8-2826-4619-83c8-f97e2646d4b1/16f75c6c-100e-4cca-aa77-4c90b010701d"
+					(reference "S4")
+					(unit 1)
+				)
+			)
+		)
+	)
+)
