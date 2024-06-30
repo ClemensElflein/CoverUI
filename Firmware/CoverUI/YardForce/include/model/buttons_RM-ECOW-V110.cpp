@@ -33,7 +33,7 @@ Buttons buttons(kBtnDefByButtonNumMap);
  * SETUP + 10H = LED animation
  */
 void magic_buttons() {
-    if (!buttons.is_pressed(BTN_SETUP_NUM))
+    if (!buttons.is_pressed(BTN_LOCK_NUM))
         return;
 
     if (buttons.is_pressed(BTN_10H_NUM))
