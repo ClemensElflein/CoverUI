@@ -50,16 +50,17 @@ public:
     void blink_slow_timer_elapsed() { blink_timer_elapsed(LED_state::LED_blink_slow); }; // STM32/GD32 compatibility method due to framework-arduino[gd32] differences
     void blink_fast_timer_elapsed() { blink_timer_elapsed(LED_state::LED_blink_fast); }; // STM32/GD32 compatibility method due to framework-arduino[gd32] differences
 
-    void force_off(uint8_t led_num, bool force); // Switch/force LED num off, independent of it's running state
-    void force_on(uint8_t led_num, bool force);  // Switch/force LED num on, independent of it's running state
+    void force_off(uint8_t led_num, bool force);         // Switch/force LED num off, independent of it's running state
+    virtual void force_off_num_seq_leds(bool force) {};  // Force off all show_num() / sequence-num LEDs
+    void force_on(uint8_t led_num, bool force);          // Switch/force LED num on, independent of it's running state
 
-    LED_state get(uint8_t led_num);                                                            // Get state from led_states_bin_ for the given led
-    bool has(uint8_t led_num, LED_state state);                                                // Comparison if the given LED has the given state (in led_states_bin_)
-    void identify(uint8_t led_num);                                                            // Identify the given LED by a special signalling
-    void set(uint8_t led_num, LED_state state = LED_state::LED_off, bool change_state = true); // Set any of known LED_state states for a specific LED
-    void set(uint64_t all_state);                                                              // Set any of known LED_state states for all LEDs by binary state value
-    virtual void set_base10_leds(char digit){};                                                // Set LED representation for a single digit (by default empty)
-    virtual void force_off_num_seq_leds(bool force){};                                         // Force off all show_num() / sequence-num LEDs
+    LED_state get(uint8_t led_num);                                                             // Get state from led_states_bin_ for the given led
+    bool has(uint8_t led_num, LED_state state);                                                 // Comparison if the given LED has the given state (in led_states_bin_)
+    void identify(uint8_t led_num);                                                             // Identify the given LED by a special signalling
+    void set(uint8_t led_num, LED_state state = LED_state::LED_off, bool change_state = true);  // Set any of known LED_state states for a specific LED
+    void set(uint64_t all_state);                                                               // Set any of known LED_state states for all LEDs by binary state value
+    virtual void set_base10_leds(char digit) {};                                                // Set LED representation for a single digit (by default empty)
+    void toggle(uint8_t led_num, bool change_state = true);                                     // Set any of known LED_state states for a specific LED
 
     virtual unsigned int boot_animation() { return 0; }; // A short boot animation which return the amount of ms it will take
 

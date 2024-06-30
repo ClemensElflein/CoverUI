@@ -51,8 +51,11 @@ HardwareTimer *hwtimer(uint32_t instance, uint32_t freq, timerCallback_t callbac
 }
 #endif
 
-#define TIM_QUICK_FREQUENCY 200                                // Hz
-#define TIM_QUICK_PERIOD_MS (1.0 / TIM_QUICK_FREQUENCY * 1000) // Milliseconds
+#define ALIVE_CYCLE_MILLIS 500  // Non-timer alive blink
+uint32_t alive_cycle_next = 0;
+
+#define TIM_QUICK_FREQUENCY 200                                 // Hz
+#define TIM_QUICK_PERIOD_MS (1.0 / TIM_QUICK_FREQUENCY * 1000)  // Milliseconds
 
 HardwareTimer *timer_slow; // Used for blink-slow LEDs and magic buttons
 HardwareTimer *timer_fast; // Used for blink-fast LEDs
@@ -108,9 +111,7 @@ void setup()
 
     serial_ll.begin(115200);
 
-    // FIXME: Not all CoverUIs do have a PCB-LED
-    leds.set(LED_NUM_REAR, LED_state::LED_blink_slow); // We're alive -> blink // FIXME: Should become a simple delay in main loop or similar, because a timer might walk on, even if main crashes
-    delay(100);                                        // Some required stupid delay, dunno why :-/
+    delay(100);  // Some required stupid delay, dunno why :-/
 
     // "Hi there" and jammed button mounting detection
     do
@@ -233,7 +234,14 @@ void loop()
             break;
         }
     }
+
 #ifdef YARDFORCE_HATCH_HPP
     hatch.process_queued();
 #endif
+
+    // Backside LED alive blink
+    if (millis() > alive_cycle_next) {
+        alive_cycle_next = millis() + ALIVE_CYCLE_MILLIS;
+        leds.toggle(LED_NUM_REAR);
+    }
 }

@@ -61,6 +61,19 @@ void LEDcontrol::set(uint8_t led_num, LED_state state, bool change_state)
 }
 
 /**
+ * @brief Toggle (on/off) the given LED num
+ *
+ * @param led_num
+ * @param change_state indicate if the state get written to led_states_bin_ buffer
+ */
+void LEDcontrol::toggle(uint8_t led_num, bool change_state) {
+    if (has(led_num, LED_state::LED_off))
+        set(led_num, LED_state::LED_on, change_state);
+    else
+        set(led_num, LED_state::LED_off, change_state);
+}
+
+/**
  * @brief Set LED based on binary state representation.
  * This method set only the OM controlled LEDs
  *
