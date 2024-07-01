@@ -502,7 +502,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 
 | Version [^4] | Changes | Date |
 | ------- | ------- | ---- |
-| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED now software driven (hwtimer independent)| 06/30/2024
+| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED now software driven (hwtimer independent)<br>- Fix emergency clear LED countdown for RM-ECOW-V1.0.0| 06/30/2024
 | 2.04    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/14/2023
 | 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
