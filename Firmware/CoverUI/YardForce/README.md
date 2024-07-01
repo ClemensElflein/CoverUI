@@ -500,7 +500,6 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 
 ## Version History
 
-
 | Version [^4] | Changes | Date |
 | ------- | ------- | ---- |
 | 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED now software driven (hwtimer independent)| 06/30/2024
@@ -509,7 +508,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
 |  NA       | First OM's CoverUI port for YardForce Classic 500 | 05/01/2023
 
-[^4]: Dependent on your CoverUI Model, Press <kbd>OK</kbd>+<kbd>Clock</kbd>, or <kbd>Setup(WLAN)</kbd>+<kbd>4H</kbd> to get your installed FW version displayed
+[^4]: Press magic button combo 'Display CoverUI- firmware version' (see [Button Usage](#button-usage)) to get your installed FW version displayed
 
 <!-- CONTRIBUTING -->
 ## Contributing

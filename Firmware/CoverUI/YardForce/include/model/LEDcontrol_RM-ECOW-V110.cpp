@@ -88,9 +88,9 @@ void LEDcontrolRMECOWV110::show_countdown_state(unsigned int sec, LED_state stat
         uint8_t led_num = 18 - i;
         if (sec_left >= i)  // Remaining secs is greater than this LED
         {
-            leds.set(led_num, state, false);
+            leds.set(led_num, state, true); // change_state = true because blink states get handled by timer and this need to be stored
         } else {
-            leds.set(led_num, LED_off, false);
+            leds.set(led_num, LED_off, true);
             force_off(led_num, true);
         }
     }

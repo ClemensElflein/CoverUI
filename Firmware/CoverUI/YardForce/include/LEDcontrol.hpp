@@ -47,8 +47,6 @@ public:
     void setup();
 
     void blink_timer_elapsed(LED_state blink_state);                                     // Get called by responsible blink timer
-    void blink_slow_timer_elapsed() { blink_timer_elapsed(LED_state::LED_blink_slow); }; // STM32/GD32 compatibility method due to framework-arduino[gd32] differences
-    void blink_fast_timer_elapsed() { blink_timer_elapsed(LED_state::LED_blink_fast); }; // STM32/GD32 compatibility method due to framework-arduino[gd32] differences
 
     void force_off(uint8_t led_num, bool force);         // Switch/force LED num off, independent of it's running state
     virtual void force_off_num_seq_leds(bool force) {};  // Force off all show_num() / sequence-num LEDs
