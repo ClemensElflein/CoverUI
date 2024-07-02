@@ -9,19 +9,19 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/ClemensElflein/CoverUI">
+  <a href="images/IMG_Overview.jpg">
     <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="19%">
   </a>
-  <a href="https://github.com/ClemensElflein/CoverUI">
+  <a href="images/IMG_Overview_RM-ECOW-V100.jpg">
     <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" title="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" width="19%">
   </a>
-  <a href="https://github.com/ClemensElflein/CoverUI">
+  <a href="images/IMG_Overview_RM-ECOW-V110.jpg">
     <img src="images/IMG_Overview_RM-ECOW-V110.jpg" alt="SA650 (9 Buttons, 11 LEDs) CoverUI" title="SA650 (9 Buttons, 11 LEDs) CoverUI" width="19%">
   </a>
-  <a href="https://github.com/ClemensElflein/CoverUI">
+  <a href="images/IMG_Overview_RM-ECOW-V1.1.jpg">
     <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" title="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" width="19%">
   </a>
-  <a href="https://github.com/ClemensElflein/CoverUI">
+  <a href="images/IMG_Overview_SAxPRO.jpg">
     <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" width="19%">
   </a>
 
@@ -32,7 +32,7 @@
 #### Tested/working with
 
 | YardForce Model                  | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
-| -------------------------------- | :------------------------: | :---: |
+| :-------------------------------- | :------------------------: | :---: |
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
 | NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
@@ -62,7 +62,7 @@
         <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
         <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
         <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</a></li>
-        <li><a href="#yardforce-sa650">YardForce SA650 (9 Buttons, 11 LEDs), RM-ECOW-V1.1.0</a></li>
+        <li><a href="#yardforce-sa650-9-buttons-11-leds-rm-ecow-v110)">YardForce SA650 (9 Buttons, 11 LEDs), RM-ECOW-V1.1.0</a></li>
         <li><a href="#yardforce-nx100i-18-buttons-3-leds-25664-pixel-lc-display-sascnx-type-rm-ec3-v11">YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</a></li>
         <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
       </ul>
