@@ -10,16 +10,19 @@
 <br />
 <div align="center">
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="24%">
+    <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="19%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="NX80i (10 Buttons 12 LEDs) SA/SC/NX-Type CoverUI" title="NX80i (10 Buttons 12 LEDs) SA/SC/NX-Type CoverUI" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" title="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" width="19%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" title="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V110.jpg" alt="SA650 (9 Buttons, 11 LEDs) CoverUI" title="SA650 (9 Buttons, 11 LEDs) CoverUI" width="19%">
   </a>
   <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" width="24%">
+    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" title="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" width="19%">
+  </a>
+  <a href="https://github.com/ClemensElflein/CoverUI">
+    <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" width="19%">
   </a>
 
   <h3 align="center">OM CoverUI Firmware for Stock YardForce PCBs</h3>
@@ -33,6 +36,7 @@
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
 | NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
+| SA650 (9 Buttons, 11 LEDs) | RM-ECOW-V1.1.0, 2019.02.18 | GD32F330R8 |
 | NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-EC3-V1.1, 20210619 | STM32F401RC |
 | SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Pixel LC-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
@@ -58,6 +62,7 @@
         <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
         <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
         <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-sa650">YardForce SA650 (9 Buttons, 11 LEDs), RM-ECOW-V1.1.0</a></li>
         <li><a href="#yardforce-nx100i-18-buttons-3-leds-25664-pixel-lc-display-sascnx-type-rm-ec3-v11">YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</a></li>
         <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
       </ul>
@@ -85,13 +90,6 @@
 For those, who still have their stock *YardForce (Rev6)* Cover-UI available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to a couple of them (see [Tested/working with](#testedworking-with)).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Built With
-
-* [![PlatformIO][PlatformIO.js]][PlatformIO-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- GETTING STARTED -->
@@ -252,6 +250,64 @@ You might also simply bridge R44 and R45, but for me it was simpler to move them
 
 </details>
 
+<!-- Hardware Modifications by Model: SA650 (9 Buttons, 11 LEDs) -->
+<details>
+  <summary><h3>YardForce SA650 (9 Buttons, 11 LEDs), RM-ECOW-V1.1.0</h3></summary>
+
+  ![YardForce SA650](images/IMG_Overview_RM-ECOW-V110.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2).
+But we need them routed to the MCU.
+Luckily the PCB is already prepared for this.
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Buttons.jpg "Open in browser")](images/IMG_PCB_Changes_RM-ECOW-V110_Buttons.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R39 to the NonPlaced R42 position (Button-Home)
+2. R34 to (NP) R37 (Button-Play)
+
+You might also simply bridge R42 and R37, but for me it was simpler to move them.
+
+### Hardware Modification: Emergency Hall Switches (*optional*)
+
+If you also like to use your original "4-leg cable for the 4 hall sensors", then you need to solder 4 more cables:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Hall.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg)
+
+Solder four cables:
+
+1. JP1-Pin39 to U6-Pin8 (RBUMP to PC9)
+2. JP1-Pin40 to U6-Pin2 (LIFT to PA8)
+3. JP1-Pin36 to U6-Pin15 (LBUMP to PC8)
+4. JP1-Pin34 to R8-left-pin (LIFTX to PA9)
+
+> **Warning**
+> As you probably know, the hall sensors are driven by 5V, whereas the MCU is running at 3.3V.<br>
+> All used GPIO ports of this modification, are so called "5V tolerant" ports.<br>
+> **But** there might happen electrical cases like: VREG delay or short on 3.3V line, which could kill the "5V tolerant" pin of your MCU.
+> To be on the save side for such odd cases, I highly recommend to remove the 5V pull-up resistor from your Hall-PCB, or move it aside like shown on this picture:
+
+[![Optional Remove Hall Pull-Up Resistor](images/IMG_PCB_Change_Hall-PullUp.jpg "Open in browser")](images/IMG_PCB_Change_Hall-PullUp.jpg)
+
+
+### Hardware Modification: Emergency Stop Switches (*optional*)
+
+If you also like to use your 2 stock Stop-Switch cables, you need to bridge or move 2 further resistors:
+
+[![Optional Hall Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Stop.jpg "Open in browser")](images/IMG_PCB_Changes_RM-ECOW-V110_Stop.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R61 to the NonPlaced R63 position (JP8 Stop)
+2. R46 to (NP) R56 (JP6 PC8-Stop)
+
+You might also simply bridge R63 and R56, but for me it was simpler to move them.
+
+</details>
+
 
 <!-- Hardware Modifications by Model: NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type -->
 <details>
@@ -385,9 +441,9 @@ Open a terminal/console, then:
 
 * `st-info --descr` should return either:
   * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
-  * `F1xx Medium-density` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
+  * `F1xx Medium-density` or `STM32F1xx_MD` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
   * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
-* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
+* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin of your ST-Link!! Now simply:<br>
  `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
@@ -502,7 +558,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 
 | Version [^4] | Changes | Date |
 | ------- | ------- | ---- |
-| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED now software driven (hwtimer independent)<br>- Fix emergency clear LED countdown for RM-ECOW-V1.0.0| 06/30/2024
+| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED is now software driven (hwtimer independent)<br>- Fix emergency-clear LED-countdown for RM-ECOW-V1.0.0| 06/30/2024
 | 2.04    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/14/2023
 | 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
