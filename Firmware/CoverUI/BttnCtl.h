@@ -9,10 +9,10 @@ enum TYPE
     Set_Buzzer = 0xB1,
     Set_LEDs = 0xB2,
     Get_Button = 0xB3,
-    Get_Emergency = 0xB4,
-    Get_Rain = 0xB5
+    Get_Emergency = 0xB4, // Stock-CoverUI
+    Get_Rain = 0xB5,      // Stock-CoverUI
+    Get_Subscribe = 0xB6
 };
-
 
 enum LED_state {
     LED_off = 0b000,
@@ -30,6 +30,14 @@ enum Emergency_state
     Emergency_stop2 = 0b00100,
     Emergency_lift1 = 0b01000,
     Emergency_lift2 = 0b10000
+};
+
+// CoverUI subscription topic_bitmask
+enum Topic_state
+{
+    Topic_set_leds = 1 << 0,
+    Topic_set_ll_status = 1 << 1,
+    Topic_set_hl_state = 1 << 2,
 };
 
 #pragma pack(push, 1)
@@ -106,6 +114,17 @@ struct msg_event_emergency
     uint8_t type;  // Command type
     uint8_t state; // State (same as in ll_status.emergency_bitmask (LowLevel, datatypes.h))
     uint16_t crc;  // CRC 16
+} __attribute__((packed));
+#pragma pack(pop)
+
+// Cover UI might subscribe in what data it's interested to receive
+#pragma pack(push, 1)
+struct msg_event_subscribe
+{
+    uint8_t type;          // Command type
+    uint8_t topic_bitmask; // Bitmask of data subscription(s), see Topic_state
+    uint16_t interval;     // Interval (ms) how often to send topic(s)
+    uint16_t crc;          // CRC 16
 } __attribute__((packed));
 #pragma pack(pop)
 

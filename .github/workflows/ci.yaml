@@ -41,11 +41,59 @@ jobs:
           name: open-mower-pico-firmware
           path: artifacts/
 
+  firmware-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Run PlatformIO
+        run: pio run -d Firmware/CoverUI --environment YF_C500_STM32 --environment YF_C500_STM32_RAIN --environment YF_C500_STM32_RAIN_HALL --environment YF_C500_STM32_HALL --environment YF_C500_GD32 --environment YF_C500_GD32_RAIN --environment YF_C500_GD32_RAIN_HALL --environment YF_C500_GD32_HALL --environment YF_RM-ECOW-V100_STM32 --environment YF_RM-ECOW-V100_STM32_STOP --environment YF_RM-EC3-V11_STM32 --environment YF_RM-EC3-V11_STM32_HALL --environment YF_RM-EC3-V11_STM32_HALL_STOP --environment YF_RM-EC3-V11_STM32_STOP --environment YF_SAXPRO_STM32 --environment YF_RM-ECOW-V110_GD32 --environment YF_RM-ECOW-V110_GD32_HALL --environment YF_RM-ECOW-V110_GD32_HALL_STOP --environment YF_RM-ECOW-V110_GD32_STOP
+
+      - name: Copy Artifacts
+        run: |
+          mkdir artifacts/
+          cp Firmware/CoverUI/.pio/build/YF_C500_STM32/firmware.bin ./artifacts/firmware_C500_STM32.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_STM32_RAIN/firmware.bin ./artifacts/firmware_C500_STM32_RAIN.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_STM32_RAIN_HALL/firmware.bin ./artifacts/firmware_C500_STM32_RAIN_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_STM32_HALL/firmware.bin ./artifacts/firmware_C500_STM32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_GD32/firmware.bin ./artifacts/firmware_C500_GD32.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_GD32_RAIN/firmware.bin ./artifacts/firmware_C500_GD32_RAIN.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_GD32_RAIN_HALL/firmware.bin ./artifacts/firmware_C500_GD32_RAIN_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_C500_GD32_HALL/firmware.bin ./artifacts/firmware_C500_GD32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_STOP/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_SAXPRO_STM32/firmware.bin ./artifacts/firmware_YF_SAXPRO_STM32.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_HALL/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_HALL_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_STOP.bin
+
+      - name: Step 3 - Use the Upload Artifact GitHub Action
+        uses: actions/upload-artifact@v3
+        with:
+          name: open-mower-stock-firmware
+          path: artifacts/
 
   tagged-release:
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
-    needs: firmware
+    needs: [firmware, firmware-stock]
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -65,6 +113,14 @@ jobs:
 
       - name: Create firmware zip
         run: zip -r release/firmware.zip firmware
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: open-mower-stock-firmware
+          path: firmware-stock
+
+      - name: Create firmware-stock zip
+        run: zip -r firmware-stock.zip firmware-stock
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -97,7 +153,7 @@ jobs:
   pre-release-latest-firmware:
     runs-on: ubuntu-latest
     if: github.ref_type != 'tag'
-    needs: firmware
+    needs: [firmware, firmware-stock]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -111,10 +167,20 @@ jobs:
       - name: Create firmware zip
         run: zip -r firmware.zip firmware
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: open-mower-stock-firmware
+          path: firmware-stock
+
+      - name: Create firmware-stock zip
+        run: zip -r firmware-stock.zip firmware-stock
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           title: "Latest Firmware"
           automatic_release_tag: "latest"
           prerelease: true
-          files: firmware.zip
+          files: |
+            firmware.zip
+            firmware-stock.zip

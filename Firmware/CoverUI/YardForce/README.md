@@ -9,11 +9,20 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview.jpg" alt="Logo" width="400">
+  <a href="images/IMG_Overview.jpg">
+    <img src="images/IMG_Overview.jpg" alt="Classic 500(B)" title="Classic 500(B)" width="19%">
   </a>
-  <a href="https://github.com/ClemensElflein/CoverUI">
-    <img src="images/IMG_Overview_SAxPRO.jpg" alt="Logo" width="400">
+  <a href="images/IMG_Overview_RM-ECOW-V100.jpg">
+    <img src="images/IMG_Overview_RM-ECOW-V100.jpg" alt="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" title="NX80i (10 Buttons, 12 LEDs) SA/SC/NX-Type CoverUI" width="19%">
+  </a>
+  <a href="images/IMG_Overview_RM-ECOW-V110.jpg">
+    <img src="images/IMG_Overview_RM-ECOW-V110.jpg" alt="SA650 (9 Buttons, 11 LEDs) SA/SC/NX-Type CoverUI" title="SA650 (9 Buttons, 11 LEDs) SA/SC/NX-Type CoverUI" width="19%">
+  </a>
+  <a href="images/IMG_Overview_RM-ECOW-V1.1.jpg">
+    <img src="images/IMG_Overview_RM-ECOW-V1.1.jpg" alt="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" title="NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display) SA/SC/NX-Type CoverUI" width="19%">
+  </a>
+  <a href="images/IMG_Overview_SAxPRO.jpg">
+    <img src="images/IMG_Overview_SAxPRO.jpg" alt="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" title="SA/SC-PRO-Type (6 Buttons, 240*160 Pixel LC-Display)" width="19%">
   </a>
 
   <h3 align="center">OM CoverUI Firmware for Stock YardForce PCBs</h3>
@@ -22,11 +31,14 @@
 
 #### Tested/working with
 
-| YardForce Model | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
-| --------------- | :------------------------: | :---: |
-| Classic 500     | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
-| Classic 500B    | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
-| SA800PRO<br>(and other SAxPRO Rev6)    | HS49067, WYPCB319B | STM32F030RC |
+| YardForce Model                  | PCB Label                  | <a href="https://en.wikipedia.org/wiki/Microcontroller">MCU</a> Variant |
+| :-------------------------------- | :------------------------: | :---: |
+| Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
+| Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
+| NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
+| SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type | RM-ECOW-V1.1.0, 2019.02.18 | GD32F330R8 |
+| NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-EC3-V1.1, 20210619 | STM32F401RC |
+| SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Pixel LC-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
   [^1]: Not yet tested, but it's expected that it will also work flawless
 
@@ -36,7 +48,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary><h2>Table of Contents</h2></summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -45,13 +57,25 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#hardware-modifications-buttons--leds-mandatory">Mandatory Hardware Modifications</a></li>
-        <li><a href="#hardware-modification-rain-sensor-optional">Optional Rain-Sensor Hardware Modifications</a></li>
-        <li><a href="#hardware-modification-emergency-hall-sensors-optional">Optional Hall-Sensor Hardware Modifications</a></li>
+        <li><a href="#hardware-modifications-by-model">Hardware Modifications by Model</a>
+              <ul>
+        <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
+        <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
+        <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-sa650-9-buttons-11-leds-sascnx-type-rm-ecow-v110">YardForce SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type, RM-ECOW-V1.1.0</a></li>
+        <li><a href="#yardforce-nx100i-18-buttons-3-leds-25664-pixel-lc-display-sascnx-type-rm-ec3-v11">YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</a></li>
+        <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
+      </ul>
+        </li>
         <li><a href="#flash-firmware">Flash Firmware</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#meaning-of-the-leds">Meaning of the LEDs</a></li>
+        <li><a href="#button-usage">Button usage</a></li>
+      </ul>
+    </li>
     <li><a href="#final-work">Final work</a></li>
     <li><a href="#version-history">Version History</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -60,20 +84,12 @@
   </ol>
 </details>
 
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-For those, who still have their stock *YardForce Classic 500 (A/B) or SAxPRO (Rev6)* Cover-UI/Botton-Board available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to it.
+For those, who still have their stock *YardForce (Rev6)* Cover-UI available and want to get it running together with [OpenMower](https://github.com/ClemensElflein/OpenMower), I ported OM's CoverUI <abbr title="Firmware">FW</abbr> functionality to a couple of them (see [Tested/working with](#testedworking-with)).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Built With
-
-* [![PlatformIO][PlatformIO.js]][PlatformIO-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- GETTING STARTED -->
@@ -85,35 +101,44 @@ For those, who still have their stock *YardForce Classic 500 (A/B) or SAxPRO (Re
 * Soldering Iron
 * ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
 
-### Hardware Modifications: Buttons & LEDs (**mandatory**)
+### Hardware Modifications by Model
 
-With the stock component placement, Button-Home and Buttom-Play get routed to the main (black) 16 pin connector (JP2/J6).
+
+<!-- Hardware Modifications by Model: Classic 500 -->
+<details>
+  <summary><h3>YardForce Classic 500, RM-ECOW-V1.3.0</h3></summary>
+
+  ![Classic 500](images/IMG_Overview.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2/J6).
 But we need them routed to the MCU.
 Luckily the PCB is already prepared for this.
 
-| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> | <div style="width:400px">SAxPRO (Rev6)</div> |
-| ----------- | ------------ | ------------ |
-| [![Mandatory Hardware Modification](images/IMG_PCB_Changes.jpg "Open in browser")](images/IMG_PCB_Changes.jpg) | [![Mandatory Hardware Modification](images/IMG_PCB_Changes_500B.jpg "Open in browser")](images/IMG_PCB_Changes_500B.jpg) |  [![Mandatory Hardware Modification](images/IMG_PCB_Changes_SAxPRO.jpg "Open in browser")](images/IMG_PCB_Changes_SAxPRO.jpg) |
-| Move the 0 Ohm (bridge) resistors:<br>1. R33 to the NonPlaced R34 position (Button-Home)<br>2. R37 to (NP) R42 (Button-Play)<br><br>(You might also simply bridge R34 and R42, but for me it was simpler to move them)<br><br><sup>(The yellow cable (to R5/C2) should not harm you. This is the NRST signal which is only required if you bug the code (like me) during development)</sup> | Move the 0 Ohm (bridge) resistors:<br>1. R33 to the NonPlaced R34 position (Button-Home)<br>2. R37 to (NP) R42 (Button-Play)<br><br>(You might also simply bridge R34 and R42, but for me it was simpler to move them) | 1. Bridge R14 (Button-Start/Play)<br>2. Bridge R15 (Button-Home)
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes.jpg "Open in browser")](images/IMG_PCB_Changes.jpg)
+<sup>(The yellow cable (to R5/C2) should not harm you. This is the NRST signal which is only required if you bug the code (like me) during development)</sup>
+
+Move the 0 Ohm (bridge) resistors:
+1. R33 to the NonPlaced R34 position (Button-Home)
+2. R37 to (NP) R42 (Button-Play)
+   
+You might also simply bridge R34 and R42, but for me it was simpler to move them
 
 ### Hardware Modification: Rain Sensor (*optional*)
 
 If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
 See the yellow cable on the following images:
 
-| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
-| ----------- | ------------ |
-| See yellow cable | See white cable |
-| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview.jpg "Open in browser")](images/IMG_Stock-Cables-overview.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview_500B.jpg) |
-| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2.jpg "Open in browser")](images/IMG_Stock-Cables-detail2.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail2_500B.jpg) |
-| [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1.jpg "Open in browser")](images/IMG_Stock-Cables-rain1.jpg) | [![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg) |
-
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview.jpg "Open in browser")](images/IMG_Stock-Cables-overview.jpg)
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2.jpg "Open in browser")](images/IMG_Stock-Cables-detail2.jpg)
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1.jpg "Open in browser")](images/IMG_Stock-Cables-rain1.jpg)
 
 ### Hardware Modification: Emergency Hall Sensors (*optional*)
 
-If you also like to use your Stock-Hall-Sensor cabling (2 * stop-button and 2 * wheel-lift):
-![Optional Rain Hardware Modification](images/IMG_Stock-Cables_500B.jpg)
-you need to solder one more R- bridge as well as 3 more separate cables. 
+If you also like to use your Stock-Hall-Sensor cabling (2 \* stop-button & 2 \* wheel-lift):
+![Optional Hall Cables](images/IMG_Stock-Cables_500B.jpg)
+Then you need to solder one more R- bridge as well as 3 more separate cables.
 Take into **attention** that you need to make all 4 steps:
 
 1. Move R52 to (non-placed) R57 (see green arrow on image), or simple bridge R57 (i.e. with 32kg solder)
@@ -121,19 +146,250 @@ Take into **attention** that you need to make all 4 steps:
 3. Solder a cable-bridge from the bottom end of R76 to U5/Pin2 (see white cable)
 4. Solder a cable-bridge from Q6/R83 to U5/Pin10 (see right green cable)
 
-| <div style="width:400px">Classic 500</div> | <div style="width:400px">Classic 500 B</div> |
-| ----------- | ------------ |
-| See green and white cables | See green cables |
-| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall_500B.jpg) |
-| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3.jpg "Open in browser")](images/IMG_Stock-Cables-detail3.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail3_500B.jpg) |
-| [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail4.jpg "Open in browser")](images/IMG_Stock-Cables-detail4.jpg) | [![Optional Hall Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg) |
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall.jpg)
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3.jpg "Open in browser")](images/IMG_Stock-Cables-detail3.jpg)
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail4.jpg "Open in browser")](images/IMG_Stock-Cables-detail4.jpg)
 
 I only made it with colored cables for a more clear documentation.
 If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/draht-0-15mm-sortiert-pk-4/dp/5017233), it might look better, like this:
 
 ![Hardware Changes Hall nice](images/IMG_Stock-Cables-nice.jpg)
 
+</details>
+
+
+
+<!-- Hardware Modifications by Model: Classic 500B -->
+<details>
+  <summary><h3>YardForce Classic 500B, RM-ECOW-V1.3.1</h3></summary>
+
+  ![Classic 500](images/IMG_Overview.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2/J6).
+But we need them routed to the MCU.
+Luckily the PCB is already prepared for this.
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_500B.jpg "Open in browser")](images/IMG_PCB_Changes_500B.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R33 to the NonPlaced R34 position (Button-Home)
+2. R37 to (NP) R42 (Button-Play)
+
+You might also simply bridge R34 and R42, but for me it was simpler to move them
+
+
+### Hardware Modification: Rain Sensor (*optional*)
+
+If you also like to use the Stock-Rain-Sensor cabling, you need to solder a separate cable from FB2 to the non-placed R79.
+See the white cable on the following images:
+
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-overview_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview_500B.jpg)
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-detail2_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail2_500B.jpg)
+[![Optional Rain Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg)
+
+### Hardware Modification: Emergency Hall Sensors (*optional*)
+
+If you also like to use your Stock-Hall-Sensor cabling (2 \* stop-button & 2 \* wheel-lift):
+![Optional Hall Cables](images/IMG_Stock-Cables_500B.jpg)
+Then you need to solder one more R- bridge as well as 3 more separate cables.
+Take into **attention** that you need to make all 4 steps:
+
+1. Move R52 to (non-placed) R57 (see green arrow on image), or simple bridge R57 (i.e. with 32kg solder)
+2. Solder a cable-bridge from Q4/R61 to U5/Pin3 (see left green cable)
+3. Solder a cable-bridge from the bottom end of R76 to U5/Pin2 (see middle green cable)
+4. Solder a cable-bridge from Q6/R83 to U5/Pin10 (see right green cable)
+
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-overview-hall_500B.jpg "Open in browser")](images/IMG_Stock-Cables-overview-hall_500B.jpg)
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-detail3_500B.jpg "Open in browser")](images/IMG_Stock-Cables-detail3_500B.jpg)
+[![Optional Hall Hardware Modification](images/IMG_Stock-Cables-rain1_500B.jpg "Open in browser")](images/IMG_Stock-Cables-rain1_500B.jpg)
+
+I only made it with colored cables for a more clear documentation.
+If you've repair-wire like [this](https://de.farnell.com/roadrunner/rrp-a-105/draht-0-15mm-sortiert-pk-4/dp/5017233), it might look better, like this:
+
+![Hardware Changes Hall nice](images/IMG_Stock-Cables-nice.jpg)
+
+</details>
+
+
+<!-- Hardware Modifications by Model: NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type -->
+<details>
+  <summary><h3>YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</h3></summary>
+
+  ![YardForce NX80i](images/IMG_Overview_RM-ECOW-V100.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2/J6).
+But we need them routed to the MCU.
+Luckily the PCB is already prepared for this.
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V100.jpg "Open in browser")](images/IMG_PCB_Changes_RM-ECOW-V100.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R39 to the NonPlaced R41 position (Button-Home)
+2. R38 to (NP) R40 (Button-Play)
+
+You might also simply bridge R40 and R41, but for me it was simpler to move them
+
+### Hardware Modification: Emergency Stop Switches (*optional*)
+
+If you also like to use your two Stock-Stop-Switch cables, and you should, as you need the four OM- Hall-Plugs for the remaining hall-sensors:
+
+[![Optional Hall Hardware Modification](images/IMG_MOD-Stop_RM-ECOW-V100.jpg "Open in browser")](images/IMG_MOD-Stop_RM-ECOW-V100.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R42 to the NonPlaced R44 position (JP5 Stop)
+2. R43 to (NP) R45 (JP6 Stop)
+
+You might also simply bridge R44 and R45, but for me it was simpler to move them
+
+</details>
+
+<!-- Hardware Modifications by Model: SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type -->
+<details>
+  <summary><h3>YardForce SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type, RM-ECOW-V1.1.0</h3></summary>
+
+  ![YardForce SA650](images/IMG_Overview_RM-ECOW-V110.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2).
+But we need them routed to the MCU.
+Luckily the PCB is already prepared for this.
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Buttons.jpg "Open in browser")](images/IMG_PCB_Changes_RM-ECOW-V110_Buttons.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R39 to the NonPlaced R42 position (Button-Home)
+2. R34 to (NP) R37 (Button-Play)
+
+You might also simply bridge R42 and R37, but for me it was simpler to move them.
+
+### Hardware Modification: Emergency Hall Switches (*optional*)
+
+If you also like to use your original "4-leg cable for the 4 hall sensors", then you need to solder 4 more cables:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Hall.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg)
+
+Solder four cables:
+
+1. JP1-Pin39 to U6-Pin8 (RBUMP to PC9)
+2. JP1-Pin40 to U6-Pin2 (LIFT to PA8)
+3. JP1-Pin36 to U6-Pin15 (LBUMP to PC8)
+4. JP1-Pin34 to R8-left-pin (LIFTX to PA9)
+
+> **Warning**
+> As you probably know, the hall sensors are driven by 5V, whereas the MCU is running at 3.3V.<br>
+> All used GPIO ports of this modification, are so called "5V tolerant" ports.<br>
+> **But** there might happen electrical cases like: VREG delay or short on 3.3V line, which could kill the "5V tolerant" pin of your MCU.
+> To be on the save side for such odd cases, I highly recommend to remove the 5V pull-up resistor from your Hall-PCB, or move it aside like shown on this picture:
+
+[![Optional Remove Hall Pull-Up Resistor](images/IMG_PCB_Change_Hall-PullUp.jpg "Open in browser")](images/IMG_PCB_Change_Hall-PullUp.jpg)
+
+
+### Hardware Modification: Emergency Stop Switches (*optional*)
+
+If you also like to use your 2 stock Stop-Switch cables, you need to bridge or move 2 further resistors:
+
+[![Optional Hall Hardware Modification](images/IMG_PCB_Changes_RM-ECOW-V110_Stop.jpg "Open in browser")](images/IMG_PCB_Changes_RM-ECOW-V110_Stop.jpg)
+
+Move the 0 Ohm (bridge) resistors:
+
+1. R61 to the NonPlaced R63 position (JP8 Stop)
+2. R46 to (NP) R56 (JP6 PC8-Stop)
+
+You might also simply bridge R63 and R56, but for me it was simpler to move them.
+
+</details>
+
+
+<!-- Hardware Modifications by Model: NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type -->
+<details>
+  <summary><h3>YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</h3></summary>
+
+  ![YardForce NX100i](images/IMG_Overview_RM-ECOW-V1.1.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP5).
+But we need them routed to the MCU.
+
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory1.jpg)
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Mandatory2.jpg)
+
+Solder two cables:
+
+1. S8/D9 front-side, to back-side R35-upper-pin (Play button)
+2. S10/D7 front-side, to back-side R27-upper-pin (Home button)
+
+### Hardware Modification: Emergency Stop Switches (*optional*)
+
+If you also like to use your two Stock-Stop-Switch cables, and you should, because you need the four OM- Hall-Plugs for the remaining hall-sensors:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Stop1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Stop1.jpg)
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Stop2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Stop2.jpg)
+
+Solder another two cables:
+
+1. JP5-Pin14 front-side, to back-side U7-Pin1
+2. JP5-Pin6 front-side, to back-side U7-Pin2
+
+### Hardware Modification: Emergency Hall Switches (*optional*)
+
+If you also like to use your original "4-leg cable for the 4 hall sensors", then you need to solder 4 more cables:
+
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall1.jpg)
+[![Optional Stop Hardware Modification](images/IMG_PCB_Changes_RM-EC3-V11_Hall2.jpg "Open in browser")](images/IMG_PCB_Changes_RM-EC3-V11_Hall2.jpg)
+
+Solder four cables:
+
+1. JP5-Pin15 front-side, to back-side R17-lower-pin
+2. JP5-Pin16 front-side, to back-side R18-upper-pin
+3. JP5-Pin12 front-side, to back-side R13-right-pin
+4. JP5-Pin10 front-side, to back-side R21-right-pin
+
+> **Warning**
+> As you might know, the hall sensors are driven by 5V, whereas the MCU is running at 3.3V.
+> All used GPIO ports of this modification, are so called "5V tolerant" ports.
+> But there might happen electrical cases like: VREG delay or short on 3.3V line, which could kill the "5V tolerant" pin of your MCU.
+> To be on the save side for such odd things happen, I highly advice to remove the 5V pull-up resistor on your Hall-PCB, or move it aside like shown on this picture:
+
+[![Optional Remove Hall Pull-Up Resistor](images/IMG_PCB_Change_Hall-PullUp.jpg "Open in browser")](images/IMG_PCB_Change_Hall-PullUp.jpg)
+
+
+</details>
+
+
+<!-- Hardware Modifications by Model: SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display) HS49067, WYPCB319B -->
+<details>
+  <summary><h3>YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</h3></summary>
+
+  ![Classic 500](images/IMG_Overview_SAxPRO.jpg)
+
+### Hardware Modifications: Buttons (*mandatory*)
+
+With the stock component placement, Button-Home and Button-Play get routed to the main (black) 16 pin connector (JP2/J6).
+But we need them routed to the MCU.
+Luckily the PCB is already prepared for this.
+
+[![Mandatory Hardware Modification](images/IMG_PCB_Changes_SAxPRO.jpg "Open in browser")](images/IMG_PCB_Changes_SAxPRO.jpg)
+
+1. Bridge R14 (Button-Start/Play)
+2. Bridge R15 (Button-Home)
+
+</details>
+
+
 ## Flash Firmware
+
+### Programmer/Debugger
 
 You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
 
@@ -161,6 +417,18 @@ and you're ready.
 There're two generic ways to get the Firmware into your MCU.<br>
 Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
 
+### Firmware binaries
+
+1. Goto [Releases](/releases)
+2. Download `firmware-stock.zip`
+3. Unpack it somewhere
+
+The file name syntax of the included firmware binaries is:  `firmware_<MDL>_<MCU>[_<opt MOD>, ...].bin`
+
+> **Warning**
+> Only install the \<MOD> version, for which you also made the required hardware modifications!
+> See [Hardware Modifications by Model](#hardware-modifications-by-model)
+
 
 ### ST-Link (flash binary)
 
@@ -173,11 +441,10 @@ Open a terminal/console, then:
 
 * `st-info --descr` should return either:
   * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
-  * `F1xx Medium-density` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
+  * `F1xx Medium-density` or `STM32F1xx_MD` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
   * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
-* Dependent on what kind of MCU you identified, download your matching [firmware binary](./bin)
-* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin on your ST-Link!! Now simply:<br>
- `st-flash write firmware_<mdl>_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
+* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin of your ST-Link!! Now simply:<br>
+ `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
@@ -188,26 +455,19 @@ Unlock your flash via:
 
 ```openocd -f interface/stlink.cfg -f target/stm32f0x.cfg -c "init" -c "halt" -c "stm32f0x unlock 0" -c "shutdown"```
 
-Now, try again flashing by: `st-flash write firmware_<ver>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
+Now, try again flashing by: `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
 
 
 ### Picoprobe (flash binary) STM32 MCU only!
-
-> **Note**
-> Updated 05/08/2023
 
 Do **NOT** try this variant with a GD32 MCU. There's a high risk to brick it!!
 
 You need [OpenOCD][OpenOCD-url] for this. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
 
-Download [STM32 firmware binary](./bin).
-
 Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, CLK, DIO and 3V3.
 
 Open a terminal/console, then:
-
-* `openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<ver>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`<br>
-  Take attention that you replace `<ver>` with your downloaded version!
+`openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<mdl>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
 
@@ -215,9 +475,6 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 
 
 ### PlatformIO
-
-> **Note**
-> Updated 05/08/2023
 
 [PlatformIO](https://platformio.org/) is a [Visual Studio Code](https://code.visualstudio.com/) extension. Once installed, do:
 
@@ -239,23 +496,45 @@ If st-flash fails with an error like "Flash memory is write protected", simply f
 ## Usage
 
 > **Note**
-> Updated 05/07/2023
+> Updated 11/07/2023
 
 Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
-There are also some, (I call it) magic-buttons. If you press:
+### Meaning of the LEDs:
 
-- OK + Sun Button, you're able to trigger the power-on animation.<br>
-  This is mainly for mounting validation, to ensure that you hit all LED guidance holes.
-- OK + Clock Button, will show you the Custom-CoverUI- firmware version on which this FW port is based.
-  It get display as a number sequence[^2], which should show (as of writing) 200.<br>
-  Fully useless ATM ;-)
-- OK + Home Button, will show you this FW port version.
-  It get display as a number sequence[^2], which should show (as of writing) 100.
+| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs), SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| :-------: | :-----: | :-------: | :----: | :----: | ----- |
+| 2hr&nbsp;-&nbsp;8hr | 4H&nbsp;-&nbsp;10H | 4H&nbsp;-&nbsp;10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
+| S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
+| S2 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | ROS Sub-State:<br><b>On</b> = not used<br> <b>Blink-slow</b> = Docking or Record-Outline<br><b>Blink-fast</b> = Undocking or Record-Obstacle<br><b>Off</b> = Idle or Mowing |
+| Lifted | :heavy_check_mark: | :heavy_check_mark: | <img src="images/car-burst-solid.svg" width=15% height=15%> | <img src="images/car-burst-solid.svg" width=15% height=15%> | Emergency:<br><b>On</b> = No heart beat for more than 0.5s?!?<br> <b>Blink-slow</b> = Lifted or tilted<br><b>Blink-fast</b> = Stop button pressed<br><b>Off</b> = No Emergency |
+| Wire | WLAN | WLAN | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | <img src="images/satellite-dish-solid.svg" width=15% height=15%> | GPS Quality:<br><b>On</b> = \<25%<br><b>Blink-fast</b> = \<50%<br><b>Blink-slow</b> = \<75%<br><b>Off</b> = \>75% |
+| Battery | :heavy_check_mark: | :heavy_check_mark: | <img src="images/car-battery-solid.svg" width=15% height=15%> | <img src="images/car-battery-solid.svg" width=15% height=15%> | <b>On</b> = Empty |
+| Charge | :heavy_check_mark: | :heavy_check_mark: | <img src="images/charging-station-solid.svg" width=15% height=15%> | <img src="images/charging-station-solid.svg" width=15% height=15%> | <b>On</b> = Fully charged<br><b>Blink-slow</b> = Approx. 50% charged<br><b>Blink-fast</b> = Empty<br><b>Off</b> = Not docked |
+| Mon-Sun | :x: | :x: | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 7 digit battery-charge-state progress bar |
 
-[^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
-A digit > 6, get displayed with multiple digit LEDs.
+
+### Button usage:
+
+| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs) SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| :-------: | :----: | :---------------------------------: | :-----: | :----: | ----- |
+| <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
+| <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
+| <kbd>S1</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Start area recording if 'idle'. Pause if 'mowing' |
+| <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
+| <kbd>Lock</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
+| <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Lock</kbd>+<kbd>10H</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | <kbd>MENU</kbd>+<kbd>BACK</kbd> | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
+| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Lock</kbd>+<kbd>4H</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 205 |
+| <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
+| <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
+| <kbd>Wed</kbd> | :x: | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | ~~Next language~~ Language selection has moved to mower_config[^3] |
+
+
+[^2]: A 'number sequence' get displayed via the 'Mon(0)' to 'Sun(6)' or '4H(0)' to 'S2(5)' LEDs, whereas every short blinking 'Lifted' LED indicate a new digit.
+Larger digits, get displayed with multiple digit LEDs.
 I.e. 9 = 'Sun(6)' together with 'Thu(3)'
+
+[^3]: 'Improve-Sound' branch  of 'OpenMower' Pico Firmware presupposed
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -272,12 +551,20 @@ I simply cropped the 16 pin connector from my original cable and crimped OM's pl
 You're done!
 
 Plug it into `UI Board` connector of your OM mainboard and
-check the official [CoverUI documentation](https://openmower.de/docs/cover-ui-assembly/) about the [LED](https://openmower.de/docs/cover-ui-assembly/#meaning-of-the-leds) and [Button](https://openmower.de/docs/cover-ui-assembly/#button-usage) usage
+check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button](#button-usage) usage.
 
 
 ## Version History
 
-See [./bin/README.md](./bin/README.md)
+| Version [^4] | Changes | Date |
+| ------- | ------- | ---- |
+| 2.05    | - YardForce RM-ECOW-V1.1.0 support<br>- Backside alive LED is now software driven (hwtimer independent)<br>- Fix emergency-clear LED-countdown for RM-ECOW-V1.0.0| 06/30/2024
+| 2.04    | - YardForce RM-ECOW-V1.0.0 support<br>- Dropped separate versioning<br>- Fully refactored | 11/14/2023
+| 1.00    | - YardForce SAxPRO (Rev6) Dot-Matrix-Display support | 09/27/2023
+| 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 05/13/2023
+|  NA       | First OM's CoverUI port for YardForce Classic 500 | 05/01/2023
+
+[^4]: Press magic button combo 'Display CoverUI- firmware version' (see [Button Usage](#button-usage)) to get your installed FW version displayed
 
 <!-- CONTRIBUTING -->
 ## Contributing
