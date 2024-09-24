@@ -35,8 +35,8 @@
 | :-------------------------------- | :------------------------: | :---: |
 | Classic 500                      | RM-ECOW-V1.3.0, 2020.05.08 | STM32F030R8, GD32F330R8 |
 | Classic 500B                     | RM-ECOW-V1.3.1, 2021.08.09 | STM32F030R8[^1], GD32F330R8 |
-| NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
-| SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type | RM-ECOW-V1.1.0, 2019.02.18 | GD32F330R8 |
+| SA/SC/NX-Type (10 Buttons, 12 LEDs) | RM-ECOW-V1.0.0, 2018.06.05 | STM32F030R8 |
+| SA/SC/NX-Type (9 Buttons, 11 LEDs)e | RM-ECOW-V1.1.0, 2019.02.18 | STM32F030R8, GD32F330R8 |
 | NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | RM-EC3-V1.1, 20210619 | STM32F401RC |
 | SA/SC-PRO-Type Rev6 (6 Buttons, 240*128 Pixel LC-Display)    | HS49067, WYPCB319B | STM32F030RC |
 
@@ -61,8 +61,8 @@
               <ul>
         <li><a href="#yardforce-classic-500-rm-ecow-v130">YardForce Classic 500, RM-ECOW-V1.3.0</a></li>
         <li><a href="#yardforce-classic-500b-rm-ecow-v131">YardForce Classic 500B, RM-ECOW-V1.3.1</a></li>
-        <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce NX80i (10 Buttons, 12 LEDs), SA/SC/NX-Type, RM-ECOW-V1.0.0</a></li>
-        <li><a href="#yardforce-sa650-9-buttons-11-leds-sascnx-type-rm-ecow-v110">YardForce SA650 (9 Buttons, 11 LEDs), SA/SC/NX-Type, RM-ECOW-V1.1.0</a></li>
+        <li><a href="#yardforce-nx80i-10-buttons-12-leds-sascnx-type-rm-ecow-v100">YardForce SA/SC/NX-Type (10 Buttons, 12 LEDs), RM-ECOW-V1.0.0</a></li>
+        <li><a href="#yardforce-sa650-9-buttons-11-leds-sascnx-type-rm-ecow-v110">YardForce SA/SC/NX-Type (9 Buttons, 11 LEDs), RM-ECOW-V1.1.0</a></li>
         <li><a href="#yardforce-nx100i-18-buttons-3-leds-25664-pixel-lc-display-sascnx-type-rm-ec3-v11">YardForce NX100i (18 Buttons, 3 LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type, RM-EC3-V1.1</a></li>
         <li><a href="#yardforce-sasc-pro-type-rev6-6-buttons-240160-dot-matrix-display-hs49067-wypcb319b">YardForce SA/SC-PRO-Type Rev6 (6 Buttons, 240*160 Dot-Matrix-Display), HS49067, WYPCB319B</a></li>
       </ul>
