@@ -99,7 +99,7 @@ For those, who still have their stock *YardForce (Rev6)* Cover-UI available and 
 
 * Compatible stock *YardForce* Cover-UI/Button-Board or Display (see [Tested/working with](#testedworking-with))
 * Soldering Iron
-* ST-Link programmer/debugger (or Picoprobe if you've a STM32 MCU)
+* ST-Link programmer/debugger
 
 ### Hardware Modifications by Model
 
@@ -391,28 +391,9 @@ Luckily the PCB is already prepared for this.
 
 ### Programmer/Debugger
 
-You either need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
-
-> **Note**
-> If you have a GD32 MCU, this is your only option
+You need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
 
 <img src="images/IMG_ST-Link-V2-Clone.jpg" alt="My ST-Link (V2) clone" width="32%">
-
-Or use (build) a [Picoprobe][Picoprobe-url] (CMSIS-DAP debugger) if you have a STM32 MCU:
-
-> **Note**
-> Do **not** try this with a GD32 MCU! I bricked my lent one by trying it and it took me 3 hours to get it back running!
-
-<p float="left">
-<img src="images/IMG_Picoprobe.jpg" alt="My Picoprobe" width="32%">
-<img src="images/IMG_Picoprobe-open1.jpg" alt="My open Picoprobe" width="32%">
-<img src="images/IMG_Picoprobe-open2.jpg" alt="My open Picoprobe" width="32%">
-<p>
-
-Simply take a [Raspberry Pico][Pico-url], solder some cables, upload [Picoprobe][Picoprobe-url]
-and you're ready.
-
-(For sure, there might be more programmer/debugger options, but with these two variants I got it quickly running)
 
 There're two generic ways to get the Firmware into your MCU.<br>
 Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
@@ -458,22 +439,6 @@ Unlock your flash via:
 Now, try again flashing by: `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000`
 
 
-### Picoprobe (flash binary) STM32 MCU only!
-
-Do **NOT** try this variant with a GD32 MCU. There's a high risk to brick it!!
-
-You need [OpenOCD][OpenOCD-url] for this. Try `openocd --version` to check if [OpenOCD][OpenOCD-url] is already installed.
-
-Unplug everything from you stock CoverUI PCB and connect your Picoprobe to GND, CLK, DIO and 3V3.
-
-Open a terminal/console, then:
-`openocd -f interface/cmsis-dap.cfg -f target/stm32f0x.cfg -c "init; reset halt; stm32f0x unlock 0; reset run" -c "program firmware_<mdl>_STM32[_<opt mod>, ...].bin verify exit 0x08000000 reset; exit;"`
-
-When done, re-plug your ST-Link and you should see a quick power-on animation.
-
-If st-flash fails with an error like "Flash memory is write protected", simply flash it again. On the second run it should work with this method.
-
-
 ### PlatformIO
 
 [PlatformIO](https://platformio.org/) is a [Visual Studio Code](https://code.visualstudio.com/) extension. Once installed, do:
@@ -502,7 +467,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs), SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | :-------: | :-----: | :-------: | :----: | :----: | ----- |
 | 2hr&nbsp;-&nbsp;8hr | 4H&nbsp;-&nbsp;10H | 4H&nbsp;-&nbsp;10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
 | S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
@@ -516,7 +481,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Button usage:
 
-| C500(B) | SA650<br>(9&nbsp;Buttons, 11&nbsp;LEDs) | NX80i<br>(10&nbsp;Buttons, 12&nbsp;LEDs) SA/SC/NX-Type | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | :-------: | :----: | :---------------------------------: | :-----: | :----: | ----- |
 | <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
 | <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
@@ -592,26 +557,12 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
-<!-- CONTACT -->
-<!-- ## Contact
-
-Apehaenger - joerg@ebeling.ws
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
--->
-
-
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 * [OpenMower](https://github.com/ClemensElflein/OpenMower)
 * [Mowgli](https://github.com/cloudn1ne/Mowgli)
 * [PlatformIO](https://platformio.org/)
-* [Picoprobe](https://github.com/raspberrypi/picoprobe)
-* [Picoprobe housing](https://www.printables.com/de/model/217523-raspberry-pi-pico-picoprobe-housing)
 * [Maximilian Gerhardt](https://community.platformio.org/u/maxgerhardt)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -633,9 +584,4 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 [PlatformIO.js]: https://img.shields.io/badge/build%20with-PlatformIO-orange?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMjUwMCIgaGVpZ2h0PSIyNTAwIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTEyOCAwQzkzLjgxIDAgNjEuNjY2IDEzLjMxNCAzNy40OSAzNy40OSAxMy4zMTQgNjEuNjY2IDAgOTMuODEgMCAxMjhjMCAzNC4xOSAxMy4zMTQgNjYuMzM0IDM3LjQ5IDkwLjUxQzYxLjY2NiAyNDIuNjg2IDkzLjgxIDI1NiAxMjggMjU2YzM0LjE5IDAgNjYuMzM0LTEzLjMxNCA5MC41MS0zNy40OUMyNDIuNjg2IDE5NC4zMzQgMjU2IDE2Mi4xOSAyNTYgMTI4YzAtMzQuMTktMTMuMzE0LTY2LjMzNC0zNy40OS05MC41MUMxOTQuMzM0IDEzLjMxNCAxNjIuMTkgMCAxMjggMCIgZmlsbD0iI0ZGN0YwMCIvPjxwYXRoIGQ9Ik0yNDkuMzg2IDEyOGMwIDY3LjA0LTU0LjM0NyAxMjEuMzg2LTEyMS4zODYgMTIxLjM4NkM2MC45NiAyNDkuMzg2IDYuNjEzIDE5NS4wNCA2LjYxMyAxMjggNi42MTMgNjAuOTYgNjAuOTYgNi42MTQgMTI4IDYuNjE0YzY3LjA0IDAgMTIxLjM4NiA1NC4zNDYgMTIxLjM4NiAxMjEuMzg2IiBmaWxsPSIjRkZGIi8+PHBhdGggZD0iTTE2MC44NjkgNzQuMDYybDUuMTQ1LTE4LjUzN2M1LjI2NC0uNDcgOS4zOTItNC44ODYgOS4zOTItMTAuMjczIDAtNS43LTQuNjItMTAuMzItMTAuMzItMTAuMzJzLTEwLjMyIDQuNjItMTAuMzIgMTAuMzJjMCAzLjc1NSAyLjAxMyA3LjAzIDUuMDEgOC44MzdsLTUuMDUgMTguMTk1Yy0xNC40MzctMy42Ny0yNi42MjUtMy4zOS0yNi42MjUtMy4zOWwtMi4yNTggMS4wMXYxNDAuODcybDIuMjU4Ljc1M2MxMy42MTQgMCA3My4xNzctNDEuMTMzIDczLjMyMy04NS4yNyAwLTMxLjYyNC0yMS4wMjMtNDUuODI1LTQwLjU1NS01Mi4xOTd6TTE0Ni41MyAxNjQuOGMtMTEuNjE3LTE4LjU1Ny02LjcwNi02MS43NTEgMjMuNjQzLTY3LjkyNSA4LjMyLTEuMzMzIDE4LjUwOSA0LjEzNCAyMS41MSAxNi4yNzkgNy41ODIgMjUuNzY2LTM3LjAxNSA2MS44NDUtNDUuMTUzIDUxLjY0NnptMTguMjE2LTM5Ljc1MmE5LjM5OSA5LjM5OSAwIDAgMC05LjM5OSA5LjM5OSA5LjM5OSA5LjM5OSAwIDAgMCA5LjQgOS4zOTkgOS4zOTkgOS4zOTkgMCAwIDAgOS4zOTgtOS40IDkuMzk5IDkuMzk5IDAgMCAwLTkuMzk5LTkuMzk4em0yLjgxIDguNjcyYTIuMzc0IDIuMzc0IDAgMSAxIDAtNC43NDkgMi4zNzQgMi4zNzQgMCAwIDEgMCA0Ljc0OXoiIGZpbGw9IiNFNTcyMDAiLz48cGF0aCBkPSJNMTAxLjM3MSA3Mi43MDlsLTUuMDIzLTE4LjkwMWMyLjg3NC0xLjgzMiA0Ljc4Ni01LjA0IDQuNzg2LTguNzAxIDAtNS43LTQuNjItMTAuMzItMTAuMzItMTAuMzItNS42OTkgMC0xMC4zMTkgNC42Mi0xMC4zMTkgMTAuMzIgMCA1LjY4MiA0LjU5MiAxMC4yODkgMTAuMjY3IDEwLjMxN0w5NS44IDc0LjM3OGMtMTkuNjA5IDYuNTEtNDAuODg1IDIwLjc0Mi00MC44ODUgNTEuODguNDM2IDQ1LjAxIDU5LjU3MiA4NS4yNjcgNzMuMTg2IDg1LjI2N1Y2OC44OTJzLTEyLjI1Mi0uMDYyLTI2LjcyOSAzLjgxN3ptMTAuMzk1IDkyLjA5Yy04LjEzOCAxMC4yLTUyLjczNS0yNS44OC00NS4xNTQtNTEuNjQ1IDMuMDAyLTEyLjE0NSAxMy4xOS0xNy42MTIgMjEuNTExLTE2LjI4IDMwLjM1IDYuMTc1IDM1LjI2IDQ5LjM2OSAyMy42NDMgNjcuOTI2em0tMTguODItMzkuNDZhOS4zOTkgOS4zOTkgMCAwIDAtOS4zOTkgOS4zOTggOS4zOTkgOS4zOTkgMCAwIDAgOS40IDkuNCA5LjM5OSA5LjM5OSAwIDAgMCA5LjM5OC05LjQgOS4zOTkgOS4zOTkgMCAwIDAtOS4zOTktOS4zOTl6bS0yLjgxIDguNjcxYTIuMzc0IDIuMzc0IDAgMSAxIDAtNC43NDggMi4zNzQgMi4zNzQgMCAwIDEgMCA0Ljc0OHoiIGZpbGw9IiNGRjdGMDAiLz48L3N2Zz4=
 [PlatformIO-url]: https://platformio.org/
 [ST-Link]: images/IMG_ST-Link-V2-Clone.jpg "ST-Link (V2) Clone"
-[Picoprobe-url]: https://github.com/raspberrypi/picoprobe
-[Picoprobe]: images/IMG_Picoprobe.jpg
-[Picoprobe-open1]: images/IMG_Picoprobe-open1.jpg
-[Picoprobe-open2]: images/IMG_Picoprobe-open2.jpg
-[Pico-url]: https://www.raspberrypi.com/products/raspberry-pi-pico/ "Raspberry Pico"
 [OpenOCD-url]: https://openocd.org/pages/about.html
