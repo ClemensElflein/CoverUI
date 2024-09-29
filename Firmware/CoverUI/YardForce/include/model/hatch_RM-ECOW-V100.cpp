@@ -37,9 +37,6 @@ unsigned int HatchRMECOWV100::handle_button(unsigned int button_id, unsigned int
     if (button_id == BTN_6H_NUM)
         return BTN_TUE_NUM; // Volume down
 
-    if (button_id == BTN_8H_NUM)
-        return BTN_WED_NUM; // Next language
-
     return button_id;
 };
 

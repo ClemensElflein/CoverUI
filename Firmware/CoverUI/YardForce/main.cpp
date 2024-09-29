@@ -86,6 +86,13 @@ HardwareSerial serial_ll((uint8_t)UART_LL_RX, (uint8_t)UART_LL_TX, 1); // Serial
 
 void setup()
 {
+#ifdef MDL_RMECOWV100
+    // RM-ECOW-V1.0.0 might have a populated ESP-WROOM-02 module.
+    // Disable it, because one might have made MOD_HALL but flash or test another FW variant
+    pinMode(PF7, OUTPUT);    // ESP-WROOM-02 EN pin
+    digitalWrite(PF7, LOW);  // Disable ESP-WROOM-02 module so that it's GPIOs doesn't collide with ours
+#endif
+
     leds.setup();
     buttons.setup();
 #ifdef YARDFORCE_DISPLAY_HPP
