@@ -5,17 +5,14 @@
  * This is for YardForce models (like SA, SC or NX), whose CoverUI is behind a hatch.
  * Those need some special (button) handling because opening the hatch (to reach the buttons), triggers stop-emergency.
  * @version 0.2
- * @date 2023-11-05
+ * @date 2024-09-30
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023, 2024
  *
  */
 
 #include <Arduino.h>
-// #include <stdint.h>
-#include <list>
-// #include "include/Hatch.hpp"
-// #include "include/LEDcontrol.hpp"
+
 #include "include/main.h"
 
 /**
@@ -38,7 +35,7 @@ unsigned int Hatch::handle_button(unsigned int button_id, uint32_t press_time)
 
 void Hatch::queue_button(uint8_t button_id, uint8_t press_duration, uint32_t delay)
 {
-    fake_button_queue.push_back({button_id, press_duration, millis() + delay});
+    fake_button_queue.push({button_id, press_duration, millis() + delay});
 };
 
 /**
@@ -46,15 +43,12 @@ void Hatch::queue_button(uint8_t button_id, uint8_t press_duration, uint32_t del
  */
 void Hatch::process_queued()
 {
-    if (fake_button_queue.empty())
+    if (fake_button_queue.empty() || fake_button_queue.full())
         return;
 
-    for (auto it = fake_button_queue.begin(); it != fake_button_queue.end(); ++it)
-    {
-        if (millis() >= it->delay_end)
-        {
-            buttons.send(it->button_id, it->press_duration);
-            it = fake_button_queue.erase(it);
-        }
+    auto first = fake_button_queue.front();
+    if (millis() >= first.delay_end) {
+        buttons.send(first.button_id, first.press_duration);
+        fake_button_queue.pop();
     }
 };
