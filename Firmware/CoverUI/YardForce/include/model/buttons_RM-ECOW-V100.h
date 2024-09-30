@@ -12,6 +12,7 @@
 #define YARDFORCE_BUTTONS_RMECOWV100_H
 
 #include <Arduino.h>
+
 #include "../Buttons.hpp"
 
 #define BTN_S1_PIN PA4
@@ -30,4 +31,4 @@ extern Buttons buttons;
 #define HAS_MAGIC_BUTTONS
 extern void magic_buttons();
 
-#endif // YARDFORCE_BUTTONS_RMECOWV100_H
+#endif  // YARDFORCE_BUTTONS_RMECOWV100_H
