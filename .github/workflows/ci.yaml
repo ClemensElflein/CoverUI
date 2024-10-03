@@ -58,7 +58,7 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Run PlatformIO
-        run: pio run -d Firmware/CoverUI --environment YF_C500_STM32 --environment YF_C500_STM32_RAIN --environment YF_C500_STM32_RAIN_HALL --environment YF_C500_STM32_HALL --environment YF_C500_GD32 --environment YF_C500_GD32_RAIN --environment YF_C500_GD32_RAIN_HALL --environment YF_C500_GD32_HALL --environment YF_RM-ECOW-V100_STM32 --environment YF_RM-ECOW-V100_STM32_STOP --environment YF_RM-EC3-V11_STM32 --environment YF_RM-EC3-V11_STM32_HALL --environment YF_RM-EC3-V11_STM32_HALL_STOP --environment YF_RM-EC3-V11_STM32_STOP --environment YF_SAXPRO_STM32 --environment YF_RM-ECOW-V110_GD32 --environment YF_RM-ECOW-V110_GD32_HALL --environment YF_RM-ECOW-V110_GD32_HALL_STOP --environment YF_RM-ECOW-V110_GD32_STOP
+        run: pio run -d Firmware/CoverUI
 
       - name: Copy Artifacts
         run: |
@@ -73,6 +73,8 @@ jobs:
           cp Firmware/CoverUI/.pio/build/YF_C500_GD32_HALL/firmware.bin ./artifacts/firmware_C500_GD32_HALL.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_HALL/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_HALL_STOP.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL_STOP.bin
@@ -82,6 +84,10 @@ jobs:
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_HALL/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_HALL.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_HALL_STOP.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_GD32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_GD32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_STM32/firmware.bin ./artifacts/firmware_RM-ECOW-V110_STM32.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_STM32_HALL/firmware.bin ./artifacts/firmware_RM-ECOW-V110_STM32_HALL.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_STM32_HALL_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_STM32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_STM32_STOP.bin
 
       - name: Step 3 - Use the Upload Artifact GitHub Action
         uses: actions/upload-artifact@v3

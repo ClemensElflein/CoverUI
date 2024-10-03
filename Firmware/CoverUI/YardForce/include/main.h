@@ -11,7 +11,8 @@
 #ifndef __YARDFORCE_MAIN_H
 #define __YARDFORCE_MAIN_H
 
-#include <Arduino.h> // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+#include <Arduino.h>  // Stock CoverUI is build now via Arduino framework (instead of HAL), which is ATM the only framework with STM32F030R8 and GD32F330R8 support
+
 #include "datatypes.h"
 
 #if defined(FIRMWARE_VERSION) && !(FIRMWARE_VERSION == 200)
@@ -20,18 +21,18 @@
 #else
 #undef FIRMWARE_VERSION
 #endif
-#define FIRMWARE_VERSION 205
+#define FIRMWARE_VERSION 206
 
 #if defined(MDL_C500)
-#include "model_C500.h"
+#include "../model/C500/assembly.hpp"
 #elif defined(MDL_RMECOWV100)
-#include "model_RM-ECOW-V100.h"
+#include "../model/RM-ECOW-V100/assembly.hpp"
 #elif defined(MDL_RMECOWV110)
-#include "model_RM-ECOW-V110.h"
+#include "../model/RM-ECOW-V110/assembly.hpp"
 #elif defined(MDL_RMEC3V11)
-#include "model_RM-EC3-V11.h"
+#include "../model/RM-EC3-V11/assembly.hpp"
 #elif defined(MDL_SAXPRO)
-#include "model_SAxPRO.h"
+#include "../model/SAxPRO/assembly.hpp"
 #else
 #pragma GCC error "Missing model header!"
 #include <AbortCompile>
@@ -69,4 +70,4 @@ extern void uart_putc(HardwareSerial *Serial, uint8_t c);
 extern bool uart_is_readable(HardwareSerial *Serial);
 extern void Force_LED_off(uint8_t led_num, bool force);
 
-#endif // __YARDFORCE_MAIN_H
+#endif  // __YARDFORCE_MAIN_H
