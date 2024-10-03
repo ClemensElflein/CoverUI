@@ -71,7 +71,7 @@ Please check here, what modifications are required for your CoverUI model:
 - [YardForce Classic 500**B**, RM-ECOW-V1.3.1](README-MOD-YF-C500B_RM-ECOW-V1.3.1.md)
 - [YardForce SA/SC/NX-Type 10 Buttons, 12 LEDs, RM-ECOW-V1.0.0](README-MOD-YF-SASCNX_RM-ECOW-V1.0.0.md)
 - [YardForce SA/SC/NX-Type 9 Buttons, 11 LEDs, RM-ECOW-V1.1.0](README-MOD-YF-SASCNX_RM-ECOW-V1.1.0.md)
-- [YardForce SA/SC/NX-Type 18 Buttons, 3 LEDs, 256*64 Pixel LC-Display, RM-EC3-V1.1](README-MOD-YF-SASCNX_RM-EC3-V1.1.md)
+- [YardForce NX100i (SA/SC/NX-Type) 18 Buttons, 3 LEDs, 256*64 Pixel LC-Display, RM-EC3-V1.1](README-MOD-YF-SASCNX_RM-EC3-V1.1.md)
 - [YardForce SA/SC-PRO-Type 6 Buttons, 240*160 Dot-Matrix-Display, HS49067](README-MOD-YF-SASC_PRO_HS49067.md)
 
 
@@ -155,7 +155,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Meaning of the LEDs:
 
-| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i<br>(SA/SC/NX-Type),<br>18&nbsp;Buttons, 3&nbsp;LEDs,<br> 256*64 Pixel LC-Display | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | :-------: | :-----: | :-------: | :----: | :----: | ----- |
 | 2hr&nbsp;-&nbsp;8hr | 4H&nbsp;-&nbsp;10H | 4H&nbsp;-&nbsp;10H | <img src="images/lcd.svg" width=15% height=15%> | <img src="images/lcd.svg" width=15% height=15%> | 4 digi GPS quality progressbar. Blink = No GPS-Fix
 | S1 | :heavy_check_mark: | :heavy_check_mark: | <img src="images/brain-solid.svg" width=15% height=15%> | <img src="images/brain-solid.svg" width=15% height=15%> | ROS State:<br><b>On</b> = Running (idle)<br> <b>Blink-slow</b> = Autonomous mode (mowing, (un-)docking)<br><b>Blink-fast</b> = Area recording<br><b>Off</b> = ROS not running |
@@ -169,7 +169,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 
 ### Button usage:
 
-| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i<br>(18&nbsp;Buttons, 3&nbsp;LEDs, 256*64 Pixel LC-Display), SA/SC/NX-Type | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
+| C500(B) | SA/SC/NX-Type,<br>9&nbsp;Buttons, 11&nbsp;LEDs | SA/SC/NX-Type,<br>10&nbsp;Buttons, 12&nbsp;LEDs | NX100i (SA/SC/NX-Type),<br>18&nbsp;Buttons, 3&nbsp;LEDs,<br> 256*64 Pixel LC-Display | SA/SC-PRO<br>(240*160 Pixel LC-Display) | Remark |
 | :-------: | :----: | :---------------------------------: | :-----: | :----: | ----- |
 | <kbd>Home</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | Go home (docking station) |
 | <kbd>▶</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | <kbd>Start</kbd> | Start mowing or continue |
@@ -177,7 +177,7 @@ Once flashed, the CoverUI should show you a quick LED animation when powered on.
 | <kbd>S2</kbd> | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: | Skip over to next area if 'mowing'. Long press (2-3s) in 'idle', delete all recorded areas! |
 | <kbd>Lock</kbd> | :heavy_check_mark: | :heavy_check_mark: | :x: | <kbd>Enter</kbd> | Long press (2-3s) reset emergency |
 | <kbd>OK</kbd>+<kbd>Sun</kbd> | <kbd>Lock</kbd>+<kbd>10H</kbd> | <kbd>Setup</kbd>+<kbd>10H</kbd> | <kbd>MENU</kbd>+<kbd>BACK</kbd> | :x: | Trigger power-on animation.<br>This is mainly for mounting validation, to ensure that you hit all LED guidance holes |
-| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Lock</kbd>+<kbd>4H</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 205 |
+| <kbd>OK</kbd>+<kbd>Clock</kbd> | <kbd>Lock</kbd>+<kbd>4H</kbd> | <kbd>Setup</kbd>+<kbd>4H</kbd> | <kbd>MENU</kbd>+<kbd>0</kbd> | :x: | Display CoverUI- firmware version. LED only models will show the version as a number sequence[^2], which should show (as of writing) 206 |
 | <kbd>Mon</kbd> | <kbd>4H</kbd> | <kbd>4H</kbd> | <kbd>1</kbd> | <img src="images/circle-up-solid.svg" width=20% height=20%> | Volume up[^3] |
 | <kbd>Tue</kbd> | <kbd>6H</kbd> | <kbd>6H</kbd> | <kbd>2</kbd> | <img src="images/circle-down-solid.svg" width=20% height=20%> | Volume down[^3] |
 | <kbd>Wed</kbd> | :x: | <kbd>8H</kbd> | <kbd>3</kbd> | <kbd>Back</kbd> | ~~Next language~~ Language selection has moved to mower_config[^3] |
@@ -218,7 +218,7 @@ check section [usage](#usage) about the [LED](#meaning-of-the-leds) and [Button]
 | 1.00    | - Stock-Cable support for rain & hall sensors<br>- Classic 500B support | 2023-05-13
 |  NA       | First OM's CoverUI port for YardForce Classic 500 | 2023-05-01
 
-[^4]: Press magic button combo 'Display CoverUI- firmware version' (see [Button Usage](#button-usage)) to get your installed FW version displayed
+[^4]: Press sys-req button combo 'Display CoverUI- firmware version' (see [Button Usage](#button-usage)) to get your installed FW version displayed
 
 <!-- CONTRIBUTING -->
 ## Contributing
