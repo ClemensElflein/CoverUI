@@ -73,6 +73,8 @@ jobs:
           cp Firmware/CoverUI/.pio/build/YF_C500_GD32_HALL/firmware.bin ./artifacts/firmware_C500_GD32_HALL.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_HALL/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_STOP.bin
+          cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V100_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V100_STM32_STOP.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL.bin
           cp Firmware/CoverUI/.pio/build/YF_RM-EC3-V11_STM32_HALL_STOP/firmware.bin ./artifacts/firmware_RM-EC3-V11_STM32_HALL_STOP.bin
