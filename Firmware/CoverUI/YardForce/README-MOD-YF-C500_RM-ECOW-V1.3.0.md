@@ -25,7 +25,7 @@ You might also simply bridge R34 and R42, but for me it was simpler to move them
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### ST-Link Headers (*mandatory*)
-In case you do not have headers for ST-LINK connection, you can solder them now.
+In case you do not have headers for ST-LINK connection, you should solder them also.
 
 [![Optional Rain Hardware Modification](images/IMG_Headers_500.png "Open in browser")](images/IMG_Headers_500.png)
 
