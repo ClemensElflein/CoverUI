@@ -83,12 +83,24 @@ You need an ST-Link programmer/debugger like this cheap *ST-Link (V2) clone*:
 
 <img src="images/IMG_ST-Link-V2-Clone.jpg" alt="My ST-Link (V2) clone" width="32%">
 
+ * Install stlink-tools (you need st-info to identify your board): e.g. `sudo apt install stlink-tools`
+
+ * Unplug everything from you stock CoverUI PCB and connect your ST-Links GND, CLK, DIO and 3V3 to the same pins on the board.
+Take special attention to hit the '3.3V' pin of your ST-Link!!
+ * Identify your board: Open a terminal/console, then:
+
+   * `st-info --descr` should return either:
+      * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
+      * `F1xx Medium-density` or `STM32F1xx_MD` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
+      * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
+
+
 There're two generic ways to get the Firmware into your MCU.<br>
 Either you flash the binary directly, or you compile it by yourself with [PlatformIO](https://platformio.org/).
 
-### Firmware binaries
+### Firmware binaries 
 
-1. Goto [Releases](/releases)
+1. Goto [Releases](/releases) // TODO links currently broken
 2. Download `firmware-stock.zip`
 3. Unpack it somewhere
 
@@ -106,13 +118,7 @@ The file name syntax of the included firmware binaries is:  `firmware_<MDL>_<MCU
 
 It turns out that ST-Link GUI tool is some how flawy, why I recommend to use the `st-flash` console command.
 
-Open a terminal/console, then:
-
-* `st-info --descr` should return either:
-  * `F0xx`, which identify your PCB's MCU as a 'STM32F030R8' (i.e. Classic 500)
-  * `F1xx Medium-density` or `STM32F1xx_MD` which identify a 'GD32F330R8' MCU (i.e. Classic 500)
-  * `F09X` identifies a 'STM32F030RC' MCU (i.e. SAxPRO Display)
-* Unplug everything from you stock CoverUI PCB and connect your ST-Link to GND, CLK, DIO and 3V3. Take special attention to hit the '3.3V' pin of your ST-Link!! Now simply:<br>
+* simply:<br>
  `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>, ...].bin 0x08000000` which should log at the end something like 'Flash written and verified! jolly good!'
 
 When done, re-plug your ST-Link and you should see a quick power-on animation.
@@ -136,8 +142,11 @@ Now, try again flashing by: `st-flash write firmware_<mdl>_<mcu type>[_<opt mod>
 - `Open Project` cloned repository branch -> CoverUI/Firmware/CoverUI (contains platformio.ini)
 - Wait till tools got loaded (bottom right status info)
 - In bottombar click `Switch PlatformIO Project Environment` and choose whatever MCU, MOD & programmer/debugger- probe you use
+<img src="images/PlatformIO_env.png" alt="PlatformIO env" width="32%">
 - Wait till tools got loaded (bottom right status info)
-- Finally press `PlatformIO: Upload` (right arrow symbol) in bottombar. After it compiled, linked and uploaded, it should reboot and do a short power-on LED animation.
+- Finally press `PlatformIO: Upload` (right arrow symbol) in bottombar.
+<img src="images/PlatformIO_upload.png" alt="PlatformIO upload" width="32%">
+ When done, re-plug your ST-Link and you should see a quick power-on animation.
 - If you get an "Error: stm32x device protected", simply upload a second time. Look like I placed the "unlock" command some how to late. 
 
 
