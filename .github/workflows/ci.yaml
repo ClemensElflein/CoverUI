@@ -8,14 +8,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -36,7 +36,7 @@ jobs:
           cp Firmware/CoverUI_V2/.pio/build/test_mode/firmware.uf2 ./artifacts/firmwar_test_mode.uf2
 
       - name: Step 3 - Use the Upload Artifact GitHub Action
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: open-mower-pico-firmware
           path: artifacts/
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cache/pip
@@ -90,7 +90,7 @@ jobs:
           cp Firmware/CoverUI/.pio/build/YF_RM-ECOW-V110_STM32_STOP/firmware.bin ./artifacts/firmware_RM-ECOW-V110_STM32_STOP.bin
 
       - name: Step 3 - Use the Upload Artifact GitHub Action
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: open-mower-stock-firmware
           path: artifacts/
