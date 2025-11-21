@@ -132,7 +132,7 @@ void reportButtonPress(int idx, int duration) {
     Serial.print("BTN ");
     Serial.print(reply.button_id);
     Serial.print(" length ");
-    Serial.print(reply.press_duration);
+    Serial.println(reply.press_duration);
 
     sendMessage((uint8_t *) &reply, sizeof(reply));
 }
